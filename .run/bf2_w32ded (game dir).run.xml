@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="bf2_w32ded (game dir)" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="+modPath mods/bf2" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="true" EMULATE_TERMINAL="false" WORKING_DIR="file://$PROJECT_DIR$/../../B2BF Launcher/Battlefield2" PASS_PARENT_ENVS_2="true" PROJECT_NAME="BF2Rebuilt" TARGET_NAME="bf2_w32ded" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="BF2Rebuilt" RUN_TARGET_NAME="bf2_w32ded">
+    <envs>
+      <env name="BF2_FRAMES" value="3" />
+      <env name="BF2_TRACE_FIRERATE" value="1" />
+    </envs>
+    <method v="2">
+      <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+    </method>
+  </configuration>
+</component>

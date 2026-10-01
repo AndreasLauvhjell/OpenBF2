@@ -1,0 +1,27 @@
+; [CHOSEN, not recovered] - TextureAtlasBuilder.dll's EXPORT table, for `link /DEF:` in
+; Code\Build\textureatlasbuilder.cmd: it pins the rebuilt DLL's twelve exports to the shipped ordinals
+; (1-12, in name order - `dumpbin /exports` on the 1.50 image) and marks the two vftables DATA. The
+; dllexport classes in RendDX9/TextureAtlas/TextureAtlasBuilder/ITextureAtlas.h produce the same twelve
+; names on their own; this file fixes their ORDINALS. The script's ABI check reads it back.
+;
+; NOT the file RendDX9 imports through: an import library made from a .def with @ordinals binds BY
+; ORDINAL (measured 2026-10-01: "Ordinal 11 / Ordinal 12" in the rebuilt RendDX9's import table), and
+; the shipped RendDX9.dll imports the two creates BY NAME - RendDX9Abi\TextureAtlasBuilder.def.
+;
+; The decorated names are copied from `dumpbin /exports TextureAtlasBuilder.dll` (1.50, md5 1132a012...)
+; and are what modern MSVC produces for the declarations in ITextureAtlas.h: both classes `class` (V),
+; the creates `static ... __fastcall` (SI), the device a `struct IDirect3DDevice9` (U).
+LIBRARY TextureAtlasBuilder
+EXPORTS
+    ??0ITextureAtlas@textureatlas@@QAE@ABV01@@Z                     @1
+    ??0ITextureAtlas@textureatlas@@QAE@XZ                           @2
+    ??0ITextureAtlasConfiguration@textureatlas@@QAE@ABV01@@Z        @3
+    ??0ITextureAtlasConfiguration@textureatlas@@QAE@XZ              @4
+    ??1ITextureAtlas@textureatlas@@UAE@XZ                           @5
+    ??1ITextureAtlasConfiguration@textureatlas@@UAE@XZ              @6
+    ??4ITextureAtlas@textureatlas@@QAEAAV01@ABV01@@Z                @7
+    ??4ITextureAtlasConfiguration@textureatlas@@QAEAAV01@ABV01@@Z   @8
+    ??_7ITextureAtlas@textureatlas@@6B@                             @9  DATA
+    ??_7ITextureAtlasConfiguration@textureatlas@@6B@                @10 DATA
+    ?create@ITextureAtlas@textureatlas@@SIPAV12@PAUIDirect3DDevice9@@@Z  @11
+    ?create@ITextureAtlasConfiguration@textureatlas@@SIPAV12@XZ     @12

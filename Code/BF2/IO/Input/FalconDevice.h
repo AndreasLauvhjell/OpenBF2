@@ -1,0 +1,75 @@
+// Falcon input device. [INFERRED] Header placement. Preserve its 27-slot interface without a destructor slot.
+#ifndef IO_INPUT_FALCONDEVICE_H
+#define IO_INPUT_FALCONDEVICE_H
+#include "../../Core/BuildConfig.h"
+#if !DEDICATED
+#include "Input.h"
+#include "../../External/NovintHFX/NovintHFX.h"
+#include <list>
+namespace dice { namespace hfe { namespace io {
+// Type name attested in the ELF list specialization; fields from PE 0x6A5C90.
+struct FalconInputFormat {
+    unsigned int buttons;
+    double position[3];
+    DWORD time;
+};
+extern NovintHFX::Device* g_falconDevice; // [INFERRED] name, PE 0xA03940
+extern int g_falconMouseMode; // [INFERRED] name, PE978FC4 initialized1; HUD/updateCurrentState writers
+class FalconDevice : public IAdvancedInputDevice {
+public:
+    FalconDevice();
+    ~FalconDevice(); // PE 0x6A50D0, nonvirtual
+    void addRef() override;
+    int getRef() override;
+    int release() override;
+    void* queryInterface(unsigned int) const override;
+    InputDeviceTypes getType() const override;
+    bool setCooperativeMode(InputDeviceMode) override;
+    InputDeviceMode getCooperativeMode() const override;
+    bool activate() override;
+    bool deActivate() override;
+    void update(float) override;
+    bool isActive() const override;
+    bool getNextInput(InputDeviceAxes&, InputDeviceButtons&, InputDeviceKeys&, bool&) override;
+    int getNumAxes() const override;
+    float readAxis(InputDeviceAxes, bool) const override;
+    // +38 retains the recovered IAdvancedInputDevice::peakXYAxis default.
+    void setInvertAxis(InputDeviceAxes, bool) override;
+    bool getInvertAxis(InputDeviceAxes) const override;
+    void setAxisScale(InputDeviceAxes, float) override;
+    float getAxisScale(InputDeviceAxes) const override;
+    void setAxisAdd(InputDeviceAxes, float) override;
+    float getAxisAdd(InputDeviceAxes) const override;
+    int getNumButtons() const override;
+    bool buttonDown(InputDeviceButtons) const override;
+    bool buttonPressed(InputDeviceButtons) const override;
+    bool buttonReleased(InputDeviceButtons) const override;
+    float buttonPressedSampleLatency(InputDeviceButtons) const override;
+    virtual bool init();
+private:
+    // [FRONTIER] PE 0x6A52A0, ELF 0x8499C80; positive-dt frame update.
+    // Required HapticSettings/effect interfaces are not yet recovered.
+    void updateCurrentState(float); // [TEMP] diagnostic abort; falcon-state-diagnostic
+    int m_refCount;                         // PE +04
+    unsigned int m_buttons;                // +08
+    InputDeviceMode m_mode;                 // +0C; ctor leaves untouched
+    unsigned int m_numButtons;              // +10; assigned in init
+    unsigned int m_previousButtons;        // +14
+    double m_axes[3];                       // +18
+    int m_axisTravel[3];                    // +30
+    int m_numAxes;                          // +3C; assigned in init
+    bool m_active;                          // +40
+    float m_axisScale[3];                   // +44
+    bool m_invertAxis[3];                   // +50
+    float m_buttonLatency[32];              // +54; ctor leaves untouched
+    DWORD m_pollTime, m_sampleTime;          // +D4/+D8; D8 untouched
+    NovintHFX::HapticsSystem* m_haptics;      // +DC
+    NovintHFX::Device* m_device;             // +E0
+    std::list<FalconInputFormat> m_samples;  // +E4, native STL size
+    DWORD m_field0f0, m_field0f4, m_field0f8;  // [UNRESOLVED] initialized zero
+    bool m_field0fc;                        // [UNRESOLVED] initialized false
+    DWORD m_field100;                       // [UNRESOLVED] initialized zero
+};
+} } }
+#endif
+#endif

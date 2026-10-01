@@ -1,0 +1,6 @@
+﻿  Can not find a suitable PERL:
+   NO perl interpreters were found on this machine at all!
+   Please install ActivePerl and ensure it appears on your path
+  The Python SSL module was not built
+  [6348 refs]
+C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Microsoft\VC\v170\Microsoft.MakeFile.Targets(45,5): error MSB3073: The command "python_d -u build_ssl.py -d" exited with code 1.

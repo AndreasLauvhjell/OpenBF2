@@ -1,0 +1,12 @@
+﻿cl : command line  warning D9035: option 'Gm' has been deprecated and will be removed in a future release
+  pyexpat.c
+  xmltok.c
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\pyexpat.c(129,5): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  xmlrole.c
+  xmlparse.c
+  Generating Code...
+C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Microsoft\VC\v170\Microsoft.CppBuild.targets(1395,5): warning MSB8012: TargetPath(C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\PCbuild\pyexpat.dll) does not match the Linker's OutputFile property value (C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\PCbuild\pyexpat_d.pyd). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Link.OutputFile).
+C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Microsoft\VC\v170\Microsoft.CppBuild.targets(1396,5): warning MSB8012: TargetExt(.dll) does not match the Linker's OutputFile property value (.pyd). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Link.OutputFile).
+C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Microsoft\VC\v170\Microsoft.CppBuild.targets(1397,5): warning MSB8012: TargetName(pyexpat) does not match the Linker's OutputFile property value (pyexpat_d). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Link.OutputFile).
+     Creating library .\.\pyexpat_d.lib and object .\.\pyexpat_d.exp
+  pyexpat.vcxproj -> C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\PCbuild\pyexpat.dll

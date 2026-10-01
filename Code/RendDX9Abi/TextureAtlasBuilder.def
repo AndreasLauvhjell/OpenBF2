@@ -1,0 +1,17 @@
+; [CHOSEN, not recovered] - input to `lib /def:` (Code\Build\renddx9.cmd) so RendDX9.dll can IMPORT
+; the two exported creates of TextureAtlasBuilder.dll STATICALLY, as the shipped image does: RendDX9.dll
+; 1.50 carries an import descriptor for TextureAtlasBuilder.dll with exactly these two names, by name
+; (IAT 0x101DB3B4 / 0x101DB3B8; one call each, both in the atlas builder 0x10015EA0 - TextureAtlas.cpp's
+; textureAtlasBuild). Without the DLL on the search path RendDX9.dll does not load, in retail and here
+; alike; the game directory ships it.
+;
+; No @ordinals here, deliberately: a .def with ordinals makes an import library that binds BY ORDINAL.
+; The DLL's own export table (all twelve names, the shipped ordinals) is TextureAtlasBuilderExports.def.
+;
+; The decorated names are copied from `dumpbin /imports RendDX9.dll` (1.50) and are what modern MSVC
+; produces for RendDX9/TextureAtlas/TextureAtlasBuilder/ITextureAtlas.h's declarations - the same
+; "plain declaration is enough" bargain as Memory.def.
+LIBRARY TextureAtlasBuilder
+EXPORTS
+    ?create@ITextureAtlas@textureatlas@@SIPAV12@PAUIDirect3DDevice9@@@Z
+    ?create@ITextureAtlasConfiguration@textureatlas@@SIPAV12@XZ

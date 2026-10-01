@@ -1,0 +1,17 @@
+; [CHOSEN, not recovered] - DICE's own .def is not in the shipped image, but its EFFECT is:
+; `dumpbin /exports RendDX9.dll` returns exactly two names, undecorated, and in this order:
+;
+;     ordinal hint RVA      name
+;           1    0 00074240 deinitDll
+;           2    1 00073DA0 initDll
+;
+; The ordinals are pinned to match. They are alphabetical, which is what the linker assigns when a
+; .def lists names without ordinals - so pinning them here is belt and braces rather than a
+; correction. BF2 resolves both by NAME (GetProcAddress in loadPluginDll at BF2.exe 0x54CE20), so
+; the ordinals are cosmetic; matching them anyway keeps a dumpbin diff of the two images clean.
+;
+; ⚠ NOTHING ELSE MAY BE ADDED HERE. The two-export surface IS the plugin ABI - see
+; Code/BF2/Core/DllModule.h. Anything the host needs beyond these crosses through IClassManager.
+EXPORTS
+    deinitDll   @1
+    initDll     @2

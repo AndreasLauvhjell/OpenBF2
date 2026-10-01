@@ -1,0 +1,87 @@
+﻿# Local agent/session state
+.claude/
+
+# CMake / CLion local state
+.idea/
+/out/
+/cmake-build-*/
+/CMakeUserPresets.json
+/Code/!OUT!/
+
+# Retired workspace paths; maintained tooling is under Code/Build and Code/Tests.
+/Code/_build/
+/Code/_stubs/
+
+# Build products; keep authored tools and fixtures.
+Code/BF2/External/python-embedded/OBJ/
+Code/Build/**/*.exe
+Code/Build/**/*.dll
+Code/Build/**/*.lib
+Code/Build/**/*.log
+Code/Build/**/*.map
+Code/Tests/**/*.exe
+Code/Tests/**/*.dll
+Code/Tests/**/*.lib
+Code/Tests/**/*.log
+Code/Tests/**/*.map
+Code/Tests/**/obj*/
+Code/Tests/**/bin*/
+
+# Visual Studio caches and generated Python 2.3.4 build outputs
+.vs/
+ipch/
+*.VC.db
+*.suo
+*.user
+Code/BF2/External/Python-2.3.4/PCbuild/x86-temp-*/
+Code/BF2/External/Python-2.3.4/PCbuild/*.dll
+Code/BF2/External/Python-2.3.4/PCbuild/*.exe
+Code/BF2/External/Python-2.3.4/PCbuild/*.lib
+Code/BF2/External/Python-2.3.4/PCbuild/*.pdb
+Code/BF2/External/Python-2.3.4/PCbuild/*.ilk
+Code/BF2/External/Python-2.3.4/PCbuild/*.zip
+
+# Generated compiler/debugger state is reproducible and stays out of source backups.
+*.obj
+*.pdb
+*.ilk
+*.exp
+!Code/BF2/External/python-embedded/py-src-2.3.4/Mac/**/*.exp
+*.pyc
+*.pch
+!Code/BF2/External/python-embedded/py-src-2.3.4/Mac/mwerks/*.pch
+*.i64
+*.idb
+*.id0
+*.id1
+*.id2
+*.nam
+*.til
+*.dmp
+*.stackdump
+__pycache__/
+CMakeFiles/
+CMakeCache.txt
+build.ninja
+.ninja_deps
+.ninja_log
+cmake_install.cmake
+compile_commands.json
+
+# Build runs may contain copied source. Only maintained tool subdirectories are public.
+/Code/Build/*/
+!/Code/Build/python/
+!/Code/Build/pyfixture/
+!/Code/Build/demo/
+!/Code/Build/bf2audio_diff/
+!/Code/Build/bf2audio_smoke/
+!/Code/Build/textureatlas_diff/
+!/Code/Build/bin/
+/Code/Build/bin/**
+!/Code/Build/bin/README.md
+
+# Local test executables and Python build outputs (the vendored source remains).
+Code/BF2/External/python-embedded/py-src-2.3.4/PCbuild/*.exe
+Code/BF2/External/python-embedded/py-src-2.3.4/PCbuild/*.dll
+Code/BF2/External/python-embedded/py-src-2.3.4/PCbuild/*.lib
+Code/BF2/External/python-embedded/py-src-2.3.4/PCbuild/*.zip

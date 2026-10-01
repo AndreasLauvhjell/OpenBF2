@@ -1,0 +1,959 @@
+{
+ "ModuleBF2": {
+  "active": [
+   [
+    "dice.bf.gameServer",
+    "GameServer::create"
+   ],
+   [
+    "dice.hfe.world.PlayerManager.Standard",
+    "world::PlayerManager::create"
+   ]
+  ],
+  "dead": []
+ },
+ "ModuleGame": {
+  "active": [
+   [
+    "dice.hfe.StatsManager",
+    "StatsManager::create"
+   ],
+   [
+    "dice.hfe.PlayerStatsManager",
+    "PlayerStatsManager::create"
+   ],
+   [
+    "dice.hfe.PlayerAwards",
+    "PlayerAwards::create"
+   ],
+   [
+    "dice.hfe.PlayerStats",
+    "PlayerStats::create"
+   ],
+   [
+    "dice.hfe.PlayerUnlocks",
+    "PlayerUnlocks::create"
+   ],
+   [
+    "dice.hfe.SearchForPlayer",
+    "SearchForPlayer::create"
+   ],
+   [
+    "dice.hfe.LeaderBoard",
+    "LeaderBoard::create"
+   ],
+   [
+    "dice.hfe.PlayerUnlockInfo",
+    "PlayerUnlockInfo::create"
+   ],
+   [
+    "dice.hfe.PlayerRankInfo",
+    "PlayerRankInfo::create"
+   ],
+   [
+    "dice.hfe.ModInfo",
+    "ModInfo::create"
+   ]
+  ],
+  "dead": []
+ },
+ "ModuleGameLogic": {
+  "active": [
+   [
+    "dice.bf.SquadManager",
+    "SquadManager::create"
+   ],
+   [
+    "dice.bf.ClientSquadManager",
+    "ClientSquadManager::create"
+   ],
+   [
+    "dice.bf.clientGameLogic",
+    "ClientGameLogic::create"
+   ],
+   [
+    "dice.bf.serverGameLogic",
+    "ServerGameLogic::create"
+   ]
+  ],
+  "dead": []
+ },
+ "ModuleNetworkables": {
+  "active": [
+   [
+    "dice.bf2.Networkable.FreeCamera",
+    "FreeCameraNetworkable::create"
+   ],
+   [
+    "dice.bf2.Networkable.ControlPoint",
+    "ControlPointNetworkable::create"
+   ]
+  ],
+  "dead": [
+   [
+    "dice.bf2.Networkable.SimpleObject",
+    "SimpleObjectNetworkable::create",
+    "RW-6: FACTORY UNRECOVERED - NOT REGISTERED IN THIS BUILD"
+   ],
+   [
+    "dice.bf2.Networkable.RotationalBundle",
+    "RotationalBundleNetworkable::create",
+    "RW-6: FACTORY UNRECOVERED - NOT REGISTERED IN THIS BUILD"
+   ],
+   [
+    "dice.bf2.Networkable.OverheadCamera",
+    "OverheadCameraNetworkable::create",
+    "RW-6: FACTORY UNRECOVERED - NOT REGISTERED IN THIS BUILD"
+   ],
+   [
+    "dice.bf2.Networkable.Spring",
+    "SpringNetworkable::create",
+    "RW-6: FACTORY UNRECOVERED - NOT REGISTERED IN THIS BUILD"
+   ],
+   [
+    "dice.bf2.Networkable.Item",
+    "ItemNetworkable::create",
+    "RW-6: FACTORY UNRECOVERED - NOT REGISTERED IN THIS BUILD"
+   ],
+   [
+    "dice.bf2.Networkable.DestroyableObject",
+    "DestroyableObjectNetworkable::create",
+    "RW-6: FACTORY UNRECOVERED - NOT REGISTERED IN THIS BUILD"
+   ],
+   [
+    "dice.bf2.Networkable.DestroyableWindowsBundle",
+    "DestroyableWindowsBundleNetworkable::create",
+    "RW-6: FACTORY UNRECOVERED - NOT REGISTERED IN THIS BUILD"
+   ],
+   [
+    "dice.bf2.Networkable.Soldier",
+    "SoldierNetworkable::create",
+    "RW-6: FACTORY UNRECOVERED - NOT REGISTERED IN THIS BUILD"
+   ],
+   [
+    "dice..bf2.Networkable.PlayerControlObject",
+    "PlayerControlObjectNetworkable::create",
+    "RW-6: FACTORY UNRECOVERED - NOT REGISTERED IN THIS BUILD"
+   ],
+   [
+    "dice.bf2.Networkable.Kit",
+    "KitNetworkable::create",
+    "RW-6: FACTORY UNRECOVERED - NOT REGISTERED IN THIS BUILD"
+   ],
+   [
+    "dice.bf2.Networkable.GenericProjectile",
+    "GenericProjectileNetworkable::create",
+    "RW-6: FACTORY UNRECOVERED - NOT REGISTERED IN THIS BUILD"
+   ],
+   [
+    "dice.bf2.Networkable.Engine",
+    "EngineNetworkable::create",
+    "RW-6: FACTORY UNRECOVERED - NOT REGISTERED IN THIS BUILD"
+   ],
+   [
+    "dice.bf2.Networkable.TargetObject",
+    "TargetObjectNetworkable::create",
+    "RW-6: FACTORY UNRECOVERED - NOT REGISTERED IN THIS BUILD"
+   ],
+   [
+    "dice.bf2.Networkable.TriggerableTarget",
+    "TriggerableTargetNetworkable::create",
+    "RW-6: FACTORY UNRECOVERED - NOT REGISTERED IN THIS BUILD"
+   ]
+  ]
+ },
+ "MathModule": {
+  "active": [],
+  "dead": []
+ },
+ "BfSoundModule": {
+  "active": [
+   [
+    "dice.hfe.world.ObjectTemplate.Sound",
+    "ClassFactory<SoundObjectTemplate>::create"
+   ]
+  ],
+  "dead": []
+ },
+ "SpawnSystemModule": {
+  "active": [
+   [
+    "dice.bf.SpawnPoint",
+    "SpawnPointTemplate::create"
+   ],
+   [
+    "dice.bf.SpawnManager",
+    "SpawnManager::create"
+   ]
+  ],
+  "dead": []
+ },
+ "ModuleIO": {
+  "active": [
+   [
+    "dice.hfe.io.ControlMap.Standard",
+    "io::ControlMap::create"
+   ],
+   [
+    "dice.hfe.io.InputDeviceManager.Null",
+    "io::NullInputDeviceManager::create"
+   ],
+   [
+    "dice.hfe.io.ResourceManager.Null",
+    "io::NullResourceManager::create"
+   ],
+   [
+    "dice.hfe.io.CacheManager.Null",
+    "io::NullCacheManager::create"
+   ],
+   [
+    "dice.hfe.io.ControlMapManager.Standard",
+    "io::ControlMapManager::create"
+   ],
+   [
+    "dice.hfe.ExcelLexicon",
+    "io::ExcelLexicon::create"
+   ]
+  ],
+  "dead": []
+ },
+ "FileModule": {
+  "active": [
+   [
+    "dice.hfe.io.FileManager.Standard",
+    "io::FileManager::create"
+   ],
+   [
+    "dice.hfe.io.FileChangeManager.Standard",
+    "io::FileChangeManager::create"
+   ],
+   [
+    "dice.hfe.io.FileSystem.Win32",
+    "io::Win32FileSystem::create"
+   ],
+   [
+    "dice.hfe.io.ArchiveHandler.ZIP",
+    "io::ZipArchiveHandler::create"
+   ],
+   [
+    "dice.hfe.io.Stream.Memory",
+    "io::MemStream::create"
+   ]
+  ],
+  "dead": [
+   [
+    "dice.hfe.io.FileSystem.Unix",
+    "io::UnixFileSystem::create",
+    "RW-6: FACTORY UNRECOVERED - NOT REGISTERED IN THIS BUILD"
+   ],
+   [
+    "dice.hfe.io.Stream.Buffered",
+    "io::BufferedStream::create",
+    "RW-6: FACTORY UNRECOVERED - NOT REGISTERED IN THIS BUILD"
+   ]
+  ]
+ },
+ "NetworkModule": {
+  "active": [
+   [
+    "dice.hfe.io.NetworkableInfoManager.Standard",
+    "io::NetworkableInfoManager::create"
+   ]
+  ],
+  "dead": []
+ },
+ "InputDX8Module": {
+  "active": [],
+  "dead": []
+ },
+ "ModuleConsole": {
+  "active": [],
+  "dead": []
+ },
+ "ModuleToolObject": {
+  "active": [],
+  "dead": []
+ },
+ "AnimModule": {
+  "active": [],
+  "dead": []
+ },
+ "AIInterfaceModule": {
+  "active": [
+   [
+    "dice.bf2.ai.AIConnection",
+    "ai::ClassFactory<ai::AIConnection>::create"
+   ]
+  ],
+  "dead": []
+ },
+ "Module": {
+  "active": [],
+  "dead": []
+ },
+ "ObjectModule": {
+  "active": [
+   [
+    "dice.hfe.world.ObjectManager.Standard",
+    "world::ObjectManager::create"
+   ],
+   [
+    "dice.hfe.world.WindManager.Standard",
+    "world::WindManager::create"
+   ],
+   [
+    "dice.hfe.world.Culler.BinTreeCuller",
+    "world::BinTreeCuller::create"
+   ]
+  ],
+  "dead": [
+   [
+    "dice.hfe.world.Object.Standard",
+    "world::Object::create",
+    "RW-6: FACTORY UNRECOVERED - NOT REGISTERED IN THIS BUILD"
+   ],
+   [
+    "dice.hfe.world.ObjectPriorityCalculator.Standard",
+    "world::ObjectPriorityCalculator::create",
+    "RW-6: FACTORY UNRECOVERED - NOT REGISTERED IN THIS BUILD"
+   ],
+   [
+    "dice.hfe.world.Culler.QuadTreeCuller",
+    "world::QuadTreeCuller::create",
+    "RW-6: FACTORY UNRECOVERED - NOT REGISTERED IN THIS BUILD"
+   ]
+  ]
+ },
+ "ObjTemplBaseModule": {
+  "active": [
+   [
+    "dice.hfe.world.ObjectTemplateManager.Standard",
+    "world::ClassFactory<world::ObjectTemplateManager>::create"
+   ]
+  ],
+  "dead": []
+ },
+ "ObjTemplPortalModule": {
+  "active": [
+   [
+    "dice.hfe.world.PortalManager.Standard",
+    "world::ClassFactory<world::PortalManager>::create"
+   ]
+  ],
+  "dead": []
+ },
+ "PhysicsModule": {
+  "active": [
+   [
+    "dice.hfe.world.PhysicsSystem.Basic",
+    "world::ClassFactory<world::BasicPhysicsSystem>::create"
+   ],
+   [
+    "dice.hfe.world.PhysicsNode.Basic",
+    "world::ClassFactory<world::PhysicsNode>::create"
+   ],
+   [
+    "dice.hfe.world.PhysicsNodeManager.Basic",
+    "world::ClassFactory<world::PhysicsNodeManager>::create"
+   ],
+   [
+    "dice.hfe.world.ResponsePhysics.Basic",
+    "world::ClassFactory<world::ResponsePhysics>::create"
+   ],
+   [
+    "dice.hfe.world.ResponsePhysicsManager.Basic",
+    "world::ClassFactory<world::ResponsePhysicsManager>::create"
+   ],
+   [
+    "dice.hfe.world.Heightmap",
+    "world::Heightmap::create"
+   ],
+   [
+    "dice.hfe.world.HeightmapCluster",
+    "world::HeightmapCluster::create"
+   ],
+   [
+    "dice.hfe.world.CollisionManager",
+    "world::CollisionManager::create"
+   ]
+  ],
+  "dead": [
+   [
+    "dice.hfe.world.HeightmapEditable",
+    "world::HeightmapEditable::create",
+    "RW-6: FACTORY UNRECOVERED - NOT REGISTERED IN THIS BUILD"
+   ],
+   [
+    "dice.hfe.world.HeightmapClusterEditable",
+    "world::HeightmapClusterEditable::create",
+    "RW-6: FACTORY UNRECOVERED - NOT REGISTERED IN THIS BUILD"
+   ]
+  ]
+ },
+ "BFMaterialSystemModule": {
+  "active": [
+   [
+    "dice.hfe.world.MaterialManager",
+    "world::MaterialManager::create"
+   ]
+  ],
+  "dead": []
+ },
+ "ScoreSystemModule": {
+  "active": [
+   [
+    "dice.hfe.world.ScoreManager",
+    "world::ScoreManager::create"
+   ]
+  ],
+  "dead": []
+ },
+ "HudCompModule": {
+  "active": [],
+  "dead": [
+   [
+    "dice.hfe.world.TemplateComponent.PostProcess",
+    "world::ClassFactory<world::PostProcessCompTemplate>::create",
+    "RW-6b: createComponent() UNWRITTEN - NOT REGISTERED IN THIS BUILD"
+   ],
+   [
+    "dice.hfe.world.TemplateComponent.VehicleHud",
+    "world::ClassFactory<world::VehicleHudCompTemplate>::create",
+    "RW-6: FACTORY UNRECOVERED - NOT REGISTERED IN THIS BUILD"
+   ],
+   [
+    "dice.hfe.world.TemplateComponent.WeaponHud",
+    "world::ClassFactory<world::WeaponHudCompTemplate>::create",
+    "RW-6: FACTORY UNRECOVERED - NOT REGISTERED IN THIS BUILD"
+   ],
+   [
+    "dice.hfe.world.TemplateComponent.AbilityHud",
+    "world::ClassFactory<world::AbilityHudCompTemplate>::create",
+    "RW-6b: createComponent() UNWRITTEN - NOT REGISTERED IN THIS BUILD"
+   ],
+   [
+    "dice.hfe.world.TemplateComponent.WarningHud",
+    "world::ClassFactory<world::WarningHudCompTemplate>::create",
+    "RW-6b: createComponent() UNWRITTEN - NOT REGISTERED IN THIS BUILD"
+   ],
+   [
+    "dice.hfe.world.TemplateComponent.HelpHud",
+    "world::ClassFactory<world::HelpHudCompTemplate>::create",
+    "RW-6: FACTORY UNRECOVERED - NOT REGISTERED IN THIS BUILD"
+   ],
+   [
+    "dice.hfe.world.TemplateComponent.StrategicObject",
+    "world::ClassFactory<world::StrategicObjectCompTemplate>::create",
+    "RW-6b: createComponent() UNWRITTEN - NOT REGISTERED IN THIS BUILD"
+   ]
+  ]
+ },
+ "GameLogicCompModule": {
+  "active": [
+   [
+    "dice.hfe.world.TemplateComponent.Armor",
+    "world::ClassFactory<world::ArmorGLCompTemplate>::create"
+   ]
+  ],
+  "dead": [
+   [
+    "dice.hfe.world.TemplateComponent.Ability",
+    "world::ClassFactory<world::AbilityGLCompTemplate>::create",
+    "RW-6b: createComponent() UNWRITTEN - NOT REGISTERED IN THIS BUILD"
+   ],
+   [
+    "dice.hfe.world.TemplateComponent.Radio",
+    "world::ClassFactory<world::RadioGLCompTemplate>::create",
+    "RW-6b: createComponent() UNWRITTEN - NOT REGISTERED IN THIS BUILD"
+   ]
+  ]
+ },
+ "GameLogicObjTemplBaseModule": {
+  "active": [
+   [
+    "dice.hfe.world.ObjectTemplate.Bundle",
+    "world::ClassFactory<world::BundleTemplate>::create"
+   ],
+   [
+    "dice.hfe.world.ObjectTemplate.DynamicBundle",
+    "world::ClassFactory<world::DynamicBundleTemplate>::create"
+   ],
+   [
+    "dice.hfe.world.ObjectTemplate.Camera",
+    "world::ClassFactory<world::CameraTemplate>::create"
+   ],
+   [
+    "dice.hfe.world.ObjectTemplate.EntryPoint",
+    "world::ClassFactory<world::EntryPointTemplate>::create"
+   ],
+   [
+    "dice.hfe.world.ObjectTemplate.RotationalBundle",
+    "world::ClassFactory<world::RotationalBundleTemplate>::create"
+   ],
+   [
+    "dice.hfe.world.ObjectTemplate.SimpleObject",
+    "world::ClassFactory<world::SimpleObjectTemplate>::create"
+   ],
+   [
+    "dice.hfe.world.ObjectTemplate.FreeCamera",
+    "world::ClassFactory<world::FreeCameraTemplate>::create"
+   ],
+   [
+    "dice.hfe.world.ObjectTemplate.OverheadCamera",
+    "world::ClassFactory<world::OverheadCameraTemplate>::create"
+   ],
+   [
+    "dice.hfe.world.ObjectTemplate.LightSource",
+    "world::ClassFactory<world::LightSourceTemplate>::create"
+   ]
+  ],
+  "dead": [
+   [
+    "dice.hfe.world.TemplateComponent.WindAffector",
+    "world::ClassFactory<world::WindAffectorTemplate>::create",
+    "RW-6b: createComponent() UNWRITTEN - NOT REGISTERED IN THIS BUILD"
+   ],
+   [
+    "dice.hfe.world.TemplateComponent.Ik",
+    "world::ClassFactory<world::IkTemplateComponent>::create",
+    "RW-6b: createComponent() UNWRITTEN - NOT REGISTERED IN THIS BUILD"
+   ]
+  ]
+ },
+ "GameLogicObjTemplFxModule": {
+  "active": [
+   [
+    "dice.hfe.world.ObjectTemplate.EffectBundle",
+    "world::ClassFactory<world::EffectBundleTemplate>::create"
+   ],
+   [
+    "dice.hfe.world.ObjectTemplate.WheelEffectBundle",
+    "world::ClassFactory<world::WheelEffectBundleTemplate>::create"
+   ],
+   [
+    "dice.hfe.world.ObjectTemplate.AirDraftEffectBundle",
+    "world::ClassFactory<world::AirDraftEffectBundleTemplate>::create"
+   ],
+   [
+    "dice.hfe.world.ObjectTemplate.GroundEffectBundle",
+    "world::ClassFactory<world::GroundEffectBundleTemplate>::create"
+   ],
+   [
+    "dice.hfe.world.ObjectTemplate.Decal",
+    "world::ClassFactory<world::DecalTemplate>::create"
+   ],
+   [
+    "dice.hfe.world.ObjectTemplate.Emitter",
+    "world::ClassFactory<world::EmitterTemplate>::create"
+   ],
+   [
+    "dice.hfe.world.ObjectTemplate.Particle",
+    "world::ClassFactory<world::ParticleTemplate>::create"
+   ],
+   [
+    "dice.hfe.world.ObjectTemplate.EnvMap",
+    "world::ClassFactory<world::EnvMapTemplate>::create"
+   ]
+  ],
+  "dead": [
+   [
+    "dice.hfe.world.ObjectTemplate.SpriteParticle",
+    "world::ClassFactory<world::SpriteParticleTemplate>::create",
+    "RW-6: FACTORY UNRECOVERED - NOT REGISTERED IN THIS BUILD"
+   ],
+   [
+    "dice.hfe.world.ObjectTemplate.SpriteParticleSystem",
+    "world::ClassFactory<world::SpriteParticleSystemTemplate>::create",
+    "RW-6: FACTORY UNRECOVERED - NOT REGISTERED IN THIS BUILD"
+   ],
+   [
+    "dice.hfe.world.ObjectTemplate.MeshParticleSystem",
+    "world::ClassFactory<world::MeshParticleSystemTemplate>::create",
+    "RW-6: FACTORY UNRECOVERED - NOT REGISTERED IN THIS BUILD"
+   ],
+   [
+    "dice.hfe.world.ObjectTemplate.TrailSystem",
+    "world::ClassFactory<world::TrailSystemTemplate>::create",
+    "RW-6: FACTORY UNRECOVERED - NOT REGISTERED IN THIS BUILD"
+   ],
+   [
+    "dice.hfe.world.ObjectTemplate.ParticleSystemEmitter",
+    "world::ClassFactory<world::ParticleSystemEmitterTemplate>::create",
+    "RW-6: FACTORY UNRECOVERED - NOT REGISTERED IN THIS BUILD"
+   ],
+   [
+    "dice.hfe.world.ObjectTemplate.NonScreenAlignedParticleSystem",
+    "world::ClassFactory<world::NonScreenAlignedParticleSystemTemplate>::create",
+    "RW-6: FACTORY UNRECOVERED - NOT REGISTERED IN THIS BUILD"
+   ]
+  ]
+ },
+ "GameLogicObjTemplVehicleModule": {
+  "active": [
+   [
+    "dice.hfe.world.ObjectTemplate.Engine",
+    "world::ClassFactory<world::EngineTemplate>::create"
+   ],
+   [
+    "dice.hfe.world.ObjectTemplate.FloatingBundle",
+    "world::ClassFactory<world::FloatingBundleTemplate>::create"
+   ],
+   [
+    "dice.hfe.world.ObjectTemplate.Spring",
+    "world::ClassFactory<world::SpringTemplate>::create"
+   ],
+   [
+    "dice.hfe.world.ObjectTemplate.Wing",
+    "world::ClassFactory<world::WingTemplate>::create"
+   ],
+   [
+    "dice.hfe.world.ObjectTemplate.LandingGear",
+    "world::ClassFactory<world::LandingGearTemplate>::create"
+   ],
+   [
+    "dice.hfe.world.ObjectTemplate.Rotor",
+    "world::ClassFactory<world::RotorTemplate>::create"
+   ],
+   [
+    "dice.hfe.world.ObjectTemplate.ForceObject",
+    "world::ClassFactory<world::ForceObjectTemplate>::create"
+   ]
+  ],
+  "dead": []
+ },
+ "GameLogicObjTemplBFModule": {
+  "active": [
+   [
+    "dice.hfe.world.ObjectTemplate.Item",
+    "world::ClassFactory<world::ItemTemplate>::create"
+   ],
+   [
+    "dice.hfe.world.ObjectTemplate.ItemContainer",
+    "world::ClassFactory<world::ItemContainerTemplate>::create"
+   ],
+   [
+    "dice.hfe.world.ObjectTemplate.DestroyableWindowsBundle",
+    "world::ClassFactory<world::DestroyableWindowsBundleTemplate>::create"
+   ],
+   [
+    "dice.hfe.world.ObjectTemplate.DestroyableWindow",
+    "world::ClassFactory<world::DestroyableWindowTemplate>::create"
+   ],
+   [
+    "dice.hfe.world.ObjectTemplate.DestroyableObject",
+    "world::ClassFactory<world::DestroyableObjectTemplate>::create"
+   ],
+   [
+    "dice.hfe.world.ObjectTemplate.Kit",
+    "world::ClassFactory<world::KitTemplate>::create"
+   ],
+   [
+    "dice.hfe.world.ObjectTemplate.AntennaObject",
+    "world::ClassFactory<world::AntennaObjectTemplate>::create"
+   ],
+   [
+    "dice.hfe.world.ObjectTemplate.AnimatedBundle",
+    "world::ClassFactory<world::AnimatedBundleTemplate>::create"
+   ],
+   [
+    "dice.hfe.world.ObjectTemplate.Soldier",
+    "world::ClassFactory<world::SoldierTemplate>::create"
+   ],
+   [
+    "dice.hfe.world.ObjectTemplate.GenericFireArm",
+    "world::ClassFactory<world::GenericFireArmTemplate>::create"
+   ],
+   [
+    "dice.hfe.world.ObjectTemplate.ObjectSpawner",
+    "world::ClassFactory<world::ObjectSpawnerTemplate>::create"
+   ],
+   [
+    "dice.hfe.world.ObjectTemplate.PlayerControlObject",
+    "world::ClassFactory<world::PlayerControlObjectTemplate>::create"
+   ],
+   [
+    "dice.hfe.world.ObjectTemplate.Parachute",
+    "world::ClassFactory<world::ParachuteTemplate>::create"
+   ],
+   [
+    "dice.hfe.world.ObjectTemplate.SupplyDepot",
+    "world::ClassFactory<world::SupplyDepotTemplate>::create"
+   ],
+   [
+    "dice.hfe.world.ObjectTemplate.SupplyObject",
+    "world::ClassFactory<world::SupplyObjectTemplate>::create"
+   ],
+   [
+    "dice.hfe.world.ObjectTemplate.ControlPoint",
+    "world::ClassFactory<world::ControlPointTemplate>::create"
+   ],
+   [
+    "dice.hfe.world.ObjectTemplate.Obstacle",
+    "world::ClassFactory<world::ObstacleTemplate>::create"
+   ],
+   [
+    "dice.hfe.world.ObjectTemplate.AreaObject",
+    "world::ClassFactory<world::AreaObjectTemplate>::create"
+   ],
+   [
+    "dice.hfe.world.ObjectTemplate.TargetObject",
+    "world::ClassFactory<world::TargetObjectTemplate>::create"
+   ],
+   [
+    "dice.hfe.world.ObjectTemplate.Ladder",
+    "world::ClassFactory<world::LadderTemplate>::create"
+   ],
+   [
+    "dice.hfe.world.ObjectTemplate.LadderContainer",
+    "world::ClassFactory<world::LadderContainerTemplate>::create"
+   ],
+   [
+    "dice.hfe.world.ObjectTemplate.ZiplineRope",
+    "world::ClassFactory<world::ZiplineRopeTemplate>::create"
+   ],
+   [
+    "dice.hfe.world.ObjectTemplate.Zipline",
+    "world::ClassFactory<world::ZiplineTemplate>::create"
+   ],
+   [
+    "dice.hfe.world.ObjectTemplate.ZiplineContainer",
+    "world::ClassFactory<world::ZiplineContainerTemplate>::create"
+   ],
+   [
+    "dice.hfe.world.ObjectTemplate.GrapplingHookRope",
+    "world::ClassFactory<world::GrapplingHookRopeTemplate>::create"
+   ],
+   [
+    "dice.hfe.world.ObjectTemplate.RopeLink",
+    "world::ClassFactory<world::RopeLinkTemplate>::create"
+   ],
+   [
+    "dice.hfe.world.ObjectTemplate.HookLink",
+    "world::ClassFactory<world::HookLinkTemplate>::create"
+   ],
+   [
+    "dice.hfe.world.ObjectTemplate.RemoteControlledObject",
+    "world::ClassFactory<world::RemoteControlledObjectTemplate>::create"
+   ],
+   [
+    "dice.hfe.world.ObjectTemplate.TurnableRemoteControlledObject",
+    "world::ClassFactory<world::TurnableRemoteControlledObjectTemplate>::create"
+   ],
+   [
+    "dice.hfe.world.ObjectTemplate.Trigger",
+    "world::ClassFactory<world::TriggerTemplate>::create"
+   ],
+   [
+    "dice.hfe.world.ObjectTemplate.AmbientEffectArea",
+    "world::ClassFactory<world::AmbientEffectAreaTemplate>::create"
+   ],
+   [
+    "dice.hfe.world.ObjectTemplate.Triggerable",
+    "world::ClassFactory<world::TriggerableTemplate>::create"
+   ],
+   [
+    "dice.hfe.world.ObjectTemplate.TriggerableTarget",
+    "world::ClassFactory<world::TriggerableTargetTemplate>::create"
+   ],
+   [
+    "dice.hfe.world.ObjectTemplate.UAVVehicle",
+    "world::ClassFactory<world::UAVVehicleTemplate>::create"
+   ],
+   [
+    "dice.hfe.world.ObjectTemplate.DropVehicle",
+    "world::ClassFactory<world::DropVehicleTemplate>::create"
+   ],
+   [
+    "dice.hfe.world.ObjectTemplate.GenericProjectile",
+    "world::ClassFactory<world::GenericProjectileTemplate>::create"
+   ]
+  ],
+  "dead": [
+   [
+    "dice.hfe.world.ObjectTemplate.MaskObject",
+    "world::ClassFactory<world::MaskObjectTemplate>::create",
+    "RW-6: FACTORY UNRECOVERED - NOT REGISTERED IN THIS BUILD"
+   ],
+   [
+    "dice.hfe.world.ObjectTemplate.KitPart",
+    "world::ClassFactory<world::KitPartTemplate>::create",
+    "RW-6: FACTORY UNRECOVERED - NOT REGISTERED IN THIS BUILD"
+   ],
+   [
+    "dice.hfe.world.ObjectTemplate.GrapplingHookRopeContainer",
+    "world::ClassFactory<world::GrapplingHookRopeContainerTemplate>::create",
+    "RW-6: FACTORY UNRECOVERED - NOT REGISTERED IN THIS BUILD"
+   ],
+   [
+    "dice.hfe.world.TemplateComponent.SingleFireComp",
+    "world::ClassFactory<world::SingleFireCompTemplate>::create",
+    "RW-6b: createComponent() UNWRITTEN - NOT REGISTERED IN THIS BUILD"
+   ],
+   [
+    "dice.hfe.world.TemplateComponent.MultiFireComp",
+    "world::ClassFactory<world::MultiFireCompTemplate>::create",
+    "RW-6b: createComponent() UNWRITTEN - NOT REGISTERED IN THIS BUILD"
+   ],
+   [
+    "dice.hfe.world.TemplateComponent.DefaultAmmoComp",
+    "world::ClassFactory<world::DefaultAmmoCompTemplate>::create",
+    "RW-6b: createComponent() UNWRITTEN - NOT REGISTERED IN THIS BUILD"
+   ],
+   [
+    "dice.hfe.world.TemplateComponent.ReplenishingAmmoComp",
+    "world::ClassFactory<world::ReplenishingAmmoCompTemplate>::create",
+    "RW-6b: createComponent() UNWRITTEN - NOT REGISTERED IN THIS BUILD"
+   ],
+   [
+    "dice.hfe.world.TemplateComponent.DefaultZoomComp",
+    "world::ClassFactory<world::DefaultZoomCompTemplate>::create",
+    "RW-6b: createComponent() UNWRITTEN - NOT REGISTERED IN THIS BUILD"
+   ],
+   [
+    "dice.hfe.world.TemplateComponent.ToggleCameraComp",
+    "world::ClassFactory<world::ToggleCameraCompTemplate>::create",
+    "RW-6b: createComponent() UNWRITTEN - NOT REGISTERED IN THIS BUILD"
+   ],
+   [
+    "dice.hfe.world.TemplateComponent.DefaultSoundComp",
+    "world::ClassFactory<world::DefaultSoundCompTemplate>::create",
+    "RW-6b: createComponent() UNWRITTEN - NOT REGISTERED IN THIS BUILD"
+   ],
+   [
+    "dice.hfe.world.TemplateComponent.SoldierBasedRecoilComp",
+    "world::ClassFactory<world::SoldierBasedRecoilCompTemplate>::create",
+    "RW-6b: createComponent() UNWRITTEN - NOT REGISTERED IN THIS BUILD"
+   ],
+   [
+    "dice.hfe.world.TemplateComponent.WeaponBasedRecoilComp",
+    "world::ClassFactory<world::WeaponBasedRecoilCompTemplate>::create",
+    "RW-6b: createComponent() UNWRITTEN - NOT REGISTERED IN THIS BUILD"
+   ],
+   [
+    "dice.hfe.world.TemplateComponent.SoldierDeviationComp",
+    "world::ClassFactory<world::SoldierDeviationCompTemplate>::create",
+    "RW-6b: createComponent() UNWRITTEN - NOT REGISTERED IN THIS BUILD"
+   ],
+   [
+    "dice.hfe.world.TemplateComponent.SimpleDeviationComp",
+    "world::ClassFactory<world::SimpleDeviationCompTemplate>::create",
+    "RW-6b: createComponent() UNWRITTEN - NOT REGISTERED IN THIS BUILD"
+   ],
+   [
+    "dice.hfe.world.TemplateComponent.TargetDeviationComp",
+    "world::ClassFactory<world::TargetDeviationCompTemplate>::create",
+    "RW-6b: createComponent() UNWRITTEN - NOT REGISTERED IN THIS BUILD"
+   ],
+   [
+    "dice.hfe.world.TemplateComponent.DefaultAnimationComp",
+    "world::ClassFactory<world::DefaultAnimationCompTemplate>::create",
+    "RW-6b: createComponent() UNWRITTEN - NOT REGISTERED IN THIS BUILD"
+   ],
+   [
+    "dice.hfe.world.TemplateComponent.ThrownAnimationComp",
+    "world::ClassFactory<world::ThrownAnimationCompTemplate>::create",
+    "RW-6b: createComponent() UNWRITTEN - NOT REGISTERED IN THIS BUILD"
+   ],
+   [
+    "dice.hfe.world.TemplateComponent.MultiFireArmTargetComp",
+    "world::ClassFactory<world::MultiFireArmTargetCompTemplate>::create",
+    "RW-6b: createComponent() UNWRITTEN - NOT REGISTERED IN THIS BUILD"
+   ],
+   [
+    "dice.hfe.world.TemplateComponent.LPTargetComp",
+    "world::ClassFactory<world::LPTargetCompTemplate>::create",
+    "RW-6b: createComponent() UNWRITTEN - NOT REGISTERED IN THIS BUILD"
+   ],
+   [
+    "dice.hfe.world.TemplateComponent.SimpleTargetComp",
+    "world::ClassFactory<world::SimpleTargetCompTemplate>::create",
+    "RW-6b: createComponent() UNWRITTEN - NOT REGISTERED IN THIS BUILD"
+   ],
+   [
+    "dice.hfe.world.TemplateComponent.LPFireComp",
+    "world::ClassFactory<world::LPFireCompTemplate>::create",
+    "RW-6b: createComponent() UNWRITTEN - NOT REGISTERED IN THIS BUILD"
+   ],
+   [
+    "dice.hfe.world.TemplateComponent.SpawnObjectFireComp",
+    "world::ClassFactory<world::SpawnObjectFireCompTemplate>::create",
+    "RW-6b: createComponent() UNWRITTEN - NOT REGISTERED IN THIS BUILD"
+   ],
+   [
+    "dice.hfe.world.TemplateComponent.ThrownFireComp",
+    "world::ClassFactory<world::ThrownFireCompTemplate>::create",
+    "RW-6b: createComponent() UNWRITTEN - NOT REGISTERED IN THIS BUILD"
+   ],
+   [
+    "dice.hfe.world.TemplateComponent.ExplosivesFireComp",
+    "world::ClassFactory<world::ExplosivesFireCompTemplate>::create",
+    "RW-6b: createComponent() UNWRITTEN - NOT REGISTERED IN THIS BUILD"
+   ],
+   [
+    "dice.hfe.world.TemplateComponent.DefaultCollisionComp",
+    "world::ClassFactory<world::DefaultCollisionCompTemplate>::create",
+    "RW-6b: createComponent() UNWRITTEN - NOT REGISTERED IN THIS BUILD"
+   ],
+   [
+    "dice.hfe.world.TemplateComponent.ReplenishCollisionComp",
+    "world::ClassFactory<world::ReplenishCollisionCompTemplate>::create",
+    "RW-6b: createComponent() UNWRITTEN - NOT REGISTERED IN THIS BUILD"
+   ],
+   [
+    "dice.hfe.world.TemplateComponent.ResurrectCollisionComp",
+    "world::ClassFactory<world::ResurrectCollisionCompTemplate>::create",
+    "RW-6b: createComponent() UNWRITTEN - NOT REGISTERED IN THIS BUILD"
+   ],
+   [
+    "dice.hfe.world.TemplateComponent.StickyCollisionComp",
+    "world::ClassFactory<world::StickyCollisionCompTemplate>::create",
+    "RW-6b: createComponent() UNWRITTEN - NOT REGISTERED IN THIS BUILD"
+   ],
+   [
+    "dice.hfe.world.TemplateComponent.DefaultDetonationComp",
+    "world::ClassFactory<world::DefaultDetonationCompTemplate>::create",
+    "RW-6b: createComponent() UNWRITTEN - NOT REGISTERED IN THIS BUILD"
+   ],
+   [
+    "dice.hfe.world.TemplateComponent.ReplenishDetonationComp",
+    "world::ClassFactory<world::ReplenishDetonationCompTemplate>::create",
+    "RW-6b: createComponent() UNWRITTEN - NOT REGISTERED IN THIS BUILD"
+   ],
+   [
+    "dice.hfe.world.TemplateComponent.DefaultProjSoundComp",
+    "world::ClassFactory<world::DefaultProjectileSoundCompTemplate>::create",
+    "RW-6b: createComponent() UNWRITTEN - NOT REGISTERED IN THIS BUILD"
+   ],
+   [
+    "dice.hfe.world.TemplateComponent.DefaultPenetrateComp",
+    "world::ClassFactory<world::DefaultPenetrateCompTemplate>::create",
+    "RW-6b: createComponent() UNWRITTEN - NOT REGISTERED IN THIS BUILD"
+   ],
+   [
+    "dice.hfe.world.TemplateComponent.DefaultRicochetComp",
+    "world::ClassFactory<world::DefaultRicochetCompTemplate>::create",
+    "RW-6b: createComponent() UNWRITTEN - NOT REGISTERED IN THIS BUILD"
+   ],
+   [
+    "dice.hfe.world.TemplateComponent.SeekClosestTargetComp",
+    "world::ClassFactory<world::SeekClosestTargetCompTemplate>::create",
+    "RW-6b: createComponent() UNWRITTEN - NOT REGISTERED IN THIS BUILD"
+   ],
+   [
+    "dice.hfe.world.TemplateComponent.FixedTargetComp",
+    "world::ClassFactory<world::FixedTargetCompTemplate>::create",
+    "RW-6b: createComponent() UNWRITTEN - NOT REGISTERED IN THIS BUILD"
+   ],
+   [
+    "dice.hfe.world.TemplateComponent.DefaultFollowComp",
+    "world::ClassFactory<world::DefaultFollowCompTemplate>::create",
+    "RW-6b: createComponent() UNWRITTEN - NOT REGISTERED IN THIS BUILD"
+   ],
+   [
+    "dice.hfe.world.TemplateComponent.PreDestinedFollowComp",
+    "world::ClassFactory<world::PreDestinedFollowCompTemplate>::create",
+    "RW-6b: createComponent() UNWRITTEN - NOT REGISTERED IN THIS BUILD"
+   ]
+  ]
+ }
+}

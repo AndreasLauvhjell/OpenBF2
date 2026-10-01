@@ -1,0 +1,12 @@
+; [CHOSEN, not recovered] - input to `lib /def:` so this image can IMPORT from the shipped
+; Memory.dll rather than resolve it at run time. Only the three names both shipped images import
+; are listed; `dumpbin /exports Memory.dll` shows 32.
+;
+; The decorated names are copied verbatim from `dumpbin /imports RendDX9.dll`. Modern MSVC mangles
+; the declarations in Code/RendDX9Abi/BfMemory.h to these same three strings, which is what makes a
+; plain C++ declaration enough to bind against a 2009 DLL.
+LIBRARY Memory
+EXPORTS
+    ?addMemoryName@memory@hfe@dice@@YAHPBD@Z
+    ?bf_malloc@memory@hfe@dice@@YAPAXIH@Z
+    ?bf_free@memory@hfe@dice@@YAXPAX@Z

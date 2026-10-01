@@ -1,0 +1,18 @@
+; [CHOSEN, not recovered] - DICE's own .def is not in the shipped image, but its EFFECT is:
+; `dumpbin /exports BF2Audio.dll` on the reference binary (1.50, linked 2009-03-30) returns exactly
+; two names, undecorated (extern "C"), in this order:
+;
+;     ordinal hint RVA      name
+;           1    0 00007AD0 getSoundEngine
+;           2    1 00007B80 shutdownSoundEngine
+;
+; The ordinals are pinned to match. BF2.exe resolves both by NAME (GetProcAddress in the client's
+; BfSoundModule::init, 0x7E16D0, right after LoadLibraryA("BF2Audio.dll")), so the ordinals are
+; cosmetic; matching them keeps a dumpbin diff of the two images clean.
+;
+; NOTHING ELSE MAY BE ADDED HERE. The two-export surface IS the sound ABI: everything else crosses
+; through the ISoundEngine table getSoundEngine() answers with (Code/BF2/Sound/NullSound.h) and the
+; ISoundFileIO / ISoundTrace / IProfilerClient objects the client hands back through it.
+EXPORTS
+    getSoundEngine        @1
+    shutdownSoundEngine   @2

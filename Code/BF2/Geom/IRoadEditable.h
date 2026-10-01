@@ -1,0 +1,123 @@
+// Road interfaces shared with the editor. Cross-image strings use HostString.
+// Fade setters take Vec2 by value and getters return borrowed references.
+// String getters return by value; the save operation also owns its by-value name set.
+
+
+#ifdef BF2_IMAGE_RENDDX9
+
+#ifndef BF2_GEOM_IROADEDITABLE_H
+#define BF2_GEOM_IROADEDITABLE_H
+
+#include "../Math/Vec3.h"                     // Vec2
+#include "../../RendDX9Abi/HfeAbi.h"
+#include "../../RendDX9Abi/PluginAbi.h"       // renddx9abi::HostString
+
+#if BF2_PLUGIN_ABI_NATIVE
+#include <set>
+#endif
+
+namespace dice {
+namespace hfe {
+
+class Frustum;
+
+namespace geom {
+
+class IEditorSpline;
+class IPerlinNoise;
+class IRoadTemplate;
+
+
+// Name set passed by value to the road-template filter.
+// [CHOSEN, not recovered] Compatibility builds use the VC7.1 12-byte header and 44-byte
+// nodes. The caller supplies the copy; the callee destroys it. Native builds use std::set.
+
+#if BF2_PLUGIN_ABI_NATIVE
+typedef std::set< ::renddx9abi::HostString> RoadTemplateNameSet;
+#else
+struct RoadTemplateNameSetNode
+{
+    RoadTemplateNameSetNode* left;      // +0x00
+    RoadTemplateNameSetNode* parent;    // +0x04
+    RoadTemplateNameSetNode* right;     // +0x08
+    unsigned char            value[28]; // +0x0C  a VC7.1 std::string
+    unsigned char            color;     // +0x28
+    unsigned char            isNil;     // +0x29
+    unsigned char            pad[2];
+};
+
+class RoadTemplateNameSet
+{
+public:
+    ~RoadTemplateNameSet();
+
+    void*                    comparator;   // +0x00  never written
+    RoadTemplateNameSetNode* head;         // +0x04
+    unsigned int             size;         // +0x08
+
+private:
+    RoadTemplateNameSet(const RoadTemplateNameSet&);
+    RoadTemplateNameSet& operator=(const RoadTemplateNameSet&);
+};
+
+#if defined(_M_IX86)
+static_assert(sizeof(RoadTemplateNameSetNode) == 0x2C, "the VC7.1 set<string> node is 44 bytes");
+static_assert(sizeof(RoadTemplateNameSet) == 12, "the VC7.1 set header is 12 bytes");
+#endif
+#endif
+
+
+// IRoad (IID 820010) - the three slots after the IBase quartet both road classes share.
+
+class IRoad : public IBase
+{
+public:
+    virtual void draw() = 0;                                                    // +0x10
+    virtual void updateChunkVisibility(const Frustum* frustum) = 0;             // +0x14
+    virtual bool anyChunkVisible() = 0;                                         // +0x18
+};
+
+
+// IRoadEditable (IID 820011) - table 0x1021D918 after IRoad, in order. Names: census §2.3 and the
+// retail LevelEditor's Road.* rows where one exists; the rest [INFERRED] from the bodies.
+
+class IRoadEditable : public IRoad
+{
+public:
+    virtual void setTemplate(IRoadTemplate* roadTemplate) = 0;                  // +0x1C
+    virtual IRoadTemplate* getTemplate() = 0;                                   // +0x20
+    virtual void setSpline(IEditorSpline* spline) = 0;                          // +0x24
+    virtual IEditorSpline* getSpline() = 0;                                     // +0x28
+    virtual void setNoise(IPerlinNoise* noise) = 0;                             // +0x2C
+    virtual IPerlinNoise* getNoise() = 0;                                       // +0x30
+    virtual void setTextureScaleOffset(int layer, const Vec2& offset) = 0;      // +0x34
+    virtual const Vec2& getTextureScaleOffset(int layer) = 0;                   // +0x38
+    virtual void setPriority(int priority) = 0;                                 // +0x3C (ICF)
+    virtual int getPriority() = 0;                                              // +0x40
+    virtual void setFadeDistAtStartLeft(Vec2 distance) = 0;                     // +0x44
+    virtual const Vec2& getFadeDistAtStartLeft() = 0;                           // +0x48
+    virtual void setFadeDistAtStartRight(Vec2 distance) = 0;                    // +0x4C
+    virtual const Vec2& getFadeDistAtStartRight() = 0;                          // +0x50
+    virtual void setFadeDistAtEndLeft(Vec2 distance) = 0;                       // +0x54
+    virtual const Vec2& getFadeDistAtEndLeft() = 0;                             // +0x58
+    virtual void setFadeDistAtEndRight(Vec2 distance) = 0;                      // +0x5C
+    virtual const Vec2& getFadeDistAtEndRight() = 0;                            // +0x60
+    virtual void setName(const ::renddx9abi::HostString& name) = 0;             // +0x64
+    virtual ::renddx9abi::HostString getName() = 0;                             // +0x68
+    virtual void setGhost(bool ghost) = 0;                                      // +0x6C
+    virtual bool getGhost() = 0;                                                // +0x70
+    virtual ::renddx9abi::HostString getCompiledMeshPath() = 0;                 // +0x74
+    virtual void invalidate() = 0;                                              // +0x78
+    virtual void projectToTerrain() = 0;                                        // +0x7C
+    virtual bool compile(const ::renddx9abi::HostString& levelPath) = 0;        // +0x80
+    virtual bool compileTemplates(const ::renddx9abi::HostString& path,
+                                  RoadTemplateNameSet templates) = 0;           // +0x84
+    virtual void buildGeometry(float width, float maxError, bool ghost) = 0;    // +0x88
+};
+
+} // namespace geom
+} // namespace hfe
+} // namespace dice
+
+#endif // BF2_GEOM_IROADEDITABLE_H
+#endif // BF2_IMAGE_RENDDX9

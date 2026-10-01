@@ -1,0 +1,30 @@
+; [CHOSEN, not recovered] - DICE's own .def is not in the shipped image, but its EFFECT is.
+; `dumpbin /exports AIDLL_w32ded.dll` on the reference binary
+; ("D:\B2BF Launcher\Battlefield2\AIDLL_w32ded.dll", image base 0x10000000) returns exactly two
+; names, undecorated, in this order:
+;
+;     ordinal hint RVA      name
+;           1    0 000637E0 deinitDll
+;           2    1 00063340 initDll
+;
+; plus the CRT entry point DllEntryPoint at 0x101E2C31, which is not an EXPORTS entry.
+;
+; The ordinals are pinned to match the shipped image. The engine resolves both by NAME
+; (`GetProcAddress(h, "initDll")` in dice::hfe::LoadLibraryBf, Core/PluginDll.cpp), so the ordinals
+; are cosmetic; matching them keeps a dumpbin diff of the two images clean. Same reasoning, and the
+; same two names, as Code/SwiffPlayerAbi/SwiffPlayer.def.
+;
+; ⚠ NO `LIBRARY` STATEMENT. The link already names the image AIDLL_w32ded.dll; a LIBRARY line here
+; would only duplicate it, and link.exe warns when the two disagree.
+;
+; NOTHING ELSE MAY BE ADDED HERE. The two-export surface IS the side-DLL ABI - see
+; Code/BF2/Core/DllModule.h ("the whole contract between the server and a module is: hand over the
+; ClassManager, get a bool back, and later say stop"). Everything the host needs beyond these
+; crosses through IClassManager and the simple-singleton registry, never through a symbol.
+;
+; ⚠ BOTH ARE `extern "C"` INSIDE `dice::hfe`, which is what makes the exported names undecorated
+; while the ELF assert still prints `bool dice::hfe::initDll(dice::hfe::IClassManager*)`.
+; Core/DllModule.h records that pair; the declarations there are what this file exports.
+EXPORTS
+    deinitDll   @1
+    initDll     @2

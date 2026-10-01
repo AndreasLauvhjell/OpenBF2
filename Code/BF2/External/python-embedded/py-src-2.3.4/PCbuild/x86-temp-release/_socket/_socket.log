@@ -1,0 +1,29 @@
+﻿  socketmodule.c
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\socketmodule.c(265,5): error C2373: 'inet_pton': redefinition; different type modifiers
+      C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\ws2tcpip.h(573,1):
+      see declaration of 'inet_pton'
+  
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\socketmodule.c(266,13): error C2373: 'inet_ntop': redefinition; different type modifiers
+      C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\ws2tcpip.h(593,1):
+      see declaration of 'inet_ntop'
+  
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\socketmodule.c(307,9): warning C4005: 'EAFNOSUPPORT': macro redefinition
+      C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\ucrt\errno.h(91,13):
+      see previous definition of 'EAFNOSUPPORT'
+  
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\socketmodule.c(755,6): warning C4996: 'sscanf': This function or variable may be unsafe. Consider using sscanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\socketmodule.c(2392,13): warning C4996: 'strerror': This function or variable may be unsafe. Consider using strerror_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\socketmodule.c(2550,6): warning C4996: 'gethostbyname': Use getaddrinfo() or GetAddrInfoW() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\socketmodule.c(2646,6): warning C4996: 'gethostbyaddr': Use getnameinfo() or GetNameInfoW() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\socketmodule.c(2916,16): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\socketmodule.c(2952,29): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\socketmodule.c(4126,1): error C2373: 'inet_pton': redefinition; different type modifiers
+      C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\ws2tcpip.h(573,1):
+      see declaration of 'inet_pton'
+  
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\socketmodule.c(4130,17): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\socketmodule.c(4141,1): error C2373: 'inet_ntop': redefinition; different type modifiers
+      C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\ws2tcpip.h(593,1):
+      see declaration of 'inet_ntop'
+  
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\socketmodule.c(4149,10): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.

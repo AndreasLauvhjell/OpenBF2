@@ -1,0 +1,22 @@
+// [TEMP] Unmodified production declarations; chosen native lifetimes in the fixture.
+#pragma once
+#include <list>
+#include <string>
+#include <vector>
+#include "../../BF2/Core/Debug.h"
+#include "../../BF2/AI/AIDLL/AI/Main/BotManager.h"
+#include "../../BF2/AI/AIDLL/AI/Main/AIDllFrontier.h"
+#include "../../BF2/AI/AIDLL/AI/Main/IAIPathfinding.h"
+#include "../../BF2/AI/AIDLL/AI/Main/AIPathfinding.h"
+#include "../../BF2/AI/AIInterface/BFKnowledge/BFObjectEnvironment.h"
+#include "../../BF2/AI/AIDLL/AI/Main/CommonSingletonServer.h"
+#include "../../BF2/AI/AIDLL/AI/AIBot/BotMain.h"
+#include "../../BF2/AI/AIDLL/AI/AIBot/BotNavigation.h"
+#include "../../BF2/AI/AIDLL/AI/AIKnowledge/Information.h"
+#include "../../BF2/AI/AIDLL/AI/AIKnowledge/InformationManager.h"
+#include "../../BF2/AI/AIDLL/AI/AIKnowledge/IPIMobile.h"
+#include "../../BF2/AI/AIDLL/AI/AIKnowledge/IPIPhysical.h"
+#include "../../BF2/AI/AIInterface/BFKnowledge/AIPlayer.h"
+#include "../../BF2/AI/AIInterface/BFKnowledge/BFGameEffector.h"
+#include "../../BF2/AI/AIInterface/BFKnowledge/BFTimer.h"
+#include "../../BF2/IO/Input/PlayerInput.h"

@@ -1,0 +1,17 @@
+; [CHOSEN, not recovered] - DICE's own .def is not in the shipped image, but its EFFECT is:
+; `dumpbin /exports SwiffPlayer.dll` on the reference binary returns exactly two names, undecorated,
+; in this order:
+;
+;     ordinal hint RVA      name
+;           1    0 000030C0 deinitDll
+;           2    1 00002C20 initDll
+;
+; The ordinals are pinned to match the shipped image. BF2 resolves both by NAME (GetProcAddress in
+; loadPluginDll at BF2.exe 0x54CE20), so the ordinals are cosmetic; matching them keeps a dumpbin
+; diff of the two images clean.
+;
+; NOTHING ELSE MAY BE ADDED HERE. The two-export surface IS the plugin ABI - see
+; Code/BF2/Core/DllModule.h. Anything the host needs beyond these crosses through IClassManager.
+EXPORTS
+    deinitDll   @1
+    initDll     @2

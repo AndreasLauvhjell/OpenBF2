@@ -1,0 +1,16 @@
+; Exact subset of the original BF2.exe import names, exported by stock NovintHFX.dll.
+; Import library only: lib /nologo /machine:x86 /def:NovintHFX.def /out:<owned-output>/NovintHFX.lib
+LIBRARY NovintHFX.dll
+EXPORTS
+    Haptics DATA
+    ??0mouse_settings@ApplicationData@NovintHFX@@QAE@XZ
+    ?AttachApplication@HapticsSystem@NovintHFX@@QAE_NAAUApplicationData@2@@Z
+    ?RecountConnectedDevices@HapticsSystem@NovintHFX@@QAEXXZ
+    ?ConnectedDeviceCount@HapticsSystem@NovintHFX@@QBEHXZ
+    ?RunDevice@HapticsSystem@NovintHFX@@QAE_NPAPAVDevice@2@H@Z
+    ?StartMouse@HapticsSystem@NovintHFX@@QAEXPAVDevice@2@@Z
+    ?StopRunningDevice@HapticsSystem@NovintHFX@@QAE_NPAPAVDevice@2@@Z
+    ?InputUpdate@HapticsSystem@NovintHFX@@QAEHXZ
+    ?InputUpdate@Device@NovintHFX@@QAEXXZ
+    ?GetButtonData@Device@NovintHFX@@QBEXPAH00@Z
+    ?GetToolPosition@Device@NovintHFX@@QBEXQAN@Z

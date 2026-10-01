@@ -1,0 +1,108 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 21,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "msvc-x86",
+      "displayName": "BF2 Reconstruction - MSVC x86",
+      "description": "Use this with CLion's x86 Visual Studio toolchain.",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/out/build/${presetName}",
+      "architecture": {
+        "value": "x86",
+        "strategy": "external"
+      },
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Reconstruction",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "BUILD_TESTING": "ON"
+      }
+    },
+    {
+      "name": "msvc-x64",
+      "displayName": "BF2 native x64 dedicated port",
+      "description": "Compile the strict bf2_w64ded portability target in an isolated x64 tree.",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/out/build/${presetName}",
+      "architecture": {
+        "value": "x64",
+        "strategy": "external"
+      },
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "CMAKE_MSVC_DEBUG_INFORMATION_FORMAT": "Embedded",
+        "BUILD_TESTING": "OFF"
+      }
+    },
+    {
+      "name": "linux-x64",
+      "displayName": "BF2 native Linux x86-64 dedicated port",
+      "description": "GCC or Clang on Linux: builds bf2 and libdice_py.so into out/build/linux-x64/bin_linux. Needs cmake, ninja, g++ and libncurses-dev.",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/out/build/${presetName}",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      },
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "BUILD_TESTING": "OFF"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "msvc-x86",
+      "displayName": "Build recovered BF2 archive",
+      "configurePreset": "msvc-x86",
+      "targets": [
+        "bf2_recovered"
+      ]
+    },
+    {
+      "name": "msvc-x86-checks",
+      "displayName": "Build and run focused checks",
+      "configurePreset": "msvc-x86",
+      "targets": [
+        "bf2_run_checks"
+      ]
+    },
+    {
+      "name": "msvc-x64",
+      "displayName": "Build strict bf2_w64ded",
+      "configurePreset": "msvc-x64",
+      "targets": [
+        "bf2_w64ded"
+      ]
+    },
+    {
+      "name": "linux-x64",
+      "displayName": "Build bf2 and libdice_py.so",
+      "configurePreset": "linux-x64",
+      "targets": [
+        "bf2",
+        "dice_py_check"
+      ]
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "msvc-x86",
+      "displayName": "Run focused checks",
+      "configurePreset": "msvc-x86",
+      "output": {
+        "outputOnFailure": true
+      },
+      "execution": {
+        "jobs": 1
+      }
+    }
+  ]
+}

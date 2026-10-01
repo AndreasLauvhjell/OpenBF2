@@ -1,0 +1,364 @@
+﻿cl : command line  warning D9035: option 'Gm' has been deprecated and will be removed in a future release
+  traceback.c
+  thread.c
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\traceback.c(157,8): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\traceback.c(182,6): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\traceback.c(187,6): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\traceback.c(188,12): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\thread_nt.h(193,3): warning C4477: 'printf' : format string '%p' requires an argument of type 'void *', but variadic argument 2 has type 'unsigned long'
+  (compiling source file '../Python/thread.c')
+  
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\thread_nt.h(198,3): warning C4477: 'printf' : format string '%p' requires an argument of type 'void *', but variadic argument 2 has type 'unsigned long'
+  (compiling source file '../Python/thread.c')
+  
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\thread_nt.h(314,3): warning C4778: 'printf' : unterminated format string '%l\n'
+  (compiling source file '../Python/thread.c')
+  
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\thread_nt.h(314,3): warning C4474: 'printf' : too many arguments passed for format string
+  (compiling source file '../Python/thread.c')
+      C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\thread_nt.h(314,3):
+      placeholders and their parameters expect 2 variadic arguments, but 3 were provided
+  
+  sysmodule.c
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\sysmodule.c(499,7): warning C4996: 'GetVersionExA': was declared deprecated
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\sysmodule.c(918,5): warning C4996: 'isatty': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _isatty. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\sysmodule.c(919,3): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\sysmodule.c(923,5): warning C4996: 'isatty': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _isatty. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\sysmodule.c(924,3): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  symtable.c
+  structmember.c
+  pythonrun.c
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\pythonrun.c(156,11): warning C4996: 'getenv': This function or variable may be unsafe. Consider using _dupenv_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\pythonrun.c(158,11): warning C4996: 'getenv': This function or variable may be unsafe. Consider using _dupenv_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\pythonrun.c(160,11): warning C4996: 'getenv': This function or variable may be unsafe. Consider using _dupenv_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\pythonrun.c(388,6): warning C4996: 'getenv': This function or variable may be unsafe. Consider using _dupenv_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\pythonrun.c(438,6): warning C4996: 'getenv': This function or variable may be unsafe. Consider using _dupenv_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\pythonrun.c(442,6): warning C4996: 'getenv': This function or variable may be unsafe. Consider using _dupenv_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\pythonrun.c(578,10): warning C4996: 'getenv': This function or variable may be unsafe. Consider using _dupenv_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\pythonrun.c(853,13): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\pythonrun.c(1618,6): warning C4996: 'isatty': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _isatty. See online help for details.
+  pystate.c
+  pyfpe.c
+  mystrtoul.c
+  mysnprintf.c
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\mysnprintf.c(65,8): warning C4996: '_vsnprintf': This function or variable may be unsafe. Consider using _vsnprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  modsupport.c
+  marshal.c
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\marshal.c(672,12): warning C4996: 'fileno': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _fileno. See online help for details.
+  importdl.c
+  import.c
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\import.c(679,7): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\import.c(782,9): warning C4996: 'unlink': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _unlink. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\import.c(783,7): warning C4996: 'open': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _open. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\import.c(794,9): warning C4996: 'fdopen': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _fdopen. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\import.c(828,10): warning C4996: 'unlink': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _unlink. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\import.c(875,45): warning C4244: 'function': conversion from 'time_t' to 'long', possible loss of data
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\import.c(892,40): warning C4244: 'function': conversion from 'time_t' to 'long', possible loss of data
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\import.c(1077,2): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\import.c(1122,3): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\import.c(1123,3): warning C4996: 'strcat': This function or variable may be unsafe. Consider using strcat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\import.c(1124,3): warning C4996: 'strcat': This function or variable may be unsafe. Consider using strcat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\import.c(1125,3): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\import.c(1134,4): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\import.c(1144,4): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\import.c(1148,4): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\import.c(1204,3): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\import.c(1269,3): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\import.c(1331,4): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\import.c(1338,9): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\import.c(1443,6): warning C4996: 'getenv': This function or variable may be unsafe. Consider using _dupenv_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\import.c(1612,2): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\import.c(1623,2): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\import.c(2043,3): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\import.c(2058,3): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\import.c(2107,2): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\import.c(2121,4): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\import.c(2201,4): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\import.c(2605,8): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  graminit.c
+  getversion.c
+  getplatform.c
+  getopt.c
+  getmtime.c
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\getmtime.c(13,12): warning C4996: 'fileno': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _fileno. See online help for details.
+  getcopyright.c
+  Generating Code...
+  Compiling...
+  getcompiler.c
+  getargs.c
+  future.c
+  frozen.c
+  exceptions.c
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\exceptions.c(1789,8): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\exceptions.c(1790,8): warning C4996: 'strcat': This function or variable may be unsafe. Consider using strcat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\exceptions.c(1791,8): warning C4996: 'strcat': This function or variable may be unsafe. Consider using strcat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  errors.c
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\errors.c(293,20): warning C4996: '__sys_nerr': This function or variable may be unsafe. Consider using strerror instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\errors.c(294,8): warning C4996: '__sys_errlist': This function or variable may be unsafe. Consider using strerror instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\errors.c(312,5): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\errors.c(396,3): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\errors.c(753,7): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  dynload_win.c
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\dynload_win.c(213,5): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\dynload_win.c(215,5): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  compile.c
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\compile.c(1033,2): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\compile.c(1034,2): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\compile.c(1230,4): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\compile.c(1395,7): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\compile.c(1411,7): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\compile.c(2166,4): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  codecs.c
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\codecs.c(675,25): warning C4333: '>>': right shift by too large amount, data loss
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\codecs.c(676,25): warning C4333: '>>': right shift by too large amount, data loss
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\codecs.c(677,25): warning C4333: '>>': right shift by too large amount, data loss
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\codecs.c(678,25): warning C4333: '>>': right shift by too large amount, data loss
+  ceval.c
+  bltinmodule.c
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\bltinmodule.c(595,8): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\bltinmodule.c(1567,16): warning C4996: 'isatty': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _isatty. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Python\bltinmodule.c(1568,16): warning C4996: 'isatty': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _isatty. See online help for details.
+  msvcrtmodule.c
+  getpathp.c
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\PC\getpathp.c(129,3): warning C4996: 'strcat': This function or variable may be unsafe. Consider using strcat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\PC\getpathp.c(151,2): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\PC\getpathp.c(177,2): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\PC\getpathp.c(296,5): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\PC\getpathp.c(399,3): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\PC\getpathp.c(408,5): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\PC\getpathp.c(412,5): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\PC\getpathp.c(449,2): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\PC\getpathp.c(458,3): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\PC\getpathp.c(467,3): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\PC\getpathp.c(469,3): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\PC\getpathp.c(549,3): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\PC\getpathp.c(555,3): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\PC\getpathp.c(560,3): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\PC\getpathp.c(566,3): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\PC\getpathp.c(573,4): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\PC\getpathp.c(594,5): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\PC\getpathp.c(599,4): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\PC\getpathp.c(609,3): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\PC\getpathp.c(634,4): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  dl_nt.c
+  config.c
+  tokenizer.c
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Parser\tokenizer.c(367,3): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Parser\tokenizer.c(468,3): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Parser\tokenizer.c(708,5): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Parser\tokenizer.c(781,6): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  parsetok.c
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Parser\parsetok.c(153,4): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Parser\parsetok.c(194,6): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  parser.c
+  node.c
+  myreadline.c
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Parser\myreadline.c(180,14): warning C4996: 'isatty': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _isatty. See online help for details.
+  Generating Code...
+  Compiling...
+  metagrammar.c
+  listnode.c
+  grammar1.c
+  bitset.c
+  acceler.c
+  weakrefobject.c
+  unicodeobject.c
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Objects\unicodeobject.c(689,5): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Objects\unicodeobject.c(2429,11): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Objects\unicodeobject.c(2961,3): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Objects\unicodeobject.c(3383,4): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Objects\unicodeobject.c(3536,17): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Objects\unicodeobject.c(6056,11): warning C4996: 'vsprintf': This function or variable may be unsafe. Consider using vsprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Objects\unicodeobject.c(6813,5): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  unicodectype.c
+  typeobject.c
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Objects\typeobject.c(5057,2): warning C4018: '<': signed/unsigned mismatch
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Objects\typeobject.c(5058,13): warning C4018: '>=': signed/unsigned mismatch
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Objects\typeobject.c(5062,18): warning C4018: '>=': signed/unsigned mismatch
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Objects\typeobject.c(5066,18): warning C4018: '>=': signed/unsigned mismatch
+  tupleobject.c
+  structseq.c
+  stringobject.c
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Objects\stringobject.c(270,6): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Objects\stringobject.c(272,6): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Objects\stringobject.c(276,5): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Objects\stringobject.c(280,5): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Objects\stringobject.c(292,5): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Objects\stringobject.c(307,5): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Objects\stringobject.c(848,5): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  sliceobject.c
+  rangeobject.c
+  obmalloc.c
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Objects\obmalloc.c(434,6): warning C4996: 'getenv': This function or variable may be unsafe. Consider using _dupenv_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  object.c
+  moduleobject.c
+  methodobject.c
+  longobject.c
+  listobject.c
+  Generating Code...
+  Compiling...
+  iterobject.c
+  intobject.c
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Objects\intobject.c(878,3): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  funcobject.c
+  frameobject.c
+  floatobject.c
+  fileobject.c
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\winnt.h(12122,9): warning C4005: 'WRITE_RESTRICTED': macro redefinition
+  (compiling source file '../Objects/fileobject.c')
+      C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Include\structmember.h(79,9):
+      see previous definition of 'WRITE_RESTRICTED'
+  
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Objects\fileobject.c(198,15): warning C4996: '_wfopen': This function or variable may be unsafe. Consider using _wfopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Objects\fileobject.c(207,14): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Objects\fileobject.c(717,8): warning C4996: 'isatty': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _isatty. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Objects\fileobject.c(756,9): warning C4996: 'lseek': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _lseek. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Objects\fileobject.c(1920,6): warning C4996: 'GetVersion': was declared deprecated
+  enumobject.c
+  dictobject.c
+  descrobject.c
+  complexobject.c
+  cobject.c
+  classobject.c
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Objects\classobject.c(2341,2): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Objects\classobject.c(2351,3): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Objects\classobject.c(2364,3): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  cellobject.c
+  bufferobject.c
+  boolobject.c
+  abstract.c
+  _weakref.c
+  _randommodule.c
+  _localemodule.c
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\_localemodule.c(204,33): warning C4996: 'strdup': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _strdup. See online help for details.
+  _hotshot.c
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\winnt.h(12122,9): warning C4005: 'WRITE_RESTRICTED': macro redefinition
+  (compiling source file '../Modules/_hotshot.c')
+      C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Include\structmember.h(79,9):
+      see previous definition of 'WRITE_RESTRICTED'
+  
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\_hotshot.c(141,27): warning C4996: 'fileno': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _fileno. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\_hotshot.c(1069,27): warning C4996: 'fileno': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _fileno. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\_hotshot.c(1373,27): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\_hotshot.c(1480,19): warning C4996: 'getcwd': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getcwd. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\_hotshot.c(1532,23): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  Generating Code...
+  Compiling...
+  _codecsmodule.c
+  zipimport.c
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\zipimport.c(82,2): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\zipimport.c(243,2): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\zipimport.c(244,2): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\zipimport.c(275,3): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\zipimport.c(418,2): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\zipimport.c(481,3): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\zipimport.c(484,3): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\zipimport.c(670,2): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\zipimport.c(672,7): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\zipimport.c(742,3): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\zipimport.c(819,7): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\zipimport.c(1089,3): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  yuvconvert.c
+  xxsubtype.c
+  xreadlinesmodule.c
+  timemodule.c
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\timemodule.c(293,36): warning C4996: 'gmtime': This function or variable may be unsafe. Consider using gmtime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\timemodule.c(311,36): warning C4996: 'localtime': This function or variable may be unsafe. Consider using localtime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\timemodule.c(381,10): warning C4996: 'localtime': This function or variable may be unsafe. Consider using localtime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\timemodule.c(449,10): warning C4996: 'localtime': This function or variable may be unsafe. Consider using localtime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\timemodule.c(452,6): warning C4996: 'asctime': This function or variable may be unsafe. Consider using asctime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\timemodule.c(479,6): warning C4996: 'ctime': This function or variable may be unsafe. Consider using ctime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\timemodule.c(506,9): warning C4996: 'localtime': This function or variable may be unsafe. Consider using localtime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\timemodule.c(582,2): warning C4996: 'tzset': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _tzset. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\timemodule.c(741,6): warning C4996: 'getenv': This function or variable may be unsafe. Consider using _dupenv_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  threadmodule.c
+  structmodule.c
+  stropmodule.c
+  signalmodule.c
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\signalmodule.c(123,6): warning C4996: 'getpid': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getpid. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\signalmodule.c(321,13): warning C4996: 'getpid': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getpid. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\signalmodule.c(667,13): warning C4996: 'getpid': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getpid. See online help for details.
+  shamodule.c
+  rotormodule.c
+  rgbimgmodule.c
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\rgbimgmodule.c(242,8): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\rgbimgmodule.c(281,8): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\rgbimgmodule.c(578,9): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  regexpr.c
+  regexmodule.c
+  pypcre.c
+  posixmodule.c
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\posixmodule.c(563,17): warning C4996: 'GetVersion': was declared deprecated
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\posixmodule.c(940,4): warning C4996: 'wcscpy': This function or variable may be unsafe. Consider using wcscpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\posixmodule.c(995,4): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\posixmodule.c(1033,8): warning C4996: 'access': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _access. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\posixmodule.c(1112,38): warning C4996: 'chdir': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _chdir. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\posixmodule.c(1169,8): warning C4996: 'chmod': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _chmod. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\posixmodule.c(1291,8): warning C4996: 'getcwd': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getcwd. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\posixmodule.c(1327,8): warning C4996: 'getcwd': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getcwd. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\posixmodule.c(1384,4): warning C4996: 'wcsncpy': This function or variable may be unsafe. Consider using wcsncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\posixmodule.c(1390,4): warning C4996: 'wcscpy': This function or variable may be unsafe. Consider using wcscpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\posixmodule.c(1443,2): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\posixmodule.c(1697,8): warning C4996: 'mkdir': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _mkdir. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\posixmodule.c(1776,38): warning C4996: 'rmdir': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _rmdir. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\posixmodule.c(1828,11): warning C4996: 'umask': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _umask. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\posixmodule.c(1847,39): warning C4996: 'unlink': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _unlink. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\posixmodule.c(2109,2): warning C4996: 'execv': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _execv. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\posixmodule.c(2253,2): warning C4996: 'execve': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _execve. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\posixmodule.c(2933,30): warning C4996: 'getpid': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getpid. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\posixmodule.c(4067,7): warning C4996: 'GetVersion': was declared deprecated
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\posixmodule.c(4088,4): warning C4996: 'strncat': This function or variable may be unsafe. Consider using strncat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\posixmodule.c(4096,5): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\posixmodule.c(4100,6): warning C4996: 'strcat': This function or variable may be unsafe. Consider using strcat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\posixmodule.c(4101,5): warning C4996: 'strncat': This function or variable may be unsafe. Consider using strncat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\posixmodule.c(5109,9): warning C4996: '_wopen': This function or variable may be unsafe. Consider using _wsopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\posixmodule.c(5127,7): warning C4996: 'open': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _open. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\posixmodule.c(5147,8): warning C4996: 'close': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _close. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\posixmodule.c(5167,7): warning C4996: 'dup': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _dup. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\posixmodule.c(5186,8): warning C4996: 'dup2': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _dup2. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\posixmodule.c(5262,6): warning C4996: 'read': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _read. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\posixmodule.c(5286,9): warning C4996: 'write': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _write. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\posixmodule.c(5342,7): warning C4996: 'fdopen': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _fdopen. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\posixmodule.c(5363,25): warning C4996: 'isatty': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _isatty. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\posixmodule.c(5592,6): warning C4996: 'putenv': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _putenv. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\posixmodule.c(5661,12): warning C4996: 'strerror': This function or variable may be unsafe. Consider using strerror_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\posixmodule.c(6039,10): warning C4996: 'tmpfile': This function or variable may be unsafe. Consider using tmpfile_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\posixmodule.c(6065,12): warning C4996: 'tmpnam': This function or variable may be unsafe. Consider using tmpnam_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  pcremodule.c
+  operator.c
+  md5module.c
+  Generating Code...
+  Compiling...
+  md5c.c
+  mathmodule.c
+  main.c
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\main.c(162,4): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\main.c(163,4): warning C4996: 'strcat': This function or variable may be unsafe. Consider using strcat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\main.c(273,11): warning C4996: 'getenv': This function or variable may be unsafe. Consider using _dupenv_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\main.c(276,11): warning C4996: 'getenv': This function or variable may be unsafe. Consider using _dupenv_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\main.c(291,14): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\main.c(314,12): warning C4996: 'fileno': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _fileno. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\main.c(315,12): warning C4996: 'fileno': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _fileno. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\main.c(389,6): warning C4996: 'isatty': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _isatty. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\Modules\main.c(425,11): warning C4996: 'getenv': This function or variable may be unsafe. Consider using _dupenv_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  itertoolsmodule.c
+  imageop.c
+  gcmodule.c
+  errnomodule.c
+  cStringIO.c
+  cPickle.c
+  cmathmodule.c
+  binascii.c
+  audioop.c
+  arraymodule.c
+  Generating Code...
+cl : command line  warning D9035: option 'Gm' has been deprecated and will be removed in a future release
+  getbuildinfo.c
+cl : command line  warning D9035: option 'Gm' has been deprecated and will be removed in a future release
+  import_nt.c
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\PC\import_nt.c(74,7): warning C4996: 'strnicmp': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _strnicmp. See online help for details.
+C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\PC\import_nt.c(81,7): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Microsoft\VC\v170\Microsoft.CppBuild.targets(1395,5): warning MSB8012: TargetPath(C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\PCbuild\pythoncore.dll) does not match the Linker's OutputFile property value (C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\PCbuild\dice_py_d.dll). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Link.OutputFile).
+C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Microsoft\VC\v170\Microsoft.CppBuild.targets(1397,5): warning MSB8012: TargetName(pythoncore) does not match the Linker's OutputFile property value (dice_py_d). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Link.OutputFile).
+     Creating library .\.\dice_py_d.lib and object .\.\dice_py_d.exp
+  pythoncore.vcxproj -> C:\Users\LifeCoder.LIFECODER\Downloads\PhoenixNetwork.Hooks.Dinput8\PhoenixNetwork.Hooks.Dinput8\Python-2.3.4\PCbuild\pythoncore.dll
