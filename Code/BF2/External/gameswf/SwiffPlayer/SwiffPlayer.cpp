@@ -4890,6 +4890,18 @@ void as_profile_logout(const gameswf::fn_call& fn)
 #endif
 }
 
+void as_logic_disconnectGame(const gameswf::fn_call& fn)
+{
+    SWF_AS_TRACE("as_logic_disconnectGame");
+    BusyHost cursorHost = busyOpen();
+#if BF2_PLUGIN_ABI_NATIVE
+    (void)g_swiffPlayerInstance->getSwiffHost()->requestShutdownGame();
+#else
+    void* h = g_swiffPlayerInstance->getSwiffHost();
+    (void)reinterpret_cast<bool(__thiscall*)(void*)>(rcVtbl(h)[0xB4 / 4])(h);
+#endif
+    busyClose(cursorHost);
+}
 
 // endOfRound.swf's loading-state bridge. Every row fetches the player host without a
 // guard. getIsLoading preserves the shipped two calls and their order (+0xCC first, then +0x2A8),
@@ -12999,7 +13011,7 @@ static void registerAsMethods(SwiffAsNamespace* general, SwiffAsNamespace** ns,
         }
         else if (::strcmp(n, "Logic") == 0)
         {
-            // The six recovered dice.bf2.Logic bodies (18 of mainMenu.swf's 26 measured calls).
+            ns[i]->registerNativeCompatibleMethod<as_logic_disconnectGame>("disconnectGame");
             ns[i]->registerNativeCompatibleMethod<as_logic_isGameRunning>("isGameRunning");
             ns[i]->registerNativeCompatibleMethod<as_logic_getActivateReason>("getActivateReason");
             ns[i]->registerNativeCompatibleMethod<as_logic_getFrameLabel>("getFrameLabel");
