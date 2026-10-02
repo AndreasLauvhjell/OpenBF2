@@ -26,6 +26,11 @@
 #include "../../../IO/Stream/IStream.h"
 #include "../../../Scene/Object/ObjectTypes/Base/ObjectTemplateManager.h"  // addSoundTemplate creates through the manager
 #include "../../../Geom/IGeometryTemplate.h"
+#if !DEDICATED
+#include "../../Main/Game.h"
+#include "../../../Sound/BfSound.h"
+#include "../../../Sound/SoundObjectTemplate.h"
+#endif
 #if !DEDICATED && defined(_M_IX86) && BF2_PLUGIN_ABI_NATIVE
 #include "../../../Geom/GeometryTemplateManager.h"
 #endif
@@ -806,12 +811,28 @@ ObjectTemplate* SimpleObjectTemplate::addSoundTemplate(const std::string& name)
     return soundTemplate;
 }
 
-// in the server build: the sound factory is a stub answering 0, and every caller
-// (PlayerControlObject::init's two ambient hookups) null-guards it - a headless server has no
-// sound objects to build. As shipped.
-void* SimpleObjectTemplate::createSoundFromTemplate(const std::string&, IObject*) const
+void* SimpleObjectTemplate::createSoundFromTemplate(const std::string& name, IObject* owner) const
 {
+#if DEDICATED
     return 0;
+#else
+    if (isDedicated() || !g_bfSound)
+        return 0;
+
+    SoundObjectTemplate* const objectTemplate = static_cast<SoundObjectTemplate*>(
+        objectTemplateManager->getTemplate(makeSoundTemplateName(name), 9986001u));
+    if (!objectTemplate)
+        return 0;
+
+    ISoundObjectTemplate* const soundTemplate = objectTemplate;
+    if (!soundTemplate->impl()
+        || !soundTemplate->impl()->getFilename()
+        || !*soundTemplate->impl()->getFilename())
+    {
+        return 0;
+    }
+    return g_bfSound->createSound(soundTemplate->impl(), owner);
+#endif
 }
 
 } // namespace world
