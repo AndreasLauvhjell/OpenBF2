@@ -1597,20 +1597,27 @@ void GhostManager::handlePacketStatus(PacketStatus& status, bool& delivered)
     m_saveList.pop_front();
 }
 
-// Reads the optional ghost block and its control state, then the declared ghost records.
-// An absent block succeeds without changing state. The tick is stored only after a valid header.
-// Malformed input fails with m_error = 2; the receive-failure diagnostic is fatal.
-// The caller controls stream direction; this method does not validate the received tick.
+// An absent ghost block succeeds without changing state. Dedicated builds reject a present block.
+// Client builds read its control state and records, storing the tick only after a valid header.
+// Client decode failures set m_error = 2; the record-failure diagnostic is fatal.
+// The received tick is not validated. A false result makes the server disconnect the peer.
 bool GhostManager::processReceivedPacket(io::BitStream* stream)
 {
+#if !DEDICATED
     const unsigned int startPos = (stream->m_readWriteSwitch == 1)
                                 ? stream->m_readBitPos : stream->m_bitPos;
+#endif
 
     unsigned int present = 0;
     stream->readBits(&present, 1);
     if (present != 1)
         return true;                                     // the one-bit "no ghosts" case
 
+#if DEDICATED
+    // [CHOSEN, not recovered] Clients must not send ghost updates to a dedicated server.
+    // Reject before decoding or applying any state: https://github.com/B2BF/OpenBF2/issues/1.
+    return false;
+#else
     unsigned int tick = 0;
     stream->readBits(&tick, 32);
     unsigned int count = 0;
@@ -1660,6 +1667,7 @@ bool GhostManager::processReceivedPacket(io::BitStream* stream)
     stream->m_error     = false;
     m_error = 2;
     return false;
+#endif
 }
 
 // Read one ghost action: no-op, update or removal; action 2 is a protocol error.
