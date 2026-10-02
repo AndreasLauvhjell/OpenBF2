@@ -138,7 +138,6 @@ void engineFree(void* value)
 }
 void* crtMalloc(size_t size) { return std::malloc(size); }
 void crtFree(void* value) { std::free(value); }
-bool crtHeapAvailable() { return true; }
 void trace(const char*, const void*, unsigned int) {}
 void logf(const char* format, ...)
 {

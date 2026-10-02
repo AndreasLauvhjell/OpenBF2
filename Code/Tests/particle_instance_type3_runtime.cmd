@@ -1,6 +1,6 @@
 @echo off
 setlocal EnableDelayedExpansion
-rem [TEMP] strict x86 actual-source emitter (type 3) fixture, BOTH plugin ABIs; no game or GPU startup.
+rem [TEMP] strict x86 actual-source emitter (type 3) fixture, native plugin ABI; no game or GPU startup.
 rem 2026-09-26 (G1). The smoke run drives a real emitter with a real type-0 child through the manager's
 rem own vtable; the `nullchild` run must stop at the emitter's NAMED stop (an unregistered child), which
 rem the manager fixture's frontier trap reports as UNEXPECTED with exit 87.
@@ -8,7 +8,7 @@ if not defined BF2_BUILD_OUT exit /b 2
 call "%~dp0..\Build\vsdevcmd.cmd" x86
 set "TASK_ROOT=%~dp0..\.."
 if not defined BF2_TEST_OPT set "BF2_TEST_OPT=/O2"
-for %%A in (1 0) do (
+for %%A in (1) do (
   set "OUT=%BF2_BUILD_OUT%\abi%%A"
   if not exist "!OUT!" mkdir "!OUT!"
   cl /nologo %BF2_TEST_OPT% /EHsc /std:c++14 /permissive /MD /Gy /Gw /Z7 ^
@@ -23,7 +23,7 @@ for %%A in (1 0) do (
   if errorlevel 1 (echo abi%%A BUILD FAILED & type "!OUT!\build.log" & goto :fail)
   call :run %%A || goto :fail
 )
-echo Emitter (type 3) fixture: both ABIs passed, and the null-child named stop confirmed in both
+echo Emitter (type 3) fixture: native ABI passed, and the null-child named stop confirmed
 exit /b 0
 
 :run

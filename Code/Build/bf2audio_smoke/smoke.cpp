@@ -102,11 +102,9 @@ int main(int argc, char** argv)
     const char* provider       = argc > 4 ? argv[4] : "Software Audio";
     const int   seconds        = argc > 5 ? std::atoi(argv[5]) : 4;
 
-    // Memory.dll needs MSVCR71.dll from the same directory, and a DLL loaded by full path does not
-    // get its own directory searched for its dependents - so the game directory joins this
-    // process's DLL search path (a process-local setting; nothing is written there).
+    // The OpenAL provider is loaded from the content installation. The rebuilt audio DLL
+    // uses the same dynamic CRT as this host and needs no retail Memory.dll or MSVCR71 heap.
     std::printf("SetDllDirectory(%s) -> %d\n", gameDir.c_str(), SetDllDirectoryA(gameDir.c_str()) ? 1 : 0);
-    HMODULE memory = loadByPath(gameDir + "\\Memory.dll", "Memory.dll");
     HMODULE openal = loadByPath(gameDir + "\\BF2OpenAL.dll", "BF2OpenAL.dll");
     HMODULE audio  = loadByPath(dllPath, "BF2Audio.dll");
     if (!audio)
@@ -188,6 +186,6 @@ int main(int argc, char** argv)
     std::printf("shutdown: isInitialized=%d\n", engine->isInitialized() ? 1 : 0);
     shutdownSoundEngine();
     std::printf("shutdownSoundEngine done\n");
-    (void) memory; (void) openal;
+    (void) openal;
     return 0;
 }

@@ -33,10 +33,8 @@ enum { CID_Swiff = 870002u, IID_ISwiffPlayer = 870001u };
 #define SWF_FRONTIER_AT(qualifiedName, self, slot) \
     ::renddx9abi::frontier((qualifiedName), (self), (slot))
 
-// The two interfaces SwiffPlayer consumes, never implements. SwiffRender lives in RendDX9.dll,
-// SwiffHost in BF2.exe. Opaque here: the skeleton only stores the pointers; the raw-vtable-offset
-// dispatch into them is the Stage-3 typed-dispatch work, and every method that would reach it is a
-// named frontier below.
+// Interfaces supplied by the rebuilt renderer and client. Their pointers stay opaque in this
+// layout declaration; SwiffPlayer.cpp provides dispatch and the remaining named frontiers.
 struct ISwiffRender;
 struct ISwiffHost;
 
@@ -145,7 +143,7 @@ public:
     // 19 +0x4C
     virtual void  setTextInput(const char* text) = 0;
     // 20 +0x50 writes the current text-input into a preconstructed host string.
-    // The pointer ABI is shared; the body selects VC7.1 or native HostString (RW-49).
+    // The caller supplies a live native HostString using the shared CRT and release STL layout.
     virtual void  getTextInput0(void* outStdString) = 0;
     // 21 +0x54
     virtual void  getTextInput1(void* outStdString) = 0;
@@ -292,10 +290,8 @@ private:
     friend IBase* __fastcall RefFactory_ui_SwiffPlayer(unsigned int iid, IBase* parent);
 };
 
-// RefFactory_ui_SwiffPlayer 0x10007F50. __fastcall - the /Gr convention BF2's createInstance passes
-// (iid in ECX, outer in EDX). The signature matches ClassRegInfo::create in HfeAbi.h exactly
-// (IBase* (__fastcall*)(unsigned int, IBase*)); declaring it any other way is the single most
-// damaging silent-wrongness available (see that header).
+// The factory retains its recovered __fastcall convention. Module registration wraps it with
+// RD9_CLASS_FACTORY to provide the native host's cdecl ClassRegInfo::create callback.
 IBase* __fastcall RefFactory_ui_SwiffPlayer(unsigned int iid, IBase* parent);
 
 } // namespace ui

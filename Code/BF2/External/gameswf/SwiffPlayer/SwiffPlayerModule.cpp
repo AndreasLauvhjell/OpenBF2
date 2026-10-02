@@ -48,9 +48,8 @@ void* SwiffModule::queryInterface(unsigned int iid) const
     return 0;
 }
 
-// publishes exactly one class: {cid 870002, "dice.hfe.ui.Swiff", the __fastcall
-// factory}. The retail host uses 36-byte records; native mode uses the host's
-// typed vector/string and a cdecl adapter around the same recovered factory (RW-49).
+// Publishes the Swiff class using the native host's typed vector/string and a cdecl adapter
+// around the recovered __fastcall factory (RW-49).
 void SwiffModule::getClassList(RD9_HOST_VECTOR_PARAMETER(ClassRegInfo, hostVector))
 {
     renddx9abi::HostVectorWriter<ClassRegInfo> classes(hostVector);

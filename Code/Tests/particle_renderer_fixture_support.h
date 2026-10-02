@@ -35,6 +35,10 @@ void requireConstruction() { if (!allowConstruction) std::abort(); }
 }
 namespace dice { namespace hfe { namespace geom { IHemiMapManager* g_HemiMapManager = 0; } } }
 namespace dice { namespace hfe { namespace dx9rend {
+// These fixtures never unload a level or release device buffers. Stop if that scope changes.
+void textureAtlasReleaseAll(TextureAtlas*) { std::abort(); }
+void vertexBufferRelease(void*) { std::abort(); }
+void indexBufferRelease(void*) { std::abort(); }
 void* g_rendererBase = 0;
 void* g_raShaderConstants = 0;
 void* g_shaderManager = reinterpret_cast<void*>(0x51515151u);

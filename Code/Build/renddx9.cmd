@@ -6,41 +6,31 @@ rem
 rem   Code\Build\build.cmd      the dedicated server, bf2_w32ded.exe
 rem   Code\Build\renddx9.cmd    THIS. A different shipped image entirely.
 rem
-rem ⚠⚠ IT NEVER WRITES INTO THE GAME DIRECTORY. The compatibility output goes to
-rem    Code\Build\bin_renddx9\; the opt-in native output goes to
+rem IT NEVER WRITES INTO THE GAME DIRECTORY. Output goes to
 rem    Code\Build\bin_renddx9_native\. The shipped RendDX9.dll at
 rem    "D:\B2BF Launcher\Battlefield2\RendDX9.dll" is the REFERENCE BINARY and
 rem    overwriting it would destroy the only copy this rebuild reads from.
 rem    Testing against the real client is a DELIBERATE, SEPARATE act - see
 rem    docs\building.md for host ABI and runtime setup.
 rem
-rem   usage:  renddx9.cmd          VC7.1-compatible ABI (/MT + Memory.dll)
-rem           renddx9.cmd native   native host ABI (/MD, no Memory.dll)
+rem   usage:  renddx9.cmd [native]   rebuilt host ABI (/MD, no Memory.dll)
+rem [CHOSEN, not recovered] Native-only builds: https://github.com/B2BF/OpenBF2/issues/7
 rem ===========================================================================
+if not "%~2"=="" goto :usage
+if not "%~1"=="" if /i not "%~1"=="native" goto :usage
 call "%~dp0vsdevcmd.cmd" x86
+if errorlevel 1 exit /b 1
 
 for %%I in ("%~dp0..") do set CODE=%%~fI
 set ABI=%CODE%\RendDX9Abi
 set BF2=%CODE%\BF2
-set NATIVE=0
-if /i "%~1"=="native" set NATIVE=1
-
-set OUT=%~dp0obj_renddx9
-set BIN=%~dp0bin_renddx9
-set CRT=/MT
-set PLUGIN_ABI=
-if "%NATIVE%"=="1" (
-    set OUT=%~dp0obj_renddx9_native
-    set BIN=%~dp0bin_renddx9_native
-    set CRT=/MD
-    set PLUGIN_ABI=/DBF2_PLUGIN_ABI_NATIVE=1 /D_ITERATOR_DEBUG_LEVEL=0
-)
-rem Agent/CI isolation.  Apply these after flavour selection so both native and compatibility
-rem builds can avoid cleaning or overwriting another concurrent build's directories.
+set OUT=%~dp0obj_renddx9_native
+set BIN=%~dp0bin_renddx9_native
+set CRT=/MD
+set PLUGIN_ABI=/DBF2_PLUGIN_ABI_NATIVE=1 /D_ITERATOR_DEBUG_LEVEL=0
+rem Agent/CI isolation keeps builds out of another contributor's directories.
 if defined BF2_RENDDX9_OUT set OUT=%BF2_RENDDX9_OUT%
 if defined BF2_RENDDX9_BIN set BIN=%BF2_RENDDX9_BIN%
-set MEMORY_LIB="%OUT%\Memory.lib"
-if "%NATIVE%"=="1" set MEMORY_LIB=
 
 rem Prefer the stock import library from the exact SDK generation BF2 used.  Do not silently take
 rem a later d3dx9.lib: the June 2010 SDK's library names d3dx9_43.dll, while retail RendDX9 names
@@ -59,9 +49,7 @@ if not defined DXSDK_2005_ROOT if exist "C:\Program Files (x86)\Microsoft Direct
 set "D3DX25_LIB=%OUT%\d3dx9_25.lib"
 if defined DXSDK_2005_ROOT set "D3DX25_LIB=%DXSDK_2005_ROOT%\Lib\x86\d3dx9.lib"
 
-rem /MT (default) - a PRIVATE static CRT. The compatibility image replaces global operator
-rem   new/delete with Memory.dll's allocator and must not leak that replacement into another image.
-rem /MD (`native`) - shares the rebuilt client's native CRT/STL ABI; BfMemory's native branch does
+rem /MD - shares the rebuilt client's native CRT/STL ABI; BfMemory's native branch does
 rem   keep the global replacements, but routes them to that shared CRT and never references
 rem   Memory.dll. Recovered objects mix new/delete with engineAlloc/engineFree, so both routes must
 rem   terminate in one heap.
@@ -87,9 +75,8 @@ del /q "%OUT%\*.log" >nul 2>&1
 rem ---------------------------------------------------------------------------
 rem STEP 1 - import libraries.
 rem
-rem The compatibility build manufactures Memory.lib from the three shipped decorated names. The
-rem native build deliberately does not create or link it. Both flavours build the Bink import
-rem library. D3DX uses the exact April 2005 SDK library when present, or manufactures the same
+rem Build the Bink import library. D3DX uses the exact April 2005 SDK library when present,
+rem or manufactures the same
 rem d3dx9_25.dll binding from the retained .def when that SDK is absent.
 rem ---------------------------------------------------------------------------
 set LIB_BAD=0
@@ -100,23 +87,14 @@ if defined DXSDK_2005_ROOT (
     lib /nologo /def:"%ABI%\D3dx9_25.def" /machine:x86 /out:"%D3DX25_LIB%" >>"%OUT%\lib.log" 2>&1
     if errorlevel 1 set LIB_BAD=1
 )
-if "%NATIVE%"=="1" (
-    echo [1/4] import libraries - native ABI, no Memory.dll
-    lib /nologo /def:"%ABI%\binkw32.def" /machine:x86 /out:"%OUT%\binkw32.lib" >>"%OUT%\lib.log" 2>&1
-    if errorlevel 1 set LIB_BAD=1
-) else (
-    echo [1/4] import library for Memory.dll
-    lib /nologo /def:"%ABI%\Memory.def" /machine:x86 /out:"%OUT%\Memory.lib" >>"%OUT%\lib.log" 2>&1
-    if errorlevel 1 set LIB_BAD=1
-    lib /nologo /def:"%ABI%\binkw32.def" /machine:x86 /out:"%OUT%\binkw32.lib" >>"%OUT%\lib.log" 2>&1
-    if errorlevel 1 set LIB_BAD=1
-)
-rem TextureAtlasBuilder.dll (2026-10-01) - BOTH flavours. RendDX9.dll 1.50 carries a STATIC import
+echo [1/4] import libraries - native ABI, no Memory.dll
+lib /nologo /def:"%ABI%\binkw32.def" /machine:x86 /out:"%OUT%\binkw32.lib" >>"%OUT%\lib.log" 2>&1
+if errorlevel 1 set LIB_BAD=1
+rem TextureAtlasBuilder.dll: RendDX9.dll 1.50 carries a STATIC import
 rem descriptor for it with the two exported creates (RendDX9Abi\TextureAtlasBuilder.def), which
 rem TextureAtlas\TextureAtlas.cpp's atlas generator calls. Static, as in retail: without the DLL on
-rem the search path RendDX9.dll does not load. The game directory ships the retail image and every
-rem real run uses it as the working directory; a harness that runs elsewhere needs one beside its
-rem exe (Code\Build\textureatlasbuilder.cmd builds the replacement).
+rem the search path RendDX9.dll does not load. Stage the rebuilt atlas DLL beside the executable;
+rem Code\Build\textureatlasbuilder.cmd builds it and CMake stages it with the client.
 lib /nologo /def:"%ABI%\TextureAtlasBuilder.def" /machine:x86 /out:"%OUT%\TextureAtlasBuilder.lib" >>"%OUT%\lib.log" 2>&1
 if errorlevel 1 set LIB_BAD=1
 if not "%LIB_BAD%"=="0" (
@@ -249,14 +227,13 @@ set SOURCES=^
  "%BF2%\GeomMisc\MenuRend\Video.cpp" ^
  "%BF2%\GeomMisc\MenuRend\QuadDrawer.cpp"
 
-rem These sources use the rebuilt host's native std::string/list/map ABI.  They cannot be linked
-rem into the retail-compatible VC7.1 boundary flavour.
-if "%NATIVE%"=="1" set SOURCES=!SOURCES! "%BF2%\Core\ConsoleObjectBase.cpp" "%ABI%\NativeConsoleObjects.cpp" "%BF2%\Geom\LightManagerConsole.cpp" "%BF2%\Geom\HemiMapManager\HemiMapManagerConsole.cpp" "%BF2%\Geom\SkyDomeConsole.cpp" "%BF2%\Geom\TerrainConsole.cpp" "%BF2%\RendDX9\RendererConsole.cpp" "%BF2%\Geom\NametagManagerConsole.cpp" "%BF2%\Geom\Overgrowth\OverGrowthConsole.cpp" "%BF2%\Geom\UndergrowthSystemConsole.cpp" "%BF2%\Geom\DecalSystem\DecalManagerConsole.cpp"
+rem These sources use the rebuilt host's native std::string/list/map ABI.
+set SOURCES=!SOURCES! "%BF2%\Core\ConsoleObjectBase.cpp" "%ABI%\NativeConsoleObjects.cpp" "%BF2%\Geom\LightManagerConsole.cpp" "%BF2%\Geom\HemiMapManager\HemiMapManagerConsole.cpp" "%BF2%\Geom\SkyDomeConsole.cpp" "%BF2%\Geom\TerrainConsole.cpp" "%BF2%\RendDX9\RendererConsole.cpp" "%BF2%\Geom\NametagManagerConsole.cpp" "%BF2%\Geom\Overgrowth\OverGrowthConsole.cpp" "%BF2%\Geom\UndergrowthSystemConsole.cpp" "%BF2%\Geom\DecalSystem\DecalManagerConsole.cpp"
 rem RD1 (2026-09-30): the `Object.geometry.loadMesh` row - native console ABI, like the list above.
-if "%NATIVE%"=="1" set SOURCES=!SOURCES! "%BF2%\Geom\ObjectGeometryConsole.cpp"
+set SOURCES=!SOURCES! "%BF2%\Geom\ObjectGeometryConsole.cpp"
 rem Roads step 3 (2026-10-01): the native host's EventNode shape for the HeightmapEventNode
-rem RoadEditable::projectToTerrain posts; the retail flavour posts its own retail-shaped copy.
-if "%NATIVE%"=="1" set SOURCES=!SOURCES! "%BF2%\Geom\HeightmapEventNode.cpp"
+rem RoadEditable::projectToTerrain posts.
+set SOURCES=!SOURCES! "%BF2%\Geom\HeightmapEventNode.cpp"
 
 set OK=0
 set BAD=0
@@ -292,7 +269,7 @@ link /nologo /DLL /MACHINE:X86 /BASE:0x10000000 /DEBUG ^
      /PDB:"%BIN%\RendDX9.pdb" ^
      /IMPLIB:"%OUT%\RendDX9.lib" ^
      /MAP:"%OUT%\RendDX9.map" ^
-     "%OUT%\*.obj" %MEMORY_LIB% "%D3DX25_LIB%" "%OUT%\binkw32.lib" "%OUT%\TextureAtlasBuilder.lib" kernel32.lib user32.lib d3d9.lib > "%OUT%\link.log" 2>&1
+     "%OUT%\*.obj" "%D3DX25_LIB%" "%OUT%\binkw32.lib" "%OUT%\TextureAtlasBuilder.lib" kernel32.lib user32.lib d3d9.lib > "%OUT%\link.log" 2>&1
 if errorlevel 1 (
     echo   LINK FAILED - see "%OUT%\link.log"
     type "%OUT%\link.log"
@@ -302,8 +279,7 @@ if errorlevel 1 (
 rem ---------------------------------------------------------------------------
 rem STEP 4 - the ABI checks that matter, run every build.
 rem
-rem These are not cosmetic. The compatibility image must carry the two exports and Memory.dll's
-rem exact bf_malloc import; the native image must carry the same exports and no Memory.dll import.
+rem The native image must carry both exports and no retail heap or CRT imports.
 rem If either shape drifts, the DLL loads and then behaves wrongly rather than failing.
 rem ---------------------------------------------------------------------------
 echo [4/4] ABI check
@@ -321,45 +297,35 @@ if not errorlevel 1 (
     echo   exports:      initDll + deinitDll  OK
 ) else (
     echo   exports:      MISSING - the host resolves both by name
-    if "%NATIVE%"=="1" set /a ABI_BAD+=1
+    set /a ABI_BAD+=1
 )
-if "%NATIVE%"=="1" (
-    findstr /c:"Memory.dll" "%OUT%\dependents.txt" >nul
-    if errorlevel 1 (
-        echo   imports:      Memory.dll absent  OK - native /MD heap
-    ) else (
-        echo   imports:      Memory.dll UNEXPECTED in native ABI
-        set /a ABI_BAD+=1
-    )
-    findstr /c:"?bf_malloc@memory@hfe@dice@@YAPAXIH@Z" "%OUT%\imports.txt" >nul
-    if errorlevel 1 (
-        echo   bf_malloc:    absent  OK - native /MD heap
-    ) else (
-        echo   bf_malloc:    UNEXPECTED in native ABI
-        set /a ABI_BAD+=1
-    )
-    findstr /i /c:"msvcr71.dll" /c:"msvcp71.dll" "%OUT%\dependents.txt" >nul
-    if errorlevel 1 (
-        echo   VC7.1 CRT:    msvcr71/msvcp71 absent  OK - native /MD runtime
-    ) else (
-        echo   VC7.1 CRT:    UNEXPECTED dependency in native ABI
-        set /a ABI_BAD+=1
-    )
-    if not "!ABI_BAD!"=="0" (
-        echo   NATIVE ABI CHECK FAILED - !ABI_BAD! invariant^(s^) violated
-        exit /b 1
-    )
-) else (
-    findstr /c:"Memory.dll" "%OUT%\dependents.txt" >nul
-    if not errorlevel 1 (echo   imports:      Memory.dll  OK - shares the engine heap) else (echo   imports:      Memory.dll MISSING - operator new is NOT on the engine heap)
-
-    rem The three names must match the shipped DLL's byte for byte, not merely be present.
-    findstr /c:"?bf_malloc@memory@hfe@dice@@YAPAXIH@Z" "%OUT%\imports.txt" >nul
-    if not errorlevel 1 (echo   bf_malloc:    mangled name matches the shipped import  OK) else (echo   bf_malloc:    NAME MISMATCH - the loader will not bind this)
+findstr /i /c:"Memory.dll" /c:"msvcr71.dll" /c:"msvcp71.dll" "%OUT%\dependents.txt" >nul
+if not errorlevel 1 (
+    echo   imports:      retail heap/CRT UNEXPECTED in native ABI
+    set /a ABI_BAD+=1
+)
+findstr /l /c:"?bf_malloc@memory@hfe@dice@@YAPAXIH@Z" "%OUT%\imports.txt" >nul
+if not errorlevel 1 (
+    echo   imports:      engine heap function UNEXPECTED in native ABI
+    set /a ABI_BAD+=1
+)
+findstr /i /c:"VCRUNTIME140.dll" "%OUT%\dependents.txt" >nul
+if errorlevel 1 (
+    echo   imports:      native shared VCRUNTIME140.dll MISSING
+    set /a ABI_BAD+=1
+)
+findstr /i /c:"api-ms-win-crt-heap-" /c:"ucrtbase.dll" "%OUT%\dependents.txt" >nul
+if errorlevel 1 (
+    echo   imports:      native shared CRT heap MISSING
+    set /a ABI_BAD+=1
+)
+if not "!ABI_BAD!"=="0" (
+    echo   NATIVE ABI CHECK FAILED - !ABI_BAD! invariant^(s^) violated
+    exit /b 1
 )
 
 rem TextureAtlasBuilder.dll (2026-10-01): the shipped image imports exactly its two creates, by name.
-rem Both flavours; a miss stops the script (a generator that cannot bind is a broken image).
+rem A miss stops the script (a generator that cannot bind is a broken image).
 dumpbin /nologo /imports:TextureAtlasBuilder.dll "%BIN%\RendDX9.dll" > "%OUT%\imports_tab.txt"
 set TAB_BAD=0
 findstr /l /c:"?create@ITextureAtlas@textureatlas@@SIPAV12@PAUIDirect3DDevice9@@@Z" "%OUT%\imports_tab.txt" >nul
@@ -373,3 +339,7 @@ echo.
 echo   built: %BIN%\RendDX9.dll
 echo   NOTE: this is NOT installed anywhere. See docs\building.md before using this DLL with a client.
 exit /b 0
+
+:usage
+echo Usage: renddx9.cmd [native]
+exit /b 2

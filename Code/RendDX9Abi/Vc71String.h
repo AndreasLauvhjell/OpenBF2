@@ -1,8 +1,8 @@
-// VC7.1 string ABI adapter, [CHOSEN, not recovered] source.
+// Fixed-layout renderer string, [CHOSEN, not recovered] source.
 // The 28-byte layout has allocator padding at +0, a 16-byte inline buffer/pointer at +4,
 // length at +20 and capacity at +24. Capacity below 16 selects the inline buffer.
-// Heap strings allocate capacity (length | 15) plus the terminator through MSVCR71, because
-// MSVCP71 may destroy them in the host. Never free those buffers through Memory.dll.
+// Heap strings allocate capacity (length | 15) plus the terminator through the rebuilt
+// plugin's CRT allocator. This storage remains internal; host strings use the native ABI.
 // Bytes after the terminator are unspecified, including the unused inline-buffer tail.
 
 #ifndef RENDDX9ABI_VC71STRING_H
@@ -51,9 +51,8 @@ private:
 // The wide twin: VC7.1 std::wstring. The same 28 bytes and the same field order; the in-buffer
 // capacity is _BUF_SIZE = 16 / sizeof(wchar_t) = 8, so the in-buffer test is `_Myres < 8` - which is
 // exactly how the shipped SwiffPlayer's Locale.getString (sub_1004C650) reads the host's answer
-// (`v13[5] < 8u ? &v13 : v13[0]`). The host localisation call PRE-constructs one of these, the host
-// assigns into it with MSVCP71's operator=, and the caller destroys it: the long case therefore has
-// to free through the MSVCR71 heap, as the narrow class does. Only what the bridge needs is here.
+// (`v13[5] < 8u ? &v13 : v13[0]`). Retained fixed-layout users allocate and free long strings through
+// the shared native CRT, just like the narrow class. Native host localisation uses std::wstring.
 class wstring
 {
 public:

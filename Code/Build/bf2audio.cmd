@@ -9,7 +9,7 @@ rem   Code\Build\swiffplayer.cmd  the replacement SwiffPlayer.dll
 rem   Code\Build\bf2audio.cmd     THIS. The OpenAL sound engine BF2.exe loads.
 rem
 rem IT NEVER WRITES INTO THE GAME DIRECTORY. Output goes to
-rem   Code\Build\bin_bf2audio\ (retail) or bin_bf2audio_native\ (native).
+rem   Code\Build\bin_bf2audio_native\.
 rem   The shipped BF2Audio.dll in the reference game directory is the REFERENCE
 rem   BINARY. Testing against the real client is a DELIBERATE, SEPARATE act -
 rem   see docs\building.md for host ABI and runtime setup.
@@ -19,46 +19,34 @@ rem   syntaxcheck.cmd passes no image define; the DLL-side ISoundEngine table
 rem   (slot 54 = the virtual destructor) only exists under BF2_IMAGE_BF2AUDIO.
 rem   Git-Bash `cmd /c` returns 0 without building.
 rem
-rem   usage:  bf2audio.cmd          VC7.1-compatible ABI (/MT + Memory.dll)
-rem           bf2audio.cmd native   native host ABI (/MD, no Memory.dll)
-rem   Both modes accept BF2_BF2AUDIO_OUT and BF2_BF2AUDIO_BIN overrides.
+rem   usage:  bf2audio.cmd [native]   rebuilt host ABI (/MD, no Memory.dll)
+rem   BF2_BF2AUDIO_OUT and BF2_BF2AUDIO_BIN override the output paths.
+rem [CHOSEN, not recovered] Native-only builds: https://github.com/B2BF/OpenBF2/issues/7
 rem
 rem   BF2AUDIO_VORBIS=<dir>  optional: an include root holding ogg\ and vorbis\
 rem     headers plus libogg/libvorbis/libvorbisfile static libs (see the status
 rem     doc). Without it the .ogg paths (streams, music) are [FRONTIER] reports
 rem     through the trace sink and .wav playback is everything the DLL does.
 rem ===========================================================================
+if not "%~2"=="" goto :usage
+if not "%~1"=="" if /i not "%~1"=="native" goto :usage
 call "%~dp0vsdevcmd.cmd" x86
 if errorlevel 1 exit /b 1
-if not "%~1"=="" if /i not "%~1"=="native" (
-    echo Usage: bf2audio.cmd [native]
-    exit /b 2
-)
 
 for %%I in ("%~dp0..") do set CODE=%%~fI
 set ABI=%CODE%\BF2AudioAbi
 set RD9ABI=%CODE%\RendDX9Abi
 set BF2=%CODE%\BF2
 set SND=%CODE%\BF2\Sound\SoundEngine
-set NATIVE=0
-if /i "%~1"=="native" set NATIVE=1
-set OUT=%~dp0obj_bf2audio
-set BIN=%~dp0bin_bf2audio
-set CRT=/MT
-set PLUGIN_ABI=/DBF2_PLUGIN_ABI_NATIVE=0
-if "%NATIVE%"=="1" (
-    set OUT=%~dp0obj_bf2audio_native
-    set BIN=%~dp0bin_bf2audio_native
-    set CRT=/MD
-    set PLUGIN_ABI=/DBF2_PLUGIN_ABI_NATIVE=1 /D_ITERATOR_DEBUG_LEVEL=0
-)
-rem Apply overrides AFTER choosing the flavour; neither mode may discard an isolated path.
+set OUT=%~dp0obj_bf2audio_native
+set BIN=%~dp0bin_bf2audio_native
+set CRT=/MD
+set PLUGIN_ABI=/DBF2_PLUGIN_ABI_NATIVE=1 /D_ITERATOR_DEBUG_LEVEL=0
+rem Preserve agent/CI output isolation.
 if defined BF2_BF2AUDIO_OUT set "OUT=%BF2_BF2AUDIO_OUT%"
 if defined BF2_BF2AUDIO_BIN set "BIN=%BF2_BF2AUDIO_BIN%"
 for %%I in ("%OUT%") do set "OUT=%%~fI"
 for %%I in ("%BIN%") do set "BIN=%%~fI"
-set MEMORY_LIB="%OUT%\Memory.lib"
-if "%NATIVE%"=="1" set MEMORY_LIB=
 rem Ogg Vorbis: the vendored upstream sources (Code\BF2\External\libogg-1.3.6 and libvorbis-1.3.7,
 rem the decoder set plus vorbisfile) are compiled INTO the DLL, as the shipped image statically
 rem links its own (DICE-patched) libvorbis 1.0. BF2AUDIO_NO_VORBIS=1 leaves them out; the .ogg
@@ -75,9 +63,7 @@ if exist "%VORBIS%\lib\vorbisfile.c" if not defined BF2AUDIO_NO_VORBIS (
     set VORBIS_ON=1
 )
 
-rem /MT              - a PRIVATE static CRT, as the shipped image (it links MSVCR71/MSVCP71 for the
-rem                    STL and stdio only; every allocation goes to Memory.dll through operator new).
-rem /MD (native)     - shares the rebuilt host's current CRT/STL.
+rem /MD              - shares the rebuilt host's current CRT/STL.
 rem /DBF2_IMAGE_BF2AUDIO - selects the DLL-side ISoundEngine table (Sound/NullSound.h slot 54) and
 rem                    keeps the server's null-engine static objects out of NullSound.cpp.
 rem /DDEDICATED=0 + /FI Core\BuildConfig.h - the IMAGE define; this DLL is part of the CLIENT
@@ -88,7 +74,7 @@ set FLAGS=/nologo /c %CRT% /std:c++14 /permissive /EHsc /W3 /FS /Zi ^
  /DBF2_IMAGE_BF2AUDIO %PLUGIN_ABI% %VORBIS_DEF% /DDEDICATED=0 /FI"%BF2%\Core\BuildConfig.h" /DWIN32 /D_WINDOWS /DNDEBUG /D_CRT_SECURE_NO_WARNINGS /D_CRT_NONSTDC_NO_DEPRECATE ^
  /wd4100 /wd4127 /wd4244 /wd4267 /wd4291 /wd4305 /wd4996 /Fd"%OUT%\BF2Audio.pdb"
 
-echo   NATIVE=%NATIVE% CRT=%CRT%
+echo   Native host ABI, CRT=%CRT%
 echo   CODE=%CODE%
 echo   OUT=%OUT%
 echo   BIN=%BIN%
@@ -100,25 +86,14 @@ del /q "%OUT%\*.obj" >nul 2>&1
 del /q "%OUT%\*.log" >nul 2>&1
 
 rem ---------------------------------------------------------------------------
-rem STEP 1 - import library for the shipped Memory.dll (bf_malloc/bf_free/addMemoryName by name).
-rem Reuses RendDX9Abi\Memory.def - the shipped BF2Audio.dll imports exactly these three.
+rem STEP 1 - native host heap, no Memory.dll import library.
 rem ---------------------------------------------------------------------------
-if "%NATIVE%"=="1" (
-    echo [1/4] native ABI - no Memory import library
-) else (
-    echo [1/4] import library for Memory.dll
-    lib /nologo /def:"%RD9ABI%\Memory.def" /machine:x86 /out:"%OUT%\Memory.lib" >"%OUT%\lib.log" 2>&1
-    if errorlevel 1 (
-        echo   FAILED - see "%OUT%\lib.log"
-        type "%OUT%\lib.log"
-        exit /b 1
-    )
-)
+echo [1/4] native ABI - no Memory import library
 
 rem ---------------------------------------------------------------------------
 rem STEP 2 - compile. Explicit manifest, numbered objects (flat output dir).
 rem
-rem   the shared RendDX9Abi kit: BfMemory (operator new/delete -> Memory.dll, engineAlloc/engineFree
+rem   the shared RendDX9Abi kit: BfMemory (operator new/delete -> shared CRT, engineAlloc/engineFree
 rem     for the PCM buffers), Msvcr71Heap; Frontier.cpp compiled separately with this DLL's log
 rem     defines. NOT DllMain.cpp: Win32System.cpp IS this image's DllMain (attested).
 rem   Sound\NullSound.cpp: the null Sound / SoundTemplate pair getSoundEngine creates.
@@ -202,7 +177,7 @@ link /nologo /DLL /MACHINE:X86 /BASE:0x10000000 /DEBUG /OPT:REF /OPT:ICF ^
      /PDB:"%BIN%\BF2Audio.pdb" ^
      /IMPLIB:"%OUT%\BF2Audio.lib" ^
      /MAP:"%OUT%\BF2Audio.map" ^
-     "%OUT%\*.obj" %MEMORY_LIB% %VORBIS_LIBS% kernel32.lib user32.lib dsound.lib > "%OUT%\link.log" 2>&1
+     "%OUT%\*.obj" %VORBIS_LIBS% kernel32.lib user32.lib dsound.lib > "%OUT%\link.log" 2>&1
 if errorlevel 1 (
     echo   LINK FAILED - see "%OUT%\link.log"
     type "%OUT%\link.log"
@@ -238,43 +213,15 @@ if not errorlevel 1 (
     echo   imports:      OpenAL linked statically - the shipped image loads it by name
     set /a ABI_BAD+=1
 )
-if "%NATIVE%"=="1" (
-    findstr /i /c:"Memory.dll" /c:"msvcr71.dll" /c:"msvcp71.dll" "%OUT%\dependents.txt" >nul
-    if not errorlevel 1 (
-        echo   imports:      retail heap/CRT UNEXPECTED in native ABI
-        set /a ABI_BAD+=1
-    )
-    findstr /i /c:"VCRUNTIME140.dll" "%OUT%\dependents.txt" >nul
-    if errorlevel 1 (
-        echo   imports:      native shared VCRUNTIME140.dll MISSING
-        set /a ABI_BAD+=1
-    )
-) else (
-    findstr /i /c:"Memory.dll" "%OUT%\dependents.txt" >nul
-    if errorlevel 1 (
-        echo   imports:      Memory.dll MISSING in retail ABI
-        set /a ABI_BAD+=1
-    )
-    findstr /l /c:"?bf_malloc@memory@hfe@dice@@YAPAXIH@Z" "%OUT%\imports.txt" >nul
-    if errorlevel 1 (
-        echo   imports:      bf_malloc mangled name MISSING
-        set /a ABI_BAD+=1
-    )
-    findstr /l /c:"?bf_free@memory@hfe@dice@@YAXPAX@Z" "%OUT%\imports.txt" >nul
-    if errorlevel 1 (
-        echo   imports:      bf_free mangled name MISSING
-        set /a ABI_BAD+=1
-    )
-    findstr /l /c:"?addMemoryName@memory@hfe@dice@@YAHPBD@Z" "%OUT%\imports.txt" >nul
-    if errorlevel 1 (
-        echo   imports:      addMemoryName mangled name MISSING
-        set /a ABI_BAD+=1
-    )
-    findstr /i /c:"VCRUNTIME140.dll" /c:"api-ms-win-crt-" /c:"ucrtbase.dll" "%OUT%\dependents.txt" >nul
-    if not errorlevel 1 (
-        echo   imports:      shared native CRT UNEXPECTED in retail /MT ABI
-        set /a ABI_BAD+=1
-    )
+findstr /i /c:"Memory.dll" /c:"msvcr71.dll" /c:"msvcp71.dll" "%OUT%\dependents.txt" >nul
+if not errorlevel 1 (
+    echo   imports:      retail heap/CRT UNEXPECTED in native ABI
+    set /a ABI_BAD+=1
+)
+findstr /i /c:"VCRUNTIME140.dll" "%OUT%\dependents.txt" >nul
+if errorlevel 1 (
+    echo   imports:      native shared VCRUNTIME140.dll MISSING
+    set /a ABI_BAD+=1
 )
 if not "!ABI_BAD!"=="0" (
     echo   ABI CHECK FAILED - !ABI_BAD! invariant^(s^) violated
@@ -286,3 +233,7 @@ echo.
 echo   built: %BIN%\BF2Audio.dll
 echo   NOTE: this is NOT installed anywhere. See docs\building.md before using this DLL with a client.
 exit /b 0
+
+:usage
+echo Usage: bf2audio.cmd [native]
+exit /b 2

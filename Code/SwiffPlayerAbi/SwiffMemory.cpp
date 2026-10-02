@@ -1,6 +1,5 @@
-// [CHOSEN, not recovered] gameswf allocation adapters using the engine heap.
-// Host-facing strings use the separate MSVC runtime heap. Reallocation allocates, copies min(old,new)
-// and frees because the imported engine interface supplies no realloc.
+// [CHOSEN, not recovered] gameswf allocation adapters using the shared native CRT.
+// Reallocation preserves the existing allocate, copy min(old,new), and free sequence.
 
 #include "../RendDX9Abi/BfMemory.h"
 #include "../RendDX9Abi/Frontier.h"
@@ -13,9 +12,6 @@ namespace mem {
 
 void* tuMalloc(unsigned int size)
 {
-    // engineAlloc -> bf_malloc(size, g_memoryNameId). The bucket id is the "externDll" tag
-    // registered by initDll (SwiffPlayerAbi/PluginEntry.cpp); until then it is 0, exactly as the
-    // shipped image's static-initialiser allocations land in bucket 0 before initDll runs.
     return ::renddx9abi::engineAlloc(size ? size : 1u);
 }
 

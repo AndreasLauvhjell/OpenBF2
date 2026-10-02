@@ -69,8 +69,8 @@ struct HemiRenderState
 // (quality-count - 1). Held per-mode and, parallel to the AA string list, inside VideoOptions.
 typedef renddx9abi::DisplayModeMultiSample MultiSample8;
 
-// Clear an engine-heap vc71::vector_layout: destroy each element, free the buffer (the buffer is on
-// the Memory.dll heap via operator new, so operator delete returns it there), null the triple.
+// Clears an owned fixed-layout vector: destroy each element, release its operator-new buffer
+// through the shared native CRT, and null the pointer triple.
 template <typename T>
 inline void vectorClear(vc71::vector_layout* v)
 {

@@ -13,9 +13,32 @@ the retail client supports a dedicated mode, so a runtime branch cannot automati
 replaced by conditional compilation.
 
 The client uses separate renderer (`RendDX9`), sound (`BF2Audio`), movie (`SwiffPlayer`),
-and Python (`dice_py`) components. Plugin builds may target either the retail ABI or the
-rebuilt host's native ABI. Match the plugin flavor to the host; matching filenames alone
-does not make their C++ layouts compatible. The AI side-DLL has its own manifest and build target.
+and Python (`dice_py`) components. Rebuilt renderer, sound, and movie plugins target the
+rebuilt host's native ABI and share its dynamic CRT and release STL layout. Mixing these
+plugins with the retail executable, or retail engine plugins with the rebuilt executable,
+is unsupported. The AI side-DLL has its own manifest and build target.
+
+This is an intentional policy change under [issue #7](https://github.com/B2BF/OpenBF2/issues/7),
+`[CHOSEN, not recovered]`. Gameplay compatibility with retail clients and existing content
+remains a requirement. The first removal pass retires compatibility plugin builds and
+the `Memory.dll`/MSVCR71 heap adapters, and stages a rebuilt TextureAtlasBuilder with the
+client. TextureAtlasBuilder retains its static CRT and legacy float formatting because
+those choices preserve `.tai` output, independently of executable compatibility.
+
+The cleanup is staged. Renderer-internal `vc71::*` containers, fixed-offset consumers,
+factory calling-convention thunks, and legacy declarations used by shared code and reference
+fixtures remain until their callers can be migrated together. `BF2_PLUGIN_ABI_NATIVE=0`
+is rejected for renderer, movie, and audio plugin images; its remaining uses do not provide
+a supported retail plugin build. Dedicated/non-x86 alternatives and unresolved native
+frontiers retain their existing behavior.
+
+SwiffPlayer's wrapper now contains only its native host paths; the retail-host conditional
+arms have been removed under the same issue. The native ActionScript callback whitelist and
+the `swiff-native-as-host` and `swiff-host-bodies` frontiers remain, along with the RW-88
+callback/tracing, RW-89 crash-tracing, and RW-49 module-consolidation boundaries. The documented
+`voipStopTest` report-and-continue exception is preserved. Its internal `vc71::*` strings, player-stat
+records, and queued-mouse storage still have live consumers and remain for a later migration.
+This removal does not change movie formats, callback behavior, or host interface layouts.
 
 ## Source map
 
@@ -68,6 +91,71 @@ Shutdown includes game unloading, owner and reference release, listener shutdown
 receive-thread completion. A successful startup test therefore also checks clean shutdown,
 immediate port reuse, and reload. Record the configuration and paths exercised with every
 test result; the presence of these methods does not establish runtime coverage.
+
+## Client menu disconnect
+
+The stock `mainMenu.swf` disconnect page queues `dice.bf2.Logic.disconnectGame`
+through its UpdateManager, then polls `Logic.isGameRunning` while displaying the
+disconnect modal. A missing native callback leaves the game running and the page
+waiting indefinitely. `SwiffPlayer.cpp` registers the callback in the rebuilt plugin.
+It requests shutdown on the player's host while the separately looked-up registry
+host owns the busy cursor. The registry host may be absent; the player and its host
+are required. Arguments are ignored and the ActionScript result is left untouched.
+
+This bridge follows the original x86 BF2 1.50 `SwiffPlayer.dll` (MD5
+`b4ef39939007a555f23829824c021e35`): registration at `0x1004DFC3` binds the
+callback at `0x1004CB10`; `0x10013520` establishes the cursor/busy scope. The callback
+invokes host slot `+0xB4`. In BF2.exe, `SwiffHost::requestShutdownGame` at `0x491860`
+queues event 17, and `BF2Engine::renderMenu` at `0x40BD10` consumes it through
+`shutdownGame(false)`. `SwiffHost::isGameRunning` at `0x486C90` reports whether
+the global game still exists. The movie clears its modal after that becomes false.
+The movie library is client-only; there is no dedicated-server ELF counterpart to
+this callback. No host layout, event ID, or network protocol changes are needed.
+
+`Code/Tests/swiff_disconnect_runtime.cmd` resolves the registered ActionScript
+member instead of calling `SwiffHost::requestShutdownGame` directly. It takes a
+fresh native plugin object directory and an isolated test output directory. The optional
+`native` argument remains accepted. Distinct registry and player hosts expose
+incorrect cursor ownership; the callback must preserve call order and the
+caller's result even when the host returns false. This boundary check does
+not establish joined-client teardown or reconnect stability. The existing
+`swiff-native-as-host`, `swiff-host-bodies`, and `RW-88` frontiers outside this
+callback remain subject to their existing recovery and validation requirements.
+
+## Object-owned sounds
+
+Weapon components request `Fire1P`, `Fire1P_Outdoor`, `Fire3P`, and their other
+samples through `SimpleObjectTemplate::createSoundFromTemplate`. The client factory
+looks up `S_<object-template-name>_<sound-name>` with sound class ID 9986001,
+requires an engine template and a nonempty filename, then passes that template and
+the owning object to `BfSound::createSound`. That facade assigns the sound's owner
+and obstruction evaluator. The same factory serves vehicle, projectile, soldier,
+and ambient object sounds.
+
+The original BF2 1.50 x86 BF2.exe client implementation is `0x624A20` (image MD5
+`4c843dcee79388341f72c3a7adb1ace6`); weapon initialization at `0x608920` calls it for
+all eleven weapon sound slots. Its four `impl()` calls and
+two filename reads are preserved, as are the runtime dedicated-mode and missing
+sound-facade guards. The symbolized dedicated ELF implementation at `0x081F2760`
+returns null without looking anything up. The shared source now selects that
+server implementation only for `DEDICATED=1`. Previously, the server body was also
+used in the client, leaving every weapon sound slot empty before firing reached
+the audio engine. This recovery changes no interface layout or sound-file format.
+
+`Code/Tests/weapon_sound_runtime.cmd <isolated-output-directory> client` checks the
+factory guards, owner forwarding, all eleven weapon sound slots, single and
+automatic third-person firing, stopping, and sound release. Run it again with a
+different output directory and `dedicated` to check the server's null factory.
+The fixture copies the selected production bodies verbatim under their real
+headers and compiles the actual weapon sound component; its surrounding observers
+provide no audio device or game world. `BF2_TEST_FACTORY_SOURCE` can select a
+pre-fix source snapshot to verify that the client regression fails before the fix.
+
+Factory and weapon-component checks establish sound creation and playback dispatch;
+they do not establish audible output from a live joined client. Device playback,
+first/third-person mixing, and repeated gameplay still need runtime validation.
+Existing `bfsound-debug-draw` frontiers and the opt-out `BF2AUDIO_NO_VORBIS` decoder
+frontiers are outside this factory and remain unchanged.
 
 ## Content and the console
 

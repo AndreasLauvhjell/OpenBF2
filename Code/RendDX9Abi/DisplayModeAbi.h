@@ -133,9 +133,8 @@ inline void* const* hostWindowLast(const HostDisplayMode& mode)
 #endif
 }
 
-// The three destination vectors contain only POD records.  Their buffers are renderer-owned and
-// therefore live on the plugin's operator-new heap (Memory.dll in retail mode, shared /MD CRT in
-// native mode), exactly like the original vector assignments.
+// The three destination vectors contain only POD records. Their buffers are renderer-owned
+// and use the plugin's operator-new heap, backed by the shared native CRT.
 template <typename T>
 inline void clearOwnedDisplayVector(vc71::vector_layout& dst)
 {

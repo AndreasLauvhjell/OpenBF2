@@ -9,8 +9,6 @@ if not exist "%BF2_BUILD_OUT%" mkdir "%BF2_BUILD_OUT%"
 call :build_and_run engine "/MD /DDEDICATED=0"
 if errorlevel 1 exit /b 1
 call :build_and_run renddx9_native "/MD /DDEDICATED=0 /DBF2_IMAGE_RENDDX9 /DBF2_PLUGIN_ABI_NATIVE=1 /D_ITERATOR_DEBUG_LEVEL=0"
-if errorlevel 1 exit /b 1
-call :build_and_run renddx9_compat "/MT /DDEDICATED=0 /DBF2_IMAGE_RENDDX9 /DBF2_PLUGIN_ABI_NATIVE=0"
 exit /b %errorlevel%
 
 :build_and_run

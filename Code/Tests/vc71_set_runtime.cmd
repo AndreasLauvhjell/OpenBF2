@@ -7,8 +7,6 @@ if not defined BF2_BUILD_OUT set "BF2_BUILD_OUT=%~dp0..\Build\obj_vc71_set_runti
 if not exist "%BF2_BUILD_OUT%" mkdir "%BF2_BUILD_OUT%"
 
 call :build_and_run native "/MD /DBF2_PLUGIN_ABI_NATIVE=1 /D_ITERATOR_DEBUG_LEVEL=0"
-if errorlevel 1 exit /b 1
-call :build_and_run compatibility "/MT /DBF2_PLUGIN_ABI_NATIVE=0"
 exit /b %errorlevel%
 
 :build_and_run

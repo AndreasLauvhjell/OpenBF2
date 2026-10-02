@@ -10,59 +10,48 @@ rem                                        the undergrowth rebuild) call through
 rem   Code\Build\textureatlas_diff.cmd    the parity harness (retail vs rebuilt)
 rem
 rem IT NEVER WRITES INTO THE GAME DIRECTORY. Output goes to
-rem   Code\Build\bin_textureatlasbuilder\ (compatible) or bin_textureatlasbuilder_native\ (native).
+rem   Code\Build\bin_textureatlasbuilder_native\.
 rem   The shipped TextureAtlasBuilder.dll in the reference game directory is the REFERENCE BINARY.
 rem   Sources: Code\BF2\RendDX9\TextureAtlas\TextureAtlasBuilder\ (every TU is guarded by
 rem   BF2_IMAGE_TEXTUREATLASBUILDER and compiles to nothing anywhere else).
 rem
-rem   usage:  textureatlasbuilder.cmd          VC7.1-compatible heap (Memory.dll bf_malloc/bf_free)
-rem           textureatlasbuilder.cmd native   no Memory.dll (the CRT heap)
-rem   Both modes accept BF2_TEXTUREATLAS_OUT and BF2_TEXTUREATLAS_BIN overrides (agent isolation).
+rem   usage:  textureatlasbuilder.cmd [native]   CRT heap, no Memory.dll
+rem   BF2_TEXTUREATLAS_OUT and BF2_TEXTUREATLAS_BIN override the output paths.
+rem [CHOSEN, not recovered] Native-only builds: https://github.com/B2BF/OpenBF2/issues/7
 rem
-rem BOTH FLAVOURS LINK THE CRT AND THE STL STATICALLY (/MT) - deliberately, unlike the native flavour
-rem of the plugin DLLs and unlike the shipped image (it imports MSVCR71.dll / MSVCP71.dll, the VC7.1
+rem This DLL links the CRT and STL statically (/MT), unlike the other rebuilt plugin DLLs
+rem and the shipped image (it imports MSVCR71.dll / MSVCP71.dll, the VC7.1
 rem runtime). Nothing on this DLL's interface crosses a heap or a CRT (the callbacks' string
 rem is read only by a host that loaded this exact image), so sharing the host's /MD runtime buys
 rem nothing - and it would cost byte parity: the .tai writer formats its floats with
 rem ostream::operator<<(float), and under /MD that formatting runs inside msvcp140.dll with the UCRT's
 rem round-half-even, while VC7.1 rounded an exact decimal tie UP ("0.000976563" in the stock
 rem MemeAtlas.tai). legacy_stdio_float_rounding.obj restores the old rounding only for stdio linked
-rem into THIS image. So the flavours differ only in the heap: the compatible one routes operator new
-rem to Memory.dll exactly as the shipped image (bucket 0), the native one uses the static CRT heap.
+rem into THIS image. Allocations stay on this DLL's static CRT heap.
 rem
 rem VALIDATE THE DLL'S FILES ONLY WITH THIS SCRIPT, RUN VIA THE PowerShell TOOL (Git-Bash `cmd /c`
 rem returns 0 without building). Failures leave through :fail - an `exit /b 1` inside a block reaches
 rem a `cmd /c` caller as 0.
 rem ===========================================================================
-call "%~dp0vsdevcmd.cmd" x86
-if errorlevel 1 goto :fail
+if not "%~2"=="" goto :usage
 if "%~1"=="" goto :args_ok
 if /i "%~1"=="native" goto :args_ok
-echo Usage: textureatlasbuilder.cmd [native]
-exit /b 2
+goto :usage
 :args_ok
+call "%~dp0vsdevcmd.cmd" x86
+if errorlevel 1 goto :fail
 
 for %%I in ("%~dp0..") do set CODE=%%~fI
 set ABI=%CODE%\RendDX9Abi
 set BF2=%CODE%\BF2
 set SRC=%CODE%\BF2\RendDX9\TextureAtlas\TextureAtlasBuilder
-set NATIVE=0
-if /i "%~1"=="native" set NATIVE=1
-set OUT=%~dp0obj_textureatlasbuilder
-set BIN=%~dp0bin_textureatlasbuilder
-set HEAP=/DBF2_PLUGIN_ABI_NATIVE=0
-if "%NATIVE%"=="1" (
-    set OUT=%~dp0obj_textureatlasbuilder_native
-    set BIN=%~dp0bin_textureatlasbuilder_native
-    set HEAP=
-)
-rem Apply overrides AFTER choosing the flavour; neither mode may discard an isolated path.
+set OUT=%~dp0obj_textureatlasbuilder_native
+set BIN=%~dp0bin_textureatlasbuilder_native
+rem Preserve agent/CI output isolation.
 if defined BF2_TEXTUREATLAS_OUT set "OUT=%BF2_TEXTUREATLAS_OUT%"
 if defined BF2_TEXTUREATLAS_BIN set "BIN=%BF2_TEXTUREATLAS_BIN%"
 for %%I in ("%OUT%") do set "OUT=%%~fI"
 for %%I in ("%BIN%") do set "BIN=%%~fI"
-set MEMORY_LIB="%OUT%\Memory.lib"
-if "%NATIVE%"=="1" set MEMORY_LIB=
 
 rem The exact SDK generation the shipped image was built with (D3DX_SDK_VERSION 25 = April 2005):
 rem its d3dx9.lib names d3dx9_25.dll, and its DxErr9.lib is the very DXGetErrorString9A the shipped
@@ -93,7 +82,7 @@ if defined DXSDK_2005_ROOT if exist "%DXSDK_2005_ROOT%\Lib\x86\DxErr9.lib" (
     set DXERR_STANDIN=0
 )
 
-rem /MT                       - the static CRT and STL, both flavours (see the header).
+rem /MT                       - the static CRT and STL (see the header).
 rem /DBF2_IMAGE_TEXTUREATLASBUILDER - admits the TUs (they compile to nothing without it) and makes
 rem                             ITextureAtlas.h dllexport.
 rem /DDEDICATED=0 + /FI Core\BuildConfig.h - the IMAGE define; this DLL belongs to the client side
@@ -101,10 +90,10 @@ rem                            .
 rem /DNDEBUG                  - the shipped image is a release build: no asserts.
 rem No /Gr: the conventions the ABI needs are spelled out in ITextureAtlas.h.
 set FLAGS=/nologo /c /MT /O2 /std:c++14 /permissive /EHsc /W4 /wd4100 /wd4127 /Zi /FS ^
- /DBF2_IMAGE_TEXTUREATLASBUILDER %HEAP% /DDEDICATED=0 /FI"%BF2%\Core\BuildConfig.h" /DWIN32 /D_WINDOWS /DNDEBUG /D_CRT_SECURE_NO_WARNINGS /D_CRT_NONSTDC_NO_DEPRECATE ^
+ /DBF2_IMAGE_TEXTUREATLASBUILDER /DDEDICATED=0 /FI"%BF2%\Core\BuildConfig.h" /DWIN32 /D_WINDOWS /DNDEBUG /D_CRT_SECURE_NO_WARNINGS /D_CRT_NONSTDC_NO_DEPRECATE ^
  /Fd"%OUT%\TextureAtlasBuilder.pdb"
 
-echo   NATIVE=%NATIVE%  (both flavours /MT)
+echo   Native atlas heap, CRT=/MT
 echo   CODE=%CODE%
 echo   OUT=%OUT%
 echo   BIN=%BIN%
@@ -118,16 +107,11 @@ del /q "%OUT%\*.obj" >nul 2>&1
 del /q "%OUT%\*.log" >nul 2>&1
 
 rem ---------------------------------------------------------------------------
-rem STEP 1 - import libraries: Memory.dll (compatible flavour; the shipped image imports bf_malloc,
-rem bf_free and addMemoryName - RendDX9Abi\Memory.def's three) and, without the SDK, d3dx9_25.dll.
+rem STEP 1 - import library for d3dx9_25.dll when the matching SDK is absent.
 rem ---------------------------------------------------------------------------
 echo [1/4] import libraries
 type nul > "%OUT%\lib.log"
 set LIB_BAD=0
-if "%NATIVE%"=="0" (
-    lib /nologo /def:"%ABI%\Memory.def" /machine:x86 /out:"%OUT%\Memory.lib" >>"%OUT%\lib.log" 2>&1
-    if errorlevel 1 set LIB_BAD=1
-)
 if not defined DXSDK_2005_ROOT (
     lib /nologo /def:"%ABI%\D3dx9_25.def" /machine:x86 /out:"%D3DX25_LIB%" >>"%OUT%\lib.log" 2>&1
     if errorlevel 1 set LIB_BAD=1
@@ -142,8 +126,6 @@ rem ---------------------------------------------------------------------------
 rem STEP 2 - compile. Explicit manifest, numbered objects (flat output dir), in the shipped image's
 rem link order: the format helpers (0x10001000), the packer (0x10001E60), the atlas base (0x10002210),
 rem DllMain (0x10007450), the configuration base (0x10007460), the D3D9 leaves (0x10008220).
-rem The compatible flavour adds RendDX9Abi\BfMemory.cpp (operator new/delete -> Memory.dll, bucket 0:
-rem the shipped image never names its bucket).
 rem ---------------------------------------------------------------------------
 echo [2/4] compiling
 set SOURCES=^
@@ -153,7 +135,6 @@ set SOURCES=^
  "%SRC%\DllMain.cpp" ^
  "%SRC%\TextureAtlasConfiguration.cpp" ^
  "%SRC%\TextureAtlasD3D9.cpp"
-if "%NATIVE%"=="0" set SOURCES=!SOURCES! "%ABI%\BfMemory.cpp"
 if "%DXERR_STANDIN%"=="1" set SOURCES=!SOURCES! "%SRC%\DxErr9StandIn.cpp"
 
 set OK=0
@@ -186,7 +167,7 @@ link /nologo /DLL /MACHINE:X86 /BASE:0x10000000 /DEBUG /OPT:REF /OPT:ICF ^
      /PDB:"%BIN%\TextureAtlasBuilder.pdb" ^
      /IMPLIB:"%OUT%\TextureAtlasBuilder.lib" ^
      /MAP:"%OUT%\TextureAtlasBuilder.map" ^
-     "%OUT%\*.obj" legacy_stdio_float_rounding.obj %MEMORY_LIB% "%D3DX25_LIB%" %DXERR_LIBS% kernel32.lib > "%OUT%\link.log" 2>&1
+     "%OUT%\*.obj" legacy_stdio_float_rounding.obj "%D3DX25_LIB%" %DXERR_LIBS% kernel32.lib > "%OUT%\link.log" 2>&1
 if not errorlevel 1 goto :link_ok
 echo   LINK FAILED - see "%OUT%\link.log"
 type "%OUT%\link.log"
@@ -250,31 +231,13 @@ if not errorlevel 1 (
 )
 findstr /i /c:"VCRUNTIME" /c:"api-ms-win-crt-" /c:"ucrtbase.dll" /c:"MSVCP" /c:"msvcr71.dll" "%OUT%\dependents.txt" >nul
 if not errorlevel 1 (
-    echo   imports:      a shared CRT UNEXPECTED - both flavours link the CRT statically
+    echo   imports:      a shared CRT UNEXPECTED - this DLL links the CRT statically
     set /a ABI_BAD+=1
 )
-if "%NATIVE%"=="1" (
-    findstr /i /c:"Memory.dll" "%OUT%\dependents.txt" >nul
-    if not errorlevel 1 (
-        echo   imports:      Memory.dll UNEXPECTED in the native flavour
-        set /a ABI_BAD+=1
-    )
-) else (
-    findstr /i /c:"Memory.dll" "%OUT%\dependents.txt" >nul
-    if errorlevel 1 (
-        echo   imports:      Memory.dll MISSING in the compatible flavour
-        set /a ABI_BAD+=1
-    )
-    findstr /l /c:"?bf_malloc@memory@hfe@dice@@YAPAXIH@Z" "%OUT%\imports.txt" >nul
-    if errorlevel 1 (
-        echo   imports:      bf_malloc mangled name MISSING
-        set /a ABI_BAD+=1
-    )
-    findstr /l /c:"?bf_free@memory@hfe@dice@@YAXPAX@Z" "%OUT%\imports.txt" >nul
-    if errorlevel 1 (
-        echo   imports:      bf_free mangled name MISSING
-        set /a ABI_BAD+=1
-    )
+findstr /i /c:"Memory.dll" "%OUT%\dependents.txt" >nul
+if not errorlevel 1 (
+    echo   imports:      Memory.dll UNEXPECTED in the native atlas
+    set /a ABI_BAD+=1
 )
 for %%D in (D3DXCreateTexture D3DXCreateTextureFromFileExA D3DXGetImageInfoFromFileA D3DXLoadSurfaceFromSurface D3DXSaveTextureToFileA) do (
     findstr /l /e /c:" %%D" "%OUT%\imports.txt" >nul
@@ -288,8 +251,7 @@ echo   twelve exports at the shipped ordinals; d3dx9_25 by name; heap/CRT import
 
 echo.
 echo   built: %BIN%\TextureAtlasBuilder.dll
-echo   NOTE: this is NOT installed anywhere. RendDX9.dll (retail or rebuilt) resolves its static import
-echo         from the process's search path - the game directory ships the retail image.
+echo   NOTE: this is NOT installed anywhere. Stage it beside the rebuilt RendDX9.dll.
 exit /b 0
 
 :abi_fail
@@ -297,3 +259,7 @@ echo   ABI CHECK FAILED - !ABI_BAD! invariant(s) violated
 :fail
 echo   textureatlasbuilder.cmd FAILED
 exit /b 1
+
+:usage
+echo Usage: textureatlasbuilder.cmd [native]
+exit /b 2

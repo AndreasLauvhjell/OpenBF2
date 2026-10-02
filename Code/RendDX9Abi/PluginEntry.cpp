@@ -2,8 +2,6 @@
 
 #include "PluginEntry.h"
 #include "PluginModules.h"
-#include "BfMemory.h"
-#include "Msvcr71Heap.h"
 #include "Frontier.h"
 
 #include <cassert>
@@ -78,10 +76,6 @@ int getNoModules()
 
 extern "C" bool initDll(IClassManager* pClsMgr)
 {
-    // sub_1005F300("renderer") - the first statement, ahead of the assert. See BfMemory.h. This is
-    // RendDX9's own line; the AI pair's initDll does not have it.
-    renddx9abi::memoryName("renderer");
-
     // Ours, not dice's: open the instrument before anything can trip over. A replacement DLL that
     // dies without saying where is worth nothing, and this is the earliest point at which the log
     // can exist.
@@ -92,18 +86,6 @@ extern "C" bool initDll(IClassManager* pClsMgr)
     // Ours too, and for the same reason: BF2's own handler and the WER minidump both arrive after
     // the stack that explains the fault has been overwritten. See CrashReport.cpp. Report-only.
     renddx9abi::installCrashReporter();
-
-    // the CRT-heap check is ours and it is not optional in the retail-compatible flavour. Every
-    // registration name longer than 15 characters is heap-allocated by vc71::string and later
-    // freed by MSVCP71 inside BF2.exe. If msvcr71.dll could not be found, those frees would go to
-    // the wrong heap - so refuse to register anything rather than corrupt the host. Native mode's
-    // crtHeapAvailable() is true because both images use the shared /MD CRT.
-    if (!renddx9abi::crtHeapAvailable())
-    {
-        renddx9abi::logf("initDll: msvcr71.dll malloc/free could not be resolved. The string ABI "
-                         "cannot be honoured; refusing to register. Returning false.");
-        return false;
-    }
 
     // Requires the host class-manager pointer before any registration or lookup.
     assert(pClsMgr);

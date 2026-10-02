@@ -1,12 +1,10 @@
-// [PLATFORM] SwiffPlayer host handshake using HostString for the selected host ABI.
-// Registers the externDll memory bucket before assertions, then acquires services in shipped order.
+// SwiffPlayer host handshake using the rebuilt host's native HostString.
+// Acquires services in shipped order using the rebuilt host's native ABI.
 // Registers its one module before initializing it. LoadStat, Game and AIConnection are optional
 // members of the shared service lookup sequence; diagnostics use this image's configuration.
 // [RETIRE-WHEN: RW-49] Consolidate with the shared DllModule when per-image ABI types are supported.
 
 #include "../RendDX9Abi/HfeAbi.h"
-#include "../RendDX9Abi/BfMemory.h"
-#include "../RendDX9Abi/Msvcr71Heap.h"
 #include "../RendDX9Abi/Frontier.h"
 
 #include <cassert>
@@ -65,25 +63,10 @@ int getNoModules()
 
 extern "C" bool initDll(IClassManager* pClsMgr)
 {
-    // sub_1006DB40("externDll") - the first statement, ahead of the assert. Names this image's
-    // Memory.dll bucket. See RendDX9Abi/BfMemory.h; the tag differs, the mechanism does not.
-    renddx9abi::memoryName("externDll");
-
     // Ours, not dice's: open the instrument before anything can trip over.
     renddx9abi::logOpen();
     renddx9abi::logf("initDll(classManager=0x%08X) - replacement SwiffPlayer",
                      renddx9abi::addr(pClsMgr));
-
-    // the CRT-heap check is ours and not optional for the retail flavour. Native
-    // mode uses the shared /MD CRT, as selected by Msvcr71Heap.cpp. Retail names longer than 15 chars are
-    // heap-allocated by vc71::string and later freed by MSVCP71 inside BF2.exe. If msvcr71.dll could
-    // not be found those frees would go to the wrong heap - so refuse rather than corrupt the host.
-    if (!renddx9abi::crtHeapAvailable())
-    {
-        renddx9abi::logf("initDll: msvcr71.dll malloc/free could not be resolved. The string ABI "
-                         "cannot be honoured; refusing to register. Returning false.");
-        return false;
-    }
 
     // attested line - Code/BF2/Core/DllModule.cpp:72. The stringised expression is the bare pointer,
     // so dice wrote assert(pClsMgr).

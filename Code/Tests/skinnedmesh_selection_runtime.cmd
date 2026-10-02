@@ -1,15 +1,16 @@
 @echo off
 setlocal
 rem [TEMP] Actual x86 SkinnedMesh selection fixture; no original DLL or game is loaded.
-rem BF2_TEST_ABI_NATIVE=0 checks the compatibility ABI with the same isolated CRT heap.
+rem Uses the native plugin ABI with an isolated CRT heap.
 rem BF2_TEST_SOURCE_FLAGS can define BF2_SKINNEDMESH_SOURCE to a saved source snapshot.
 rem All links are strict: no /FORCE and no replaced SkinnedMesh implementation or vtable.
+if defined BF2_TEST_ABI_NATIVE if not "%BF2_TEST_ABI_NATIVE%"=="1" (echo Only the native plugin ABI is supported.& exit /b 2)
 call "%~dp0..\Build\vsdevcmd.cmd" x86
+if errorlevel 1 exit /b 1
 set "TASK_ROOT=%~dp0.."
 if not defined BF2_BUILD_OUT set "BF2_BUILD_OUT=%~dp0..\Build\zero_radius_20260922\tests"
 if not exist "%BF2_BUILD_OUT%" mkdir "%BF2_BUILD_OUT%"
-if not defined BF2_TEST_ABI_NATIVE set "BF2_TEST_ABI_NATIVE=1"
-set "TASK_FLAGS=/nologo /c /MD /std:c++14 /permissive /EHsc /Od /Z7 /Gy /Gw /DBF2_IMAGE_RENDDX9 /DBF2_PLUGIN_ABI_NATIVE=%BF2_TEST_ABI_NATIVE% /D_ITERATOR_DEBUG_LEVEL=0 /DDEDICATED=0 /DWIN32 /D_WINDOWS /D_CRT_SECURE_NO_WARNINGS"
+set "TASK_FLAGS=/nologo /c /MD /std:c++14 /permissive /EHsc /Od /Z7 /Gy /Gw /DBF2_IMAGE_RENDDX9 /DBF2_PLUGIN_ABI_NATIVE=1 /D_ITERATOR_DEBUG_LEVEL=0 /DDEDICATED=0 /DWIN32 /D_WINDOWS /D_CRT_SECURE_NO_WARNINGS"
 cl %TASK_FLAGS% %BF2_TEST_SOURCE_FLAGS% /I"%TASK_ROOT%\BF2\Geom" /FI"%TASK_ROOT%\BF2\Core\BuildConfig.h" "%~dp0skinnedmesh_selection_runtime.cpp" /Fo"%BF2_BUILD_OUT%\fixture.obj"
 if errorlevel 1 exit /b 1
 for %%F in (Vc71String) do (

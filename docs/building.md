@@ -115,8 +115,8 @@ cmake --build out/build/local-x86 --target bf2_client
 cmake --build out/build/local-x86 --target bf2_client_linkcheck
 ```
 
-`bf2_client` rebuilds and stages native `RendDX9.dll`, `SwiffPlayer.dll`, and
-`BF2Audio.dll` beside `BF2.exe`. `bf2_client_linkcheck` is the strict companion link;
+`bf2_client` rebuilds and stages `RendDX9.dll`, `SwiffPlayer.dll`, `BF2Audio.dll`, and
+`TextureAtlasBuilder.dll` beside `BF2.exe`. `bf2_client_linkcheck` is the strict companion link;
 unresolved symbols make it fail and identify remaining work. The main client target's
 `/FORCE` output does not imply that the strict companion passes.
 
@@ -125,26 +125,26 @@ The client plugin steps currently share `Code/Build/obj_*_native` and
 paths are fixed, so redirecting a plugin's `BIN` environment variable during a CMake
 client build would make it stage from the wrong location.
 
-Standalone plugin scripts accept either no argument or `native`. Both flavors are x86:
-
-| Flavor | Host | Runtime convention |
-| --- | --- | --- |
-| No argument: compatibility | Original x86 client ABI | VC7.1 compatibility adapters and `Memory.dll` allocation |
-| `native` | Rebuilt x86 client | Current host ABI; renderer, movie, and audio DLLs share the dynamic CRT |
+Standalone plugin scripts build only for the rebuilt x86 client. No argument and the
+optional `native` argument select the same build; other arguments are rejected.
+Renderer, movie, and audio DLLs share the host's dynamic CRT and require
+`_ITERATOR_DEBUG_LEVEL=0`. Retail executable/DLL swapping is retired under
+[issue #7](https://github.com/B2BF/OpenBF2/issues/7). Gameplay and content compatibility
+remain requirements.
 
 For example, from PowerShell:
 
 ```powershell
-cmd /c Code\Build\renddx9.cmd native
-cmd /c Code\Build\swiffplayer.cmd native
-cmd /c Code\Build\bf2audio.cmd native
-cmd /c Code\Build\textureatlasbuilder.cmd native
+cmd /c Code\Build\renddx9.cmd
+cmd /c Code\Build\swiffplayer.cmd
+cmd /c Code\Build\bf2audio.cmd
+cmd /c Code\Build\textureatlasbuilder.cmd
 ```
 
-Omit `native` to build the corresponding compatibility flavor. Default DLL directories
-are `Code/Build/bin_renddx9`, `bin_swiffplayer`, `bin_bf2audio`, and
-`bin_textureatlasbuilder`; native builds add `_native` to each name. Object directories
-use `obj_` instead of `bin_`. Standalone builds support these isolation overrides:
+Default DLL directories remain `Code/Build/bin_renddx9_native`,
+`bin_swiffplayer_native`, `bin_bf2audio_native`, and `bin_textureatlasbuilder_native`.
+Object directories use `obj_` instead of `bin_`. Existing compatibility outputs are
+not selected or removed by these scripts. Standalone builds support these isolation overrides:
 
 | Script | Object directory | DLL directory |
 | --- | --- | --- |
@@ -153,17 +153,32 @@ use `obj_` instead of `bin_`. Standalone builds support these isolation override
 | `bf2audio.cmd` | `BF2_BF2AUDIO_OUT` | `BF2_BF2AUDIO_BIN` |
 | `textureatlasbuilder.cmd` | `BF2_TEXTUREATLAS_OUT` | `BF2_TEXTUREATLAS_BIN` |
 
-TextureAtlasBuilder uses a static CRT in both flavors; its flavor changes heap routing.
+TextureAtlasBuilder uses its own static CRT and legacy float rounding to preserve `.tai`
+output. It does not transfer ownership of CRT allocations across the DLL boundary;
+callback string references are borrowed. The rebuilt plugins
+do not depend on `Memory.dll`, `msvcr71.dll`, or `msvcp71.dll`.
 The renderer and atlas scripts can use the April 2005 DirectX SDK (D3DX version 25)
 through `DXSDK_DIR`; they also have a no-SDK import-library fallback. The runtime still
 needs the matching `d3dx9_25.dll`. Client runtime dependencies also include the game's
 Bink and Novint components, TextureAtlasBuilder, and an OpenAL provider for audio.
 The audio build uses vendored Ogg/Vorbis by default; setting `BF2AUDIO_NO_VORBIS` omits it.
 
-The CMake client target always stages its three native plugins. It also stages Python
-and `NovintHFX.dll` when present at configuration time. It does not build or stage TextureAtlasBuilder.
-Keep any replacement DLL testing in a separate runtime directory, preserve the original
-images, and match every plugin's ABI to its host.
+The CMake client target stages all four rebuilt DLLs above. It also stages Python
+and `NovintHFX.dll` when present at configuration time. Keep runtime testing in a separate
+directory and preserve the original images as references. Original-binary differential
+fixtures are isolated validation tools, not a supported retail plugin build.
+
+Native-capable renderer and plugin fixtures now select only the rebuilt ABI. The old
+`light_manager_runtime.cmd`, `light_manager_shadowmaps_runtime.cmd`,
+`swiffplayer_host/build.cmd`, and `bf2audio_diff.cmd` entrypoints return an explicit
+retirement diagnostic because their observers assume a retail host. Their fixture
+sources remain available for a future native port. Use native focused fixtures,
+`renddx9_host/build.cmd`, `swiff_disconnect_runtime.cmd`, and `bf2audio_smoke.cmd`
+for the corresponding rebuilt boundaries; none establishes complete gameplay coverage.
+The renderer registration host currently reaches device-dependent LightManager
+construction without supplying a device. That fixture crashes with both the pre-removal
+and native-only DLLs; it is not a passing startup acceptance gate. Restore its required
+host services before using it to claim plugin initialization coverage.
 
 ## Editor
 

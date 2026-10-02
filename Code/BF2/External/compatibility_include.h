@@ -11,20 +11,17 @@
 //           you want something different" - this is that file.
 //
 // =================================================================================================
-// WHY THE ALLOCATOR ROUTES TO bf_malloc (evidence, not choice)
+// Allocator ownership
 //
 // Every gameswf allocation in the shipped SwiffPlayer.dll tail-calls sub_1006DB60, which is
 //     void* bf_malloc_wrapper(unsigned size) { return dice::hfe::memory::bf_malloc(size, g_nameId); }
 // and the frees go through sub_1006DBA0 / sub_1006DBB0 -> dice::hfe::memory::bf_free. The 16-byte
 // module, the 36-byte as_object, the 56-byte as_function, the 36-byte tu_file, the 1120-byte player
-// - all of them. So tu_malloc/tu_realloc/tu_free MUST land on the engine heap (Memory.dll), exactly
-// as they did in retail. See Code/BF2/External/gameswf/SwiffPlayer/SWIFFPLAYER_STATUS.md and
-// Code/RendDX9Abi/BfMemory.h (the two-heaps rule: engine heap here, MSVCP71's malloc for std::string
-// buffers - getting that backwards is silent corruption).
+// - all of them. The rebuilt plugin preserves paired allocation/free through these hooks, using
+// the shared native CRT in Code/RendDX9Abi/BfMemory.h.
 //
-// bf_malloc's second argument is a bucket id registered once by initDll via addMemoryName("externDll")
-// (the shipped memoryName tag). The shim reads it from a single module global the plugin entry fills;
-// until then (Stage 1 compile-only) it is an unresolved extern, which is fine under /c.
+// [CHOSEN, not recovered] Retail heap routing and named allocation buckets are retired under
+// https://github.com/B2BF/OpenBF2/issues/7. Host and plugin allocations now use the same /MD CRT.
 //
 // =================================================================================================
 // WHY THE FOUR LINK SWITCHES ARE 0

@@ -18,8 +18,7 @@ rem   rebuilt-only  run ONLY the rebuilt NATIVE flavour (no Memory.dll; d3dx9_25
 rem                 DirectX runtime in SysWOW64) - nothing from the game directory is loaded.
 rem
 rem   BF2_GAME_DIR                    the reference game directory (read only).
-rem   BF2_TEXTUREATLAS_BIN            the rebuilt DLL's directory (default bin_textureatlasbuilder,
-rem                                   or bin_textureatlasbuilder_native for rebuilt-only).
+rem   BF2_TEXTUREATLAS_BIN            the native rebuilt DLL's directory (default bin_textureatlasbuilder_native).
 rem   BF2_TEXTUREATLAS_DIFF_RETAIL=1  REQUIRED to run the retail DLL at all. Running the retail image
 rem                                   is the OWNER's decision (AGENTS.md): without this variable the
 rem                                   script refuses every mode except rebuilt-only.
@@ -55,8 +54,8 @@ echo   "textureatlas_diff.cmd %SCENARIO% %DEVICE% rebuilt-only" to exercise the 
 exit /b 2
 :mode_ok
 
-set BIN=%~dp0bin_textureatlasbuilder
-if "%ONLY_REBUILT%"=="1" set BIN=%~dp0bin_textureatlasbuilder_native
+rem The original DLL remains an isolated file-format reference, not a supported rebuilt ABI.
+set BIN=%~dp0bin_textureatlasbuilder_native
 if defined BF2_TEXTUREATLAS_BIN set "BIN=%BF2_TEXTUREATLAS_BIN%"
 if not exist "%BIN%\TextureAtlasBuilder.dll" (
     echo   no rebuilt DLL at "%BIN%" - run Code\Build\textureatlasbuilder.cmd first

@@ -1,13 +1,13 @@
 @echo off
 setlocal EnableDelayedExpansion
-rem [TEMP] strict x86 actual-source mesh-particle (type 1) fixture, BOTH plugin ABIs; no game or GPU.
+rem [TEMP] strict x86 actual-source mesh-particle (type 1) fixture, native plugin ABI; no game or GPU.
 rem 2026-09-26 (G1). The manager TU and the REAL type-1 descriptor TU (ParticleSystemTemplateType1.cpp)
 rem are linked; the descriptor's constructor and setters build the template the instance runs on.
 if not defined BF2_BUILD_OUT exit /b 2
 call "%~dp0..\Build\vsdevcmd.cmd" x86
 set "TASK_ROOT=%~dp0..\.."
 if not defined BF2_TEST_OPT set "BF2_TEST_OPT=/O2"
-for %%A in (1 0) do (
+for %%A in (1) do (
   set "OUT=%BF2_BUILD_OUT%\abi%%A"
   if not exist "!OUT!" mkdir "!OUT!"
   cl /nologo %BF2_TEST_OPT% /EHsc /std:c++14 /permissive /MD /Gy /Gw /Z7 ^
@@ -26,7 +26,7 @@ for %%A in (1 0) do (
   type "!OUT!\run.txt"
   if not "!RC!"=="0" (echo abi%%A run exited !RC! & goto :fail)
 )
-echo Mesh particle (type 1) fixture: both ABIs passed
+echo Mesh particle (type 1) fixture: native ABI passed
 exit /b 0
 
 rem !! Under `cmd /c`, an `exit /b 1` INSIDE a parenthesized block (or after `||` in a for body)

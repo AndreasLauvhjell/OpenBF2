@@ -282,12 +282,6 @@ void testEraseTopologiesAndClear()
 
 namespace renddx9abi {
 
-int g_memoryNameId;
-
-void memoryName(const char*)
-{
-}
-
 void* engineAlloc(unsigned int size)
 {
     if (failNextAllocation)

@@ -1,6 +1,6 @@
 // [CHOSEN, not recovered] Minimal DLL entry point.
-// Static initialization constructs the four modules before initDll assigns the renderer memory bucket,
-// so those allocations use bucket zero. Keep loader-lock-sensitive initialization out of DllMain.
+// Static initialization constructs the four modules using the shared native CRT.
+// Keep loader-lock-sensitive initialization out of DllMain.
 
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>

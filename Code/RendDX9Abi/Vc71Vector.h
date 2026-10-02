@@ -1,7 +1,7 @@
 // Non-owning VC7.1 vector view, [CHOSEN, not recovered] source.
 // The 16-byte layout has allocator padding followed by begin/end/capacity pointers at +4/+8/+12.
-// The host constructs and destroys the vector; this adapter may grow its buffer through Memory.dll
-// so the host can free it safely. Class and singleton registration elements occupy 36 and 44 bytes.
+// Retained fixed-layout users own the vector; this adapter grows its buffer through the shared
+// native CRT. Host registration uses native STL containers instead.
 
 #ifndef RENDDX9ABI_VC71VECTOR_H
 #define RENDDX9ABI_VC71VECTOR_H
@@ -74,9 +74,7 @@ private:
         if (newCap < required)
             newCap = required;
 
-        // `operator new`, not crtMalloc. A vector's buffer belongs to the Memory.dll heap - see
-        // the header note. Getting these two the wrong way round is the single most damaging
-        // mistake available in this file, and it would not fault until the host freed the block.
+        // Pair the vector buffer's operator new with operator delete below.
         char* buffer = static_cast<char*>(::operator new(newCap * sizeof(T)));
 
         T* src = reinterpret_cast<T*>(m_v->first);

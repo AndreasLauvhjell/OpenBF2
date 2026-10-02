@@ -8,7 +8,7 @@ rem   Code\Build\renddx9.cmd      the replacement RendDX9.dll (the sibling front
 rem   Code\Build\swiffplayer.cmd  THIS. The SWF menu player BF2.exe loads.
 rem
 rem IT NEVER WRITES INTO THE GAME DIRECTORY. Output goes to
-rem   Code\Build\bin_swiffplayer\ (retail) or bin_swiffplayer_native\ (native).
+rem   Code\Build\bin_swiffplayer_native\.
 rem   The shipped SwiffPlayer.dll at
 rem   "D:\B2BF Launcher\Battlefield2\SwiffPlayer.dll" is the REFERENCE BINARY.
 rem   Testing against the real client is a DELIBERATE, SEPARATE act - see
@@ -23,16 +23,14 @@ rem            shared RendDX9Abi kit, SwiffPlayerAbi (initDll/deinitDll + memory
 rem            and the wrapper (module, factory, the 1120-byte SwiffPlayer with a
 rem            shape-complete 37-slot vtable). Links to SwiffPlayer.dll.
 rem
-rem   usage:  swiffplayer.cmd          VC7.1-compatible ABI (/MT + Memory.dll)
-rem           swiffplayer.cmd native   native host ABI (/MD, no Memory.dll)
-rem   Both modes accept BF2_SWIFFPLAYER_OUT and BF2_SWIFFPLAYER_BIN overrides.
+rem   usage:  swiffplayer.cmd [native]   rebuilt host ABI (/MD, no Memory.dll)
+rem   BF2_SWIFFPLAYER_OUT and BF2_SWIFFPLAYER_BIN override the output paths.
+rem [CHOSEN, not recovered] Native-only builds: https://github.com/B2BF/OpenBF2/issues/7
 rem ===========================================================================
+if not "%~2"=="" goto :usage
+if not "%~1"=="" if /i not "%~1"=="native" goto :usage
 call "%~dp0vsdevcmd.cmd" x86
 if errorlevel 1 exit /b 1
-if not "%~1"=="" if /i not "%~1"=="native" (
-    echo Usage: swiffplayer.cmd [native]
-    exit /b 2
-)
 
 for %%I in ("%~dp0..") do set CODE=%%~fI
 set ABI=%CODE%\SwiffPlayerAbi
@@ -40,29 +38,17 @@ set RD9ABI=%CODE%\RendDX9Abi
 set BF2=%CODE%\BF2
 set EXT=%CODE%\BF2\External
 set SWF=%CODE%\BF2\External\gameswf\SwiffPlayer
-set NATIVE=0
-if /i "%~1"=="native" set NATIVE=1
-set OUT=%~dp0obj_swiffplayer
-set BIN=%~dp0bin_swiffplayer
-set CRT=/MT
-set PLUGIN_ABI=/DBF2_PLUGIN_ABI_NATIVE=0
-if "%NATIVE%"=="1" (
-    set OUT=%~dp0obj_swiffplayer_native
-    set BIN=%~dp0bin_swiffplayer_native
-    set CRT=/MD
-    set PLUGIN_ABI=/DBF2_PLUGIN_ABI_NATIVE=1 /D_ITERATOR_DEBUG_LEVEL=0
-)
-rem Apply overrides AFTER choosing the flavour; neither mode may discard an isolated path.
+set OUT=%~dp0obj_swiffplayer_native
+set BIN=%~dp0bin_swiffplayer_native
+set CRT=/MD
+set PLUGIN_ABI=/DBF2_PLUGIN_ABI_NATIVE=1 /D_ITERATOR_DEBUG_LEVEL=0
+rem Preserve agent/CI output isolation.
 if defined BF2_SWIFFPLAYER_OUT set "OUT=%BF2_SWIFFPLAYER_OUT%"
 if defined BF2_SWIFFPLAYER_BIN set "BIN=%BF2_SWIFFPLAYER_BIN%"
 for %%I in ("%OUT%") do set "OUT=%%~fI"
 for %%I in ("%BIN%") do set "BIN=%%~fI"
-set MEMORY_LIB="%OUT%\Memory.lib"
-if "%NATIVE%"=="1" set MEMORY_LIB=
 
-rem /MT              - a PRIVATE static CRT (the image reroutes gameswf's allocations to Memory.dll's
-rem                    heap; a shared CRT would leak that into code this build does not own).
-rem /MD (native)     - shares the rebuilt host's current CRT/STL; BfMemory and SwiffMemory route
+rem /MD              - shares the rebuilt host's current CRT/STL; BfMemory and SwiffMemory route
 rem                    allocations into that shared CRT without importing Memory.dll.
 rem /I "%EXT%"       - THE include root. Both gameswf and base include as "base/xxx.h", so External
 rem                    itself is the -I. Load-bearing; see Code/BF2/External/README.md.
@@ -84,7 +70,7 @@ set FLAGS=/nologo /c %CRT% /std:c++14 /permissive /EHsc /W3 /FS /Zi ^
  /DBF2_IMAGE_SWIFFPLAYER %PLUGIN_ABI% /DDEDICATED=0 /FI"%BF2%\Core\BuildConfig.h" /DWIN32 /D_WINDOWS /DNDEBUG /D_CRT_SECURE_NO_WARNINGS /D_CRT_NONSTDC_NO_DEPRECATE ^
  /wd4100 /wd4127 /wd4244 /wd4267 /wd4291 /wd4305 /wd4996 /Fd"%OUT%\SwiffPlayer.pdb"
 
-echo   NATIVE=%NATIVE% CRT=%CRT%
+echo   Native host ABI, CRT=%CRT%
 echo   CODE=%CODE%
 echo   OUT=%OUT%
 echo   BIN=%BIN%
@@ -96,20 +82,9 @@ del /q "%OUT%\*.obj" >nul 2>&1
 del /q "%OUT%\*.log" >nul 2>&1
 
 rem ---------------------------------------------------------------------------
-rem STEP 1 - import library for the shipped Memory.dll (binds bf_malloc/bf_free/addMemoryName by
-rem name; needs no DLL and no headers). Reuses RendDX9Abi\Memory.def (the same three names).
+rem STEP 1 - native host heap, no Memory.dll import library.
 rem ---------------------------------------------------------------------------
-if "%NATIVE%"=="1" (
-    echo [1/4] native ABI - no Memory import library
-) else (
-    echo [1/4] import library for Memory.dll
-    lib /nologo /def:"%RD9ABI%\Memory.def" /machine:x86 /out:"%OUT%\Memory.lib" >"%OUT%\lib.log" 2>&1
-    if errorlevel 1 (
-        echo   FAILED - see "%OUT%\lib.log"
-        type "%OUT%\lib.log"
-        exit /b 1
-    )
-)
+echo [1/4] native ABI - no Memory import library
 
 rem ---------------------------------------------------------------------------
 rem STEP 2 - compile. Explicit manifest, numbered objects (flat output dir).
@@ -222,7 +197,7 @@ link /nologo /DLL /MACHINE:X86 /BASE:0x10000000 /DEBUG /OPT:REF /OPT:ICF ^
      /PDB:"%BIN%\SwiffPlayer.pdb" ^
      /IMPLIB:"%OUT%\SwiffPlayer.lib" ^
      /MAP:"%OUT%\SwiffPlayer.map" ^
-     "%OUT%\*.obj" %MEMORY_LIB% kernel32.lib user32.lib winmm.lib > "%OUT%\link.log" 2>&1
+     "%OUT%\*.obj" kernel32.lib user32.lib winmm.lib > "%OUT%\link.log" 2>&1
 if errorlevel 1 (
     echo   LINK FAILED - see "%OUT%\link.log"
     type "%OUT%\link.log"
@@ -250,54 +225,25 @@ for %%E in (initDll deinitDll) do (
         set /a ABI_BAD+=1
     )
 )
-if "%NATIVE%"=="1" (
-    findstr /i /c:"Memory.dll" /c:"msvcr71.dll" /c:"msvcp71.dll" "%OUT%\dependents.txt" >nul
-    if not errorlevel 1 (
-        echo   imports:      retail heap/CRT UNEXPECTED in native ABI
-        set /a ABI_BAD+=1
-    )
-    findstr /l /c:"?bf_malloc@memory@hfe@dice@@YAPAXIH@Z" /c:"?bf_free@memory@hfe@dice@@YAXPAX@Z" /c:"?addMemoryName@memory@hfe@dice@@YAHPBD@Z" "%OUT%\imports.txt" >nul
-    if not errorlevel 1 (
-        echo   imports:      engine heap functions UNEXPECTED in native ABI
-        set /a ABI_BAD+=1
-    )
-    findstr /i /c:"VCRUNTIME140.dll" "%OUT%\dependents.txt" >nul
-    if errorlevel 1 (
-        echo   imports:      native shared VCRUNTIME140.dll MISSING
-        set /a ABI_BAD+=1
-    )
-    findstr /i /c:"api-ms-win-crt-heap-" /c:"ucrtbase.dll" "%OUT%\dependents.txt" >nul
-    if errorlevel 1 (
-        echo   imports:      native shared CRT heap MISSING
-        set /a ABI_BAD+=1
-    )
-) else (
-    findstr /i /c:"Memory.dll" "%OUT%\dependents.txt" >nul
-    if errorlevel 1 (
-        echo   imports:      Memory.dll MISSING in retail ABI
-        set /a ABI_BAD+=1
-    )
-    rem Do not put decorated names in a FOR set: their leading question mark is a file wildcard.
-    findstr /l /c:"?bf_malloc@memory@hfe@dice@@YAPAXIH@Z" "%OUT%\imports.txt" >nul
-    if errorlevel 1 (
-        echo   imports:      bf_malloc mangled name MISSING
-        set /a ABI_BAD+=1
-    )
-    findstr /l /c:"?bf_free@memory@hfe@dice@@YAXPAX@Z" "%OUT%\imports.txt" >nul
-    if errorlevel 1 (
-        echo   imports:      bf_free mangled name MISSING
-        set /a ABI_BAD+=1
-    )
-    findstr /l /c:"?addMemoryName@memory@hfe@dice@@YAHPBD@Z" "%OUT%\imports.txt" >nul
-    if errorlevel 1 (
-        echo   imports:      addMemoryName mangled name MISSING
-        set /a ABI_BAD+=1
-    )
-    findstr /i /c:"VCRUNTIME140.dll" /c:"api-ms-win-crt-" /c:"ucrtbase.dll" "%OUT%\dependents.txt" >nul
-    if not errorlevel 1 (
-        echo   imports:      shared native CRT UNEXPECTED in retail /MT ABI
-        set /a ABI_BAD+=1
-    )
+findstr /i /c:"Memory.dll" /c:"msvcr71.dll" /c:"msvcp71.dll" "%OUT%\dependents.txt" >nul
+if not errorlevel 1 (
+    echo   imports:      retail heap/CRT UNEXPECTED in native ABI
+    set /a ABI_BAD+=1
+)
+findstr /l /c:"?bf_malloc@memory@hfe@dice@@YAPAXIH@Z" /c:"?bf_free@memory@hfe@dice@@YAXPAX@Z" /c:"?addMemoryName@memory@hfe@dice@@YAHPBD@Z" "%OUT%\imports.txt" >nul
+if not errorlevel 1 (
+    echo   imports:      engine heap functions UNEXPECTED in native ABI
+    set /a ABI_BAD+=1
+)
+findstr /i /c:"VCRUNTIME140.dll" "%OUT%\dependents.txt" >nul
+if errorlevel 1 (
+    echo   imports:      native shared VCRUNTIME140.dll MISSING
+    set /a ABI_BAD+=1
+)
+findstr /i /c:"api-ms-win-crt-heap-" /c:"ucrtbase.dll" "%OUT%\dependents.txt" >nul
+if errorlevel 1 (
+    echo   imports:      native shared CRT heap MISSING
+    set /a ABI_BAD+=1
 )
 if not "!ABI_BAD!"=="0" (
     echo   ABI CHECK FAILED - !ABI_BAD! invariant^(s^) violated
@@ -309,3 +255,7 @@ echo.
 echo   built: %BIN%\SwiffPlayer.dll
 echo   NOTE: this is NOT installed anywhere. See docs\building.md before using this DLL with a client.
 exit /b 0
+
+:usage
+echo Usage: swiffplayer.cmd [native]
+exit /b 2

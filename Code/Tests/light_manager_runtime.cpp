@@ -2003,8 +2003,6 @@ extern "C" HRESULT WINAPI D3DXLoadSurfaceFromSurface(
 
 namespace renddx9abi {
 
-int g_memoryNameId = 0;
-
 void* engineAlloc(unsigned int size)
 {
     ++g_engineAllocations;
@@ -2018,7 +2016,6 @@ void engineFree(void* pointer)
     std::free(pointer);
 }
 
-void memoryName(const char*) {}
 void logOpen() {}
 void logClose() {}
 void logf(const char*, ...) {}
@@ -2027,7 +2024,6 @@ bool frontierTrapEnabled() { return true; }
 unsigned int addr(const void* pointer) { return reinterpret_cast<unsigned int>(pointer); }
 void* crtMalloc(size_t size) { return std::malloc(size); }
 void crtFree(void* pointer) { std::free(pointer); }
-bool crtHeapAvailable() { return true; }
 
 void frontier(const char*, const void*, unsigned int)
 {

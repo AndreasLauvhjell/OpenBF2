@@ -1,6 +1,6 @@
-// [CHOSEN, not recovered] Selects host/plugin carriers and factory conventions. Retail
-// uses VC7.1 layouts and fastcall factories; native mode shares the current STL/CRT.
-// Renderer-internal VC7.1 containers remain unchanged.
+// [CHOSEN, not recovered] Rebuilt plugins share the host's current STL/CRT.
+// Retail plugin loading is retired under https://github.com/B2BF/OpenBF2/issues/7.
+// Legacy declarations remain for shared layout code and isolated reference fixtures.
 
 #ifndef RENDDX9ABI_PLUGINABI_H
 #define RENDDX9ABI_PLUGINABI_H
@@ -11,6 +11,10 @@
 
 #if BF2_PLUGIN_ABI_NATIVE != 0 && BF2_PLUGIN_ABI_NATIVE != 1
 #error BF2_PLUGIN_ABI_NATIVE must be 0 (retail VC7.1 ABI) or 1 (native rebuilt-client ABI)
+#endif
+
+#if (defined(BF2_IMAGE_RENDDX9) || defined(BF2_IMAGE_SWIFFPLAYER) || defined(BF2_IMAGE_BF2AUDIO)) && !BF2_PLUGIN_ABI_NATIVE
+#error Rebuilt plugins require BF2_PLUGIN_ABI_NATIVE=1; retail executable compatibility has been removed
 #endif
 
 #include "Vc71String.h"

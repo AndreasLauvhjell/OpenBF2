@@ -13,7 +13,6 @@
 #include "Win32System.h"
 #include "SoundTrace.h"
 
-#include "../../../RendDX9Abi/BfMemory.h"
 
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
@@ -106,11 +105,10 @@ bool hasSoundDevice()
 } // namespace win32
 } // namespace hfe
 }
-// Registers the sound memory category and records the DLL instance.
+// Records the DLL instance.
 BOOL WINAPI DllMain(HINSTANCE instance, DWORD reason, LPVOID reserved)
 {
     (void) reason; (void) reserved;
-    renddx9abi::memoryName("sound");
     dice::hfe::win32::g_dllInstance = (void*) instance;
     return TRUE;
 }

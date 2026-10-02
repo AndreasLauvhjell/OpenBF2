@@ -1322,33 +1322,25 @@ if(EXISTS "${BF2_GAME_DIR}/NovintHFX.dll")
     )
 endif()
 
-# The tree's own plugin builds go beside the diagnostic BF2.exe (2026-09-08, at the owner's
-# request). LoadLibrary resolves the application directory before the game directory, so these
-# are the DLLs the client loads instead of the retail ones there; the game directory is never
-# written.
-#   - RendDX9.dll: the NATIVE host-ABI flavour (Code\Build\renddx9.cmd native ->
-#     Code/Build/bin_renddx9_native). It registers with this toolchain's class-manager layout,
-#     so initRenderer passes; the retail-flavour build (bin_renddx9) would fault in
-#     ClassManager::registerServer exactly like the retail DLL.
-#   - SwiffPlayer.dll: the native registry/host-string flavour (Code\Build\swiffplayer.cmd native
-#     -> Code/Build/bin_swiffplayer_native). Later ActionScript host-record adapters remain
-#     explicit stops at the invoked callback; the retail-compatible flavour has separate output.
-# Each copy runs Code/Build/stage_plugin.cmake on every bf2_client build, including when the
-# executable needs no relink. A plugin that has not been built yet is a note, not an error,
-# and no reconfigure is needed after building one.
+# [CHOSEN, not recovered] Build and stage one native client/plugin set:
+# https://github.com/B2BF/OpenBF2/issues/7. These DLLs target the rebuilt host only;
+# gameplay compatibility with retail clients is a separate protocol/content contract.
+# LoadLibrary resolves the application directory before the game directory, which is never
+# written. Include TextureAtlasBuilder.dll so RendDX9's static import resolves to our build.
+# The atlas keeps its private /MT runtime for file-format rounding; the other three DLLs
+# share the client's /MD CRT and native STL ABI.
+# Code/Build/stage_plugin.cmake runs on every bf2_client build, even without an executable relink.
 #
-# BOTH PLUGINS ARE ALSO REBUILT FROM SOURCE FIRST (2026-09-11, at the owner's request): running
+# All four plugins are rebuilt from source first: running
 # the client must never stage a DLL that is older than the sources it was built from. Each script
-# is its own authoritative build gate - renddx9.cmd and swiffplayer.cmd carry the explicit TU
-# manifests, the image defines (/DBF2_IMAGE_RENDDX9, /DBF2_IMAGE_SWIFFPLAYER) and the per-flavour
-# ABI assertions, and both wipe their object directory first, so every run is a clean build. That
+# is its own authoritative build gate, carrying an explicit TU manifest, image defines, and
+# native ABI assertions. Each wipes its object directory first, so every run is a clean build. That
 # is why this rebuilds unconditionally instead of declaring a CMake dependency list: a partial
 # dependency scan would miss a header edit and hand back a stale DLL while claiming freshness.
-# Measured 2026-09-11 on this tree: RendDX9 19 s (51 TUs), SwiffPlayer 10 s (45 TUs), ~29 s
-# together. Neither takes USES_TERMINAL, which would serialise them against every other
+# None takes USES_TERMINAL, which would serialise them against every other
 # console-pool job rather than just against each other.
 #
-# ⚠ THE TWO BUILDS ARE ORDERED, NOT RUN IN PARALLEL, and the 10 s that costs is deliberate.
+# The plugin builds are ordered, not run in parallel.
 # Run concurrently, one build in seven (1 of 7 observed, 2026-09-11) ended with cl reporting
 # "51 compiled, 0 failed" while one object - 46_OverlayTexture.obj - never landed, and the link
 # then failed on its two symbols. Both scripts compile /Zi /FS against a per-script PDB, so
@@ -1380,6 +1372,14 @@ if(TRUE)
     # bare form and carry the same environment dependence.
     file(TO_NATIVE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Code/Build/renddx9.cmd" BF2_RENDDX9_SCRIPT)
     file(TO_NATIVE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Code/Build/swiffplayer.cmd" BF2_SWIFFPLAYER_SCRIPT)
+    file(TO_NATIVE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Code/Build/textureatlasbuilder.cmd" BF2_TEXTUREATLAS_SCRIPT)
+    add_custom_target(bf2_textureatlas_native
+        COMMAND cmd.exe /d /c "${BF2_TEXTUREATLAS_SCRIPT}" native
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/Code/Build"
+        COMMENT "Building the native TextureAtlasBuilder.dll (Code/Build/textureatlasbuilder.cmd native)"
+        VERBATIM
+    )
+    set_property(TARGET bf2_textureatlas_native PROPERTY FOLDER "BF2")
     add_custom_target(bf2_renddx9_native
         COMMAND cmd.exe /d /c "${BF2_RENDDX9_SCRIPT}" native
         WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/Code/Build"
@@ -1387,6 +1387,7 @@ if(TRUE)
         VERBATIM
     )
     set_property(TARGET bf2_renddx9_native PROPERTY FOLDER "BF2")
+    add_dependencies(bf2_renddx9_native bf2_textureatlas_native)
     add_custom_target(bf2_swiffplayer_native
         COMMAND cmd.exe /d /c "${BF2_SWIFFPLAYER_SCRIPT}" native
         WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/Code/Build"
@@ -1430,14 +1431,19 @@ add_custom_target(bf2_client_plugins
             "-DBF2_PLUGIN_DST_DIR=${BF2_CLIENT_OUTPUT_DIR}"
             "-DBF2_PLUGIN_HINT=build it with Code/Build/bf2audio.cmd native"
             -P "${BF2_PLUGIN_STAGE_SCRIPT}"
-    COMMENT "Staging the native RendDX9.dll, SwiffPlayer.dll and BF2Audio.dll beside the diagnostic BF2.exe"
+    COMMAND "${CMAKE_COMMAND}"
+            "-DBF2_PLUGIN_SRC=${CMAKE_CURRENT_SOURCE_DIR}/Code/Build/bin_textureatlasbuilder_native/TextureAtlasBuilder.dll"
+            "-DBF2_PLUGIN_DST_DIR=${BF2_CLIENT_OUTPUT_DIR}"
+            "-DBF2_PLUGIN_HINT=build it with Code/Build/textureatlasbuilder.cmd native"
+            -P "${BF2_PLUGIN_STAGE_SCRIPT}"
+    COMMENT "Staging the four native plugins beside the diagnostic BF2.exe"
     VERBATIM
 )
-# Ordering AND obligation: both plugin builds run, and complete, before anything is copied. This
+# Ordering AND obligation: all four plugin builds complete before anything is copied. This
 # edge is unconditional on purpose - see the note above the plugin targets. Do not put it back
 # behind a switch; a staged DLL older than its sources is indistinguishable from a real bug at the
 # point where it hurts, which is a live debugging session.
-add_dependencies(bf2_client_plugins bf2_renddx9_native bf2_swiffplayer_native bf2_bf2audio_native)
+add_dependencies(bf2_client_plugins bf2_textureatlas_native bf2_renddx9_native bf2_swiffplayer_native bf2_bf2audio_native)
 add_dependencies(bf2_client bf2_client_plugins)
 # System imports present in the retail BF2.exe. VoIP remains intentionally omitted.
 target_link_libraries(bf2_client PRIVATE
