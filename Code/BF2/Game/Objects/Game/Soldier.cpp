@@ -3657,8 +3657,8 @@ void Soldier::updateCameraTransformation()
                 vehicle->getTemplate()->queryInterface(IID_IPlayerControlObjectTemplate));
         if (pcoTemplate)
         {
-            const float vehicleYawLimit = pcoTemplate->getSeatLeftRotationLimit(); // +0xB8
-            pcoTemplate->getSeatRightRotationLimit();       // called AND discarded - a leftover
+            const float vehicleYawMin = pcoTemplate->getSeatLeftRotationLimit();   // +0xB8
+            const float vehicleYawMax = pcoTemplate->getSeatRightRotationLimit();  // +0xC0
 
             const float lim = g_lookAngleLimits[0];
             bool withinVehicle = true;
@@ -3667,12 +3667,12 @@ void Soldier::updateCameraTransformation()
             if (yaw > lim)
             {
                 over = yaw - lim;
-                withinVehicle = (over + m_facingDegrees <= vehicleYawLimit);
+                withinVehicle = (over + m_facingDegrees <= vehicleYawMax);
             }
             else if (yaw < -lim)
             {
                 over = lim + yaw;
-                withinVehicle = (vehicleYawLimit <= over + m_facingDegrees);
+                withinVehicle = (vehicleYawMin <= over + m_facingDegrees);
             }
             if (!withinVehicle)
                 yaw -= over;
