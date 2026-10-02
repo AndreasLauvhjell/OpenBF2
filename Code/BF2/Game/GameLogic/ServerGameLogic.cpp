@@ -1695,23 +1695,32 @@ void ServerGameLogic::toggleEntryPoint(world::IPlayer* playerArg, bool enter)
     }
 }
 
-// Returns false for a null player. Otherwise selects the kit, reads the player's
-// current team, and stores its unlock level for that team, in that order.
 bool ServerGameLogic::selectKitAndUnlockLevel(world::IPlayer* player, int kit, int unlockLevel)
 {
     if (!player)
         return false;
 
+    const int team = player->getTeam();
+
+    if (team < 0 || team > 2 || kit < 0 || kit > 255)
+        return false;
+    if (m_kits.find((team << 8) + kit) == m_kits.end())
+        return false;
+
     player->setKit(kit);                                            // vt +0x16C
-    const int team = player->getTeam();                             // vt +0xE8
     player->setChosenUnlockLevel(kit, team, unlockLevel);           // vt +0x250
     return true;
 }
 
-// Sets the player's spawn group and returns true, or false for null player.
 bool ServerGameLogic::selectSpawnGroup(world::IPlayer* player, int group)
 {
     if (!player)
+        return false;
+
+    if (group < 0 || group > 255)
+        return false;
+    if (group != 0 &&
+        (!spawnManager || !static_cast<SpawnManager*>(spawnManager)->getSpawnGroup(group)))
         return false;
 
     player->setSpawnGroup(group);                                   // vt +0x154
