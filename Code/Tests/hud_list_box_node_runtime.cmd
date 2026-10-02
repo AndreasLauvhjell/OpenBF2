@@ -3,7 +3,7 @@ setlocal
 rem [TEMP] Native x86 fixture for Bf2NewListBoxNode and HUD builder rows 43..55.
 rem /FORCE:UNRESOLVED only covers the families the builder and HUD manager headers
 rem pull in but these never call.
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0..\Build\vsdevcmd.cmd" x86
 set "TASK_ROOT=%~dp0..\.."
 if not defined BF2_BUILD_OUT set "BF2_BUILD_OUT=%~dp0..\Build\obj_hud_list_box_node_20260915"
 if not exist "%BF2_BUILD_OUT%" mkdir "%BF2_BUILD_OUT%"

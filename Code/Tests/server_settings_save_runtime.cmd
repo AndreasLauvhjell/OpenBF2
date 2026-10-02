@@ -4,7 +4,7 @@ rem [TEMP] The recovered ServerSettings::save pair, x86. The class and Core\Stri
 rem every other engine symbol ServerSettings.cpp names is forced unresolved and never reached -
 rem the fixture drives only save(std::ostream&) and save(), whose one collaborator (io::fileManager)
 rem it supplies itself.
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0..\Build\vsdevcmd.cmd" x86
 set "TASK_ROOT=%~dp0..\BF2"
 if not defined BF2_BUILD_OUT set "BF2_BUILD_OUT=%~dp0..\Build\server_settings_save_20260912\runtime"
 if not defined BF2_TEST_OPT set "BF2_TEST_OPT=/O2"

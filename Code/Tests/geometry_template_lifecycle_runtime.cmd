@@ -1,7 +1,7 @@
 @echo off
 setlocal
 rem [TEMP] Strict x86 actual GeometryTemplateManager lifecycle fixture, no game or DLL launch.
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0..\Build\vsdevcmd.cmd" x86
 set "TASK_ROOT=%~dp0.."
 if not defined BF2_TEST_ABI_NATIVE set "BF2_TEST_ABI_NATIVE=0"
 if not defined BF2_BUILD_OUT set "BF2_BUILD_OUT=%~dp0..\Build\hemi_draw_20260922\gtm_tests"

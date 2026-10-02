@@ -2,7 +2,7 @@
 setlocal
 rem [TEMP] Strict x86 production BufferManager sweep fixture; fake COM only.
 if not defined BF2_BUILD_OUT exit /b 2
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0..\Build\vsdevcmd.cmd" x86
 if not exist "%BF2_BUILD_OUT%" mkdir "%BF2_BUILD_OUT%"
 set "TASK_ROOT=%~dp0..\.."
 if not defined BF2_TEST_OPT set "BF2_TEST_OPT=/O2"

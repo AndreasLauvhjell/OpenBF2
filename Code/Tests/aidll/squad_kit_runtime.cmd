@@ -1,7 +1,7 @@
 @echo off
 setlocal
 rem [TEMP] Exact squad queries, native chosen lifetimes, strict MSVC x86. No /FORCE.
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0..\..\Build\vsdevcmd.cmd" x86
 if errorlevel 1 exit /b 1
 set "TASK_CODE=%~dp0..\.."
 if not defined BF2_SQUAD_KIT_OUT set "BF2_SQUAD_KIT_OUT=%TASK_CODE%\Build\ai_kit_policy_20260927\squads"

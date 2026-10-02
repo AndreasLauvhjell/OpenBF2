@@ -3,7 +3,7 @@ setlocal
 rem [TEMP] Actual native GameServerSettings owner/defaults/script/accessor x86 fixture.
 rem The link forces the ServerSettings members reset's loaded branch and apply reach; the
 rem fixture keeps the file manager and the dedicated record null so neither path runs.
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0..\Build\vsdevcmd.cmd" x86
 set "TASK_ROOT=%~dp0..\BF2"
 if not defined BF2_BUILD_OUT set "BF2_BUILD_OUT=%~dp0..\Build\game_server_settings_20260907\runtime_gameserver"
 if not defined BF2_TEST_OPT set "BF2_TEST_OPT=/O2"

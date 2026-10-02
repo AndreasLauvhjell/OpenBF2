@@ -1,7 +1,7 @@
 @echo off
 setlocal
 rem [TEMP] Strict native x86 actual Profile owner/module/list/registry fixture.
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0..\Build\vsdevcmd.cmd" x86
 set "TASK_ROOT=%~dp0..\BF2"
 if not defined BF2_BUILD_OUT set "BF2_BUILD_OUT=%~dp0..\Build\profile_console_registration_20260906\runtime_o2"
 if not defined BF2_TEST_OPT set "BF2_TEST_OPT=/O2"

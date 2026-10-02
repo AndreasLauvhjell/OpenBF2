@@ -3,7 +3,7 @@ setlocal
 rem [TEMP] Actual lifetime, native prefix and named caller diagnostics; strict by default.
 rem Pass discovery for real filesystem/console constructors with typed observers;
 rem only that additional mode permits uncalled /FORCE dependencies.
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0..\Build\vsdevcmd.cmd" x86
 set "TASK_ROOT=%~dp0..\BF2"
 set "TASK_MODE=lifetime"
 set "TASK_DISCOVERY_FLAGS="

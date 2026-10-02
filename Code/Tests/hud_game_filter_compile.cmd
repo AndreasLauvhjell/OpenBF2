@@ -1,7 +1,7 @@
 @echo off
 setlocal
 rem [TEMP] Isolated x86 client compile for the final filter family.
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0..\Build\vsdevcmd.cmd" x86
 set "TASK_ROOT=%~dp0..\BF2"
 if not defined BF2_BUILD_OUT set "BF2_BUILD_OUT=%~dp0..\Build\hud_game_filter_final_20260906\compile"
 if not exist "%BF2_BUILD_OUT%" mkdir "%BF2_BUILD_OUT%"

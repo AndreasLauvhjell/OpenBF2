@@ -1,7 +1,7 @@
 @echo off
 setlocal
 rem [TEMP] Whole actual Vec3 TU, strict MSVC x86. No extraction or /FORCE.
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0..\..\Build\vsdevcmd.cmd" x86
 if errorlevel 1 exit /b 1
 set "TASK_CODE=%~dp0..\.."
 if not defined BF2_BOX_MAX_CORNER_OUT set "BF2_BOX_MAX_CORNER_OUT=%TASK_CODE%\Build\ai_kit_equipment_20260927\geometry"

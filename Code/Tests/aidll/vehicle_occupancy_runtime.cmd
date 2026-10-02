@@ -1,7 +1,7 @@
 @echo off
 setlocal
 rem [TEMP] Whole actual occupancy/manager TUs, strict MSVC x86; no /FORCE.
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0..\..\Build\vsdevcmd.cmd" x86
 if errorlevel 1 exit /b 1
 set "TASK_CODE=%~dp0..\.."
 if not defined BF2_VEHICLE_OCCUPANCY_OUT set "BF2_VEHICLE_OCCUPANCY_OUT=%TASK_CODE%\Build\ai_kit_scan_20260927\occupancy\validation"

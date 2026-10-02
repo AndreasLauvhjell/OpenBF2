@@ -1,7 +1,7 @@
 @echo off
 setlocal
 rem [TEMP] Focused x86 client fixture; not part of a BF2 image.
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0..\Build\vsdevcmd.cmd" x86
 set "TASK_ROOT=%~dp0..\BF2"
 set "TASK_OUT=%~dp0..\Build\hud_four_component_runtime_warning_help"
 if not exist "%TASK_OUT%" mkdir "%TASK_OUT%"

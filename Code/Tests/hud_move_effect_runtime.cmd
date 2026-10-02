@@ -4,7 +4,7 @@ rem [TEMP] Native x86 fixture for MoveEffect, Bf2MoveEffect and the two rows the
 rem complete: 59 createTransformNode and 132 addNodeMoveShowEffect.
 rem /FORCE:UNRESOLVED only covers the split, picture, bar, compass, text, blend
 rem and marker families the builder header pulls in but these never call.
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0..\Build\vsdevcmd.cmd" x86
 set "TASK_ROOT=%~dp0..\.."
 if not defined BF2_BUILD_OUT set "BF2_BUILD_OUT=%~dp0..\Build\obj_hud_move_effect_20260915"
 if not exist "%BF2_BUILD_OUT%" mkdir "%BF2_BUILD_OUT%"

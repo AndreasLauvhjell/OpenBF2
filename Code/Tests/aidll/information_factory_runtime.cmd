@@ -2,7 +2,7 @@
 setlocal
 rem [TEMP] InformationFactory + courier + recovered cover/mobile/physical/armament/weapon paths +
 rem full IPIUnit lifecycle, whole production TUs with the real pools and SCurve, strict x86 link.
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0..\..\Build\vsdevcmd.cmd" x86
 if errorlevel 1 exit /b 1
 set "TASK_CODE=%~dp0..\.."
 if not defined BF2_INFORMATION_FACTORY_OUT set "BF2_INFORMATION_FACTORY_OUT=%TASK_CODE%\Build\claude_ai_c07info_20260929\information_factory"

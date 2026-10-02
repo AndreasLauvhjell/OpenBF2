@@ -5,7 +5,7 @@ if not defined BF2_EFFECT_FIXTURE_DIR (
   echo Set BF2_EFFECT_FIXTURE_DIR to a directory containing native_obj and stock_PortedMenuShader.fx.
   exit /b 2
 )
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0..\Build\vsdevcmd.cmd" x86
 for %%I in ("%~dp0..") do set "TASK_CODE=%%~fI"
 set "TASK_EVIDENCE=%BF2_EFFECT_FIXTURE_DIR%"
 set "TASK_NATIVE=%TASK_EVIDENCE%\native_obj"

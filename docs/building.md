@@ -37,9 +37,12 @@ diagnostic artifact and report the exact paths a run exercised.
 The C++ build uses C++14 and MSVC permissive mode. Python 2.3.4 is built from the vendored
 source into `dice_py`; a system Python installation does not replace it.
 
-The batch helpers currently call a machine-specific `VsDevCmd.bat` path. Before using
-them, check that path in the relevant script and adjust it for your local Visual Studio
-installation if necessary. CMake compilation uses the toolchain in your terminal.
+The batch helpers enter the MSVC environment through `Code\Build\vsdevcmd.cmd`, which
+resolves `VsDevCmd.bat` from the `BF2_VSDEVCMD` environment variable (its full path) or,
+when that is unset, a `vswhere` auto-detected installation carrying the x86/x64 VC tools.
+Set `BF2_VSDEVCMD` once per machine instead of editing scripts; if neither resolves, the
+helper reports it and stops. CMake compilation uses the toolchain already present in your
+terminal.
 
 ## Windows x86
 

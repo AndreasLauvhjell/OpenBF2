@@ -5,7 +5,7 @@ rem 2026-09-26 (G1). The smoke run drives a real emitter with a real type-0 chil
 rem own vtable; the `nullchild` run must stop at the emitter's NAMED stop (an unregistered child), which
 rem the manager fixture's frontier trap reports as UNEXPECTED with exit 87.
 if not defined BF2_BUILD_OUT exit /b 2
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0..\Build\vsdevcmd.cmd" x86
 set "TASK_ROOT=%~dp0..\.."
 if not defined BF2_TEST_OPT set "BF2_TEST_OPT=/O2"
 for %%A in (1 0) do (

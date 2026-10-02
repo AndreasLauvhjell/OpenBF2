@@ -14,7 +14,7 @@ for %%F in (49_QuadDrawer.obj 15_TextureManager.obj d3dx9_25.lib binkw32.lib) do
     exit /b 2
   )
 )
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0..\Build\vsdevcmd.cmd" x86
 if not exist "%TASK_OUT%" mkdir "%TASK_OUT%"
 cl /nologo /c /MD /std:c++14 /permissive /EHsc /Od /Z7 /Gy /DBF2_IMAGE_RENDDX9 /DDEDICATED=0 /DBF2_PLUGIN_ABI_NATIVE=1 /D_ITERATOR_DEBUG_LEVEL=0 /D_CRT_SECURE_NO_WARNINGS /FI"%TASK_CODE%\BF2\Core\BuildConfig.h" "%~dp0hud_atlas_snapshot_runtime.cpp" /Fo"%TASK_OUT%\fixture.obj" >"%TASK_OUT%\compile.log" 2>&1
 if errorlevel 1 (type "%TASK_OUT%\compile.log" & exit /b 1)

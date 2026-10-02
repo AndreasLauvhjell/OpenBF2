@@ -24,7 +24,7 @@ rem from build.cmd - no stand-ins, no stubs. Run build.cmd first.
 rem
 rem   usage:  build.cmd  &&  bootrun.cmd
 rem ===========================================================================
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0vsdevcmd.cmd" x86
 set OUT=%~dp0obj
 if defined BF2_BUILD_OUT set OUT=%BF2_BUILD_OUT%
 

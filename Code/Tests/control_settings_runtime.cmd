@@ -5,7 +5,7 @@ rem The control-map manager, the device manager, the mouse and the frame event m
 rem observers; the maps derive from the tree's real io::ControlMap. Strict link by default.
 rem Pass `console` to also link the real console (setDefaults runs Settings/Controls.con through it);
 rem only that mode permits uncalled /FORCE dependencies, recorded in unresolved.log.
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0..\Build\vsdevcmd.cmd" x86
 set "TASK_ROOT=%~dp0..\BF2"
 set "TASK_MODE=strict"
 set "TASK_MODE_FLAGS="

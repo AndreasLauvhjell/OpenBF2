@@ -2,7 +2,7 @@
 setlocal
 rem [TEMP] Actual-source AIPlayerFactory lookup fixture; no bot spawn or server run.
 rem /FORCE is only for uncalled creation/registration dependencies, not link acceptance.
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0..\Build\vsdevcmd.cmd" x86
 if errorlevel 1 exit /b 1
 set "TASK_ROOT=%~dp0..\.."
 if not defined BF2_AI_FACTORY_OUT set "BF2_AI_FACTORY_OUT=%~dp0..\Build\ai_player_factory_runtime"

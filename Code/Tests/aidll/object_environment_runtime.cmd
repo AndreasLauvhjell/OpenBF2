@@ -1,7 +1,7 @@
 @echo off
 setlocal
 rem [TEMP] Strict MSVC x86; exact BFObjectEnvironment bodies and PlayerManager::getPlayers (2026-09-28).
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0..\..\Build\vsdevcmd.cmd" x86
 if errorlevel 1 exit /b 1
 set "TASK_CODE=%~dp0..\.."
 if not defined BF2_OBJECT_ENVIRONMENT_OUT set "BF2_OBJECT_ENVIRONMENT_OUT=%TASK_CODE%\Build\claude_ai_plan_20260928\object_environment"

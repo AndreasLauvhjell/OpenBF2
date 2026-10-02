@@ -55,7 +55,7 @@ if /i not "%PYARCH%"=="x86" if /i not "%PYARCH%"=="x64" (
     echo Usage: build_python.cmd [x86^|x64]
     exit /b 2
 )
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=%PYARCH% -no_logo >nul 2>&1
+call "%~dp0..\vsdevcmd.cmd" %PYARCH%
 if errorlevel 1 ( echo Visual Studio %PYARCH% environment failed & exit /b 1 )
 
 set PYSRC=%~dp0..\..\BF2\External\python-embedded\py-src-2.3.4

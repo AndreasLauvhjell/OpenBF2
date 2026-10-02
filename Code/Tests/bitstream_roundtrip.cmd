@@ -46,7 +46,7 @@
 @rem ===========================================================================
 @echo off
 setlocal
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0..\Build\vsdevcmd.cmd" x86
 pushd "%~dp0"
 cl /nologo /EHsc /O2 /DDEDICATED=1 /FI"%~dp0..\BF2\Core\BuildConfig.h" bitstream_roundtrip.cpp
 if errorlevel 1 ( popd & exit /b 1 )

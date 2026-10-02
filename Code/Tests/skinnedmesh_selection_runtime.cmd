@@ -4,7 +4,7 @@ rem [TEMP] Actual x86 SkinnedMesh selection fixture; no original DLL or game is 
 rem BF2_TEST_ABI_NATIVE=0 checks the compatibility ABI with the same isolated CRT heap.
 rem BF2_TEST_SOURCE_FLAGS can define BF2_SKINNEDMESH_SOURCE to a saved source snapshot.
 rem All links are strict: no /FORCE and no replaced SkinnedMesh implementation or vtable.
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0..\Build\vsdevcmd.cmd" x86
 set "TASK_ROOT=%~dp0.."
 if not defined BF2_BUILD_OUT set "BF2_BUILD_OUT=%~dp0..\Build\zero_radius_20260922\tests"
 if not exist "%BF2_BUILD_OUT%" mkdir "%BF2_BUILD_OUT%"

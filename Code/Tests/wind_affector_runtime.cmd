@@ -2,7 +2,7 @@
 @rem Builds x86 and clean-links the focused WindAffector/WindManager runtime suite.
 @echo off
 setlocal
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0..\Build\vsdevcmd.cmd" x86
 pushd "%~dp0"
 cl /nologo /EHsc /O2 /std:c++14 /permissive /Gy /DDEDICATED=1 /FI"%~dp0..\BF2\Core\BuildConfig.h" wind_affector_runtime.cpp ^
   ..\BF2\Game\Objects\IObjectComponent.cpp ^

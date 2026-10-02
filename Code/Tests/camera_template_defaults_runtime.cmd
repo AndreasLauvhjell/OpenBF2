@@ -5,7 +5,7 @@ rem with a freshly compiled source under test. No game, server or renderer runs.
 rem Wider uncalled engine frontiers remain unresolved under diagnostic /FORCE.
 if not defined BF2_ENGINE_BUILD exit /b 2
 if not exist "%BF2_ENGINE_BUILD%\engine_objects.rsp" exit /b 2
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0..\Build\vsdevcmd.cmd" x86
 set "TASK_ROOT=%~dp0.."
 if not defined BF2_BUILD_OUT set "BF2_BUILD_OUT=%TASK_ROOT%\Build\geom_fault_20260922\camera_tests"
 for %%D in ("%BF2_ENGINE_BUILD%") do set "TASK_ENGINE_ABS=%%~fD"

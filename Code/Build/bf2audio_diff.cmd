@@ -15,7 +15,7 @@ rem Nothing is written into the game directory; the retail wrap_oal is copied
 rem beside the shim as wrap_oal_real.dll, and the retail engine DLL is loaded
 rem by full path from where it is.
 rem ===========================================================================
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0vsdevcmd.cmd" x86
 if errorlevel 1 exit /b 1
 for %%I in ("%~dp0..") do set CODE=%%~fI
 set BF2=%CODE%\BF2

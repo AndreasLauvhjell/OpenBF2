@@ -5,7 +5,7 @@ rem with the REAL LeaderBoard, PlayerAwards, HTTPRequest, KeyParser and the Game
 rem bf2_gamespy_objects compiles, against the local stats fixture on 127.0.0.1:18124 (never 16567).
 rem Linked /FORCE:UNRESOLVED: SwiffHost's other collaborators stay unresolved and are never reached; the
 rem list of them is printed after the run. Client image (DEDICATED=0).
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0..\Build\vsdevcmd.cmd" x86
 set "TASK_ROOT=%~dp0..\BF2"
 set "TASK_GS=%~dp0..\BF2\External\GameSpy"
 if not defined BF2_BUILD_OUT set "BF2_BUILD_OUT=%~dp0..\Build\swiff_phase4_20260929\leaderboard_runtime"

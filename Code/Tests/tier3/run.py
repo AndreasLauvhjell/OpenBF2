@@ -117,7 +117,7 @@ def main():
     args.out=args.out.resolve(); args.out.mkdir(parents=True,exist_ok=True)
     runner.free_port(args.port,'0.0.0.0'); runner.free_port(args.query_port,'0.0.0.0')
     expected=args.out/'expectations.tsv'; expected.write_text(expectations(args.game_dir))
-    vcvars=Path(r'D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat')
+    vcvars=runner.default_vcvars()
     binary=runner.build(args.suite,args.build_out.resolve()/'engine_objects.rsp',args.out,vcvars)
     config=args.out/'ServerSettings.con'
     config.write_text('sv.internet 0\nsv.ranked 0\nsv.punkBuster 0\nsv.voipEnabled 0\n'

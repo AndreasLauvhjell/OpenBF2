@@ -2,7 +2,7 @@
 setlocal
 rem [TEMP] Actual console dispatch with typed HUD callbacks; wider HUD vtable uncalled.
 rem Game.cpp links for the real TargetChannel reader (PE 442150), which row 187 calls (2026-09-26).
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0..\Build\vsdevcmd.cmd" x86
 set "TASK_ROOT=%~dp0..\BF2"
 if not defined BF2_BUILD_OUT set "BF2_BUILD_OUT=%~dp0..\Build\hud_console_invokers_20260908\tests\runtime_o2"
 if not defined BF2_TEST_OPT set "BF2_TEST_OPT=/O2"

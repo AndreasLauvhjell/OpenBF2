@@ -3,7 +3,7 @@ setlocal
 rem [TEMP] Actual DemoLibrary owner, refresh, entries and the zlib stream pair over the vendored
 rem zlib. The file manager observer derives from the real FileManager, whose unreached members are
 rem forced (/FORCE:UNRESOLVED, listed in link.log); nothing DemoLibrary owns is shadowed.
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0..\Build\vsdevcmd.cmd" x86
 set "TASK_ROOT=%~dp0..\BF2"
 if not defined BF2_BUILD_OUT set "BF2_BUILD_OUT=%~dp0..\Build\demo_library_20260908\runtime_demo"
 if not defined BF2_TEST_OPT set "BF2_TEST_OPT=/O2"

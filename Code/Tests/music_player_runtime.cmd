@@ -2,7 +2,7 @@
 setlocal
 rem [TEMP] [CHOSEN, not recovered] [RETIRE-WHEN: music-player-runtime]
 rem Strict x86 native MusicPlayer fixture; the Game runtime flag alone is fixture-owned.
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0..\Build\vsdevcmd.cmd" x86
 set "TASK_ROOT=%~dp0..\BF2"
 if not defined BF2_BUILD_OUT set "BF2_BUILD_OUT=%~dp0..\Build\music_event_20260909\tests_o2"
 if not defined BF2_TEST_OPT set "BF2_TEST_OPT=/O2"

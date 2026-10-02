@@ -2,7 +2,7 @@
 setlocal
 rem [TEMP] Actual x86 RendDX9 LightManager loader/samplers with narrow PE host-service records.
 rem Strict link. No retail DLL, filesystem level content, or game process is loaded.
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0..\Build\vsdevcmd.cmd" x86
 set "TASK_ROOT=%~dp0.."
 if not defined BF2_BUILD_OUT set "BF2_BUILD_OUT=%~dp0..\Build\hemi_draw_20260922\loader_tests"
 if not exist "%BF2_BUILD_OUT%" mkdir "%BF2_BUILD_OUT%"

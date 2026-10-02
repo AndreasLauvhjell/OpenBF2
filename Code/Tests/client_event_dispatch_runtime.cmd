@@ -14,7 +14,7 @@ exit /b 0
 :build
 setlocal
 set "ARCH=%~1"
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=%ARCH% -no_logo >nul 2>&1
+call "%~dp0..\Build\vsdevcmd.cmd" %ARCH%
 if errorlevel 1 exit /b 1
 set "OUT=%TESTOUT%\%ARCH%"
 if not exist "%OUT%" mkdir "%OUT%"

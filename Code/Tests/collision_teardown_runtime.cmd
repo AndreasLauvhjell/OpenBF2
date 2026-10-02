@@ -17,7 +17,7 @@ if not exist "%BF2_COLLISION_MESH%" (
   echo Missing collision mesh fixture: "%BF2_COLLISION_MESH%"
   exit /b 2
 )
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0..\Build\vsdevcmd.cmd" x86
 set TESTOUT=%BF2_BUILD_OUT%\collision_teardown_runtime
 set PYROOT=%~dp0..\BF2\External\python-embedded\OBJ\python\release
 if not exist "%TESTOUT%" mkdir "%TESTOUT%"

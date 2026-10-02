@@ -1,7 +1,7 @@
 @echo off
 setlocal
 rem [TEMP] Exact getter/setter, chosen native lifetimes, strict MSVC x86.
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0..\..\Build\vsdevcmd.cmd" x86
 if errorlevel 1 exit /b 1
 set "TASK_CODE=%~dp0..\.."
 if not defined BF2_DEAD_BOTS_OUT set "BF2_DEAD_BOTS_OUT=%TASK_CODE%\Build\ai_kit_assignment_20260927\dead_bots\validation"

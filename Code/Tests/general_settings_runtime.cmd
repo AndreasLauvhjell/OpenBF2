@@ -5,7 +5,7 @@ rem The link forces ONE unresolved external: HudInformationAdapter::setMapStatic
 rem apply's non-null HUD branch reaches (the fixture keeps hudManager null). Core\StringUtil.cpp is
 rem linked since 2026-09-28: the published table pulls compareIgnoreCase in through the history and
 rem played-help slots, and the fixture now runs the played-help pair.
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0..\Build\vsdevcmd.cmd" x86
 set "TASK_ROOT=%~dp0..\BF2"
 if not defined BF2_BUILD_OUT set "BF2_BUILD_OUT=%~dp0..\Build\general_settings_20260907\runtime_general"
 if not defined BF2_TEST_OPT set "BF2_TEST_OPT=/O2"

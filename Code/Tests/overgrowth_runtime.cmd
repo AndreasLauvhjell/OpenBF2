@@ -1,7 +1,7 @@
 @echo off
 setlocal
 rem [TEMP] Strict x86 client-image lifecycle check; output belongs to the caller.
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0..\Build\vsdevcmd.cmd" x86
 set "TASK_ROOT=%~dp0.."
 if not defined BF2_BUILD_OUT set "BF2_BUILD_OUT=%TASK_ROOT%\Build\hemi_draw_20260922\overgrowth_test"
 if not exist "%BF2_BUILD_OUT%" mkdir "%BF2_BUILD_OUT%"

@@ -28,7 +28,7 @@ rem     headers plus libogg/libvorbis/libvorbisfile static libs (see the status
 rem     doc). Without it the .ogg paths (streams, music) are [FRONTIER] reports
 rem     through the trace sink and .wav playback is everything the DLL does.
 rem ===========================================================================
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0vsdevcmd.cmd" x86
 if errorlevel 1 exit /b 1
 if not "%~1"=="" if /i not "%~1"=="native" (
     echo Usage: bf2audio.cmd [native]

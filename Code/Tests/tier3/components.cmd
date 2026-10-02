@@ -4,7 +4,7 @@ rem Strict x86 component fixture. The output path must belong to this test run.
 if "%~1"=="" exit /b 2
 set "OUT=%~f1"
 if not exist "%OUT%" mkdir "%OUT%"
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0..\..\Build\vsdevcmd.cmd" x86
 set "ROOT=%~dp0..\..\BF2"
 set FLAGS=/nologo /c /MD /Z7 /std:c++14 /permissive /EHsc /DDEDICATED=1 /FI"%ROOT%\Core\BuildConfig.h"
 cl %FLAGS% /Fo"%OUT%\components.obj" "%~dp0components.cpp"

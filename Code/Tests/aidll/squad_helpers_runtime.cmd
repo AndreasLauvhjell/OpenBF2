@@ -1,7 +1,7 @@
 @echo off
 setlocal
 rem [TEMP] Exact manager helper definitions and typed native collaborators, strict x86.
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0..\..\Build\vsdevcmd.cmd" x86
 if errorlevel 1 exit /b 1
 set "TASK_CODE=%~dp0..\.."
 if not defined BF2_SQUAD_HELPERS_OUT set "BF2_SQUAD_HELPERS_OUT=%TASK_CODE%\Build\ai_squad_tick_20260927\dependencies\helper_validation"

@@ -2,7 +2,7 @@
 setlocal
 rem [TEMP] Strict x86 seeded seven-argument polygon query; exact outer production extract,
 rem whole lower navmesh/material TUs, typed settings observer, no /FORCE.
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0..\..\Build\vsdevcmd.cmd" x86
 if errorlevel 1 exit /b 1
 set "TASK_CODE=%~dp0..\.."
 if not defined BF2_SEEDED_POLYGON_OUT set "BF2_SEEDED_POLYGON_OUT=%TASK_CODE%\Build\ai_map_query_20261001\seeded_polygon_validation"
