@@ -1,0 +1,55 @@
+name: Release packages
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.event.release.id }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    uses: ./.github/workflows/build.yml
+
+  upload:
+    name: Attach packages to the release
+    needs: build
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - name: Download this run's packages
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          pattern: packages-*
+          path: packages
+          merge-multiple: true
+
+      - name: Verify and upload all release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        working-directory: packages
+        shell: bash
+        run: |
+          packages=(
+            openbf2-windows-x86-server-diagnostic
+            openbf2-windows-x86-client-diagnostic
+            openbf2-windows-x86-editor-diagnostic
+            openbf2-windows-x64-server
+            openbf2-linux-x64-server
+          )
+          assets=()
+          for package in "${packages[@]}"; do
+            test -s "$package.zip"
+            test -s "$package.zip.sha256"
+            sha256sum --check "$package.zip.sha256"
+            assets+=("$package.zip" "$package.zip.sha256")
+          done
+          gh release upload --repo "$GH_REPO" --clobber -- "$RELEASE_TAG" "${assets[@]}"

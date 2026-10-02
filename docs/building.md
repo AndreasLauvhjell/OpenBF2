@@ -7,6 +7,10 @@ compiler into x86 mode. In an IDE, select the matching Visual Studio architectur
 
 ## Targets and outputs
 
+GitHub Actions builds the supported Windows and Linux images on pushes and pull requests,
+and attaches ZIP packages when a release is published. See [CI and release packages](ci-releases.md)
+for the matrix, archive contents, checks and current runtime limitations.
+
 Paths below are relative to the selected CMake build directory.
 
 | Preset | Target | Output | Link contract |

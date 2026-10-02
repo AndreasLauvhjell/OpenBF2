@@ -1,0 +1,149 @@
+name: Build packages
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  windows:
+    name: Windows ${{ matrix.arch }}
+    runs-on: windows-2022
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: x86
+            server: bf2_w32ded
+          - arch: x64
+            server: bf2_w64ded
+    env:
+      BF2_PYTHON_OUT: ${{ github.workspace }}/out/ci-python/${{ matrix.arch }}
+      CMAKE_BUILD_PARALLEL_LEVEL: 2
+    defaults:
+      run:
+        shell: cmd
+    steps:
+      - name: Check out the event commit
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+
+      - name: Build and check the embedded Python runtime
+        run: call Code\Build\python\build_python.cmd ${{ matrix.arch }}
+
+      - name: Configure
+        run: |
+          call Code\Build\vsdevcmd.cmd ${{ matrix.arch }}
+          if errorlevel 1 exit /b 1
+          cmake --preset msvc-${{ matrix.arch }} -B out/build/ci-${{ matrix.arch }} -DBF2_GAME_DIR:PATH="%GITHUB_WORKSPACE%/out/no-game-content" -DBF2_DICE_PY_LIB:FILEPATH="%BF2_PYTHON_OUT%/dice_py.lib" -DBF2_DICE_PY_DLL:FILEPATH="%BF2_PYTHON_OUT%/dice_py.dll"
+
+      - name: Run x86 engine and editor framework checks
+        if: matrix.arch == 'x86'
+        run: |
+          call Code\Build\vsdevcmd.cmd x86
+          if errorlevel 1 exit /b 1
+          cmake --build out/build/ci-x86 --target bf2_run_checks bf2_editor_run_checks
+
+      - name: Build the dedicated server
+        run: |
+          call Code\Build\vsdevcmd.cmd ${{ matrix.arch }}
+          if errorlevel 1 exit /b 1
+          cmake --build out/build/ci-${{ matrix.arch }} --target ${{ matrix.server }}
+
+      # Keep the client/plugin and editor builds sequential within this checkout.
+      - name: Build the x86 AI library and client with plugins
+        if: matrix.arch == 'x86'
+        run: |
+          call Code\Build\vsdevcmd.cmd x86
+          if errorlevel 1 exit /b 1
+          cmake --build out/build/ci-x86 --target bf2_aidll bf2_client
+
+      - name: Build the x86 editor with its plugins
+        if: matrix.arch == 'x86'
+        run: |
+          call Code\Build\vsdevcmd.cmd x86
+          if errorlevel 1 exit /b 1
+          cmake --build out/build/ci-x86 --target bf2_editor
+
+      # Future Windows signing belongs here, before packaging and checksums.
+      # No signing credentials or signing step are configured yet.
+      - name: Package Windows binaries
+        run: python Code/Build/package_release.py --platform windows-${{ matrix.arch }} --build-dir out/build/ci-${{ matrix.arch }} --output-dir out/packages --revision "%GITHUB_SHA%" --repository "%GITHUB_REPOSITORY%"
+
+      - name: Upload Windows packages
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: packages-windows-${{ matrix.arch }}
+          path: |
+            out/packages/*.zip
+            out/packages/*.sha256
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 14
+
+      - name: Upload Windows build diagnostics
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: diagnostics-windows-${{ matrix.arch }}
+          path: |
+            out/ci-python/**/*.log
+            out/build/ci-${{ matrix.arch }}/CMakeFiles/CMakeConfigureLog.yaml
+            out/build/ci-${{ matrix.arch }}/Testing/Temporary/*.log
+            out/build/ci-${{ matrix.arch }}/editor_renddx9/**/*.log
+            Code/Build/obj_*_native/*.log
+          if-no-files-found: ignore
+          retention-days: 7
+
+  linux:
+    name: Linux x64
+    runs-on: ubuntu-22.04
+    timeout-minutes: 90
+    env:
+      CMAKE_BUILD_PARALLEL_LEVEL: 2
+    steps:
+      - name: Check out the event commit
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y cmake ninja-build g++ libncurses-dev
+
+      - name: Configure
+        run: cmake --preset linux-x64 -B out/build/ci-linux-x64 -DBF2_GAME_DIR:PATH="$GITHUB_WORKSPACE/out/no-game-content"
+
+      - name: Build the dedicated server and check the Python runtime
+        run: cmake --build out/build/ci-linux-x64 --target bf2 dice_py_check_run
+
+      - name: Package Linux binaries
+        run: python3 Code/Build/package_release.py --platform linux-x64 --build-dir out/build/ci-linux-x64 --output-dir out/packages --revision "$GITHUB_SHA" --repository "$GITHUB_REPOSITORY"
+
+      - name: Upload Linux packages
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: packages-linux-x64
+          path: |
+            out/packages/*.zip
+            out/packages/*.sha256
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 14
+
+      - name: Upload Linux build diagnostics
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: diagnostics-linux-x64
+          path: |
+            out/build/ci-linux-x64/CMakeFiles/CMakeConfigureLog.yaml
+            out/build/ci-linux-x64/CMakeFiles/CMake*.log
+          if-no-files-found: ignore
+          retention-days: 7
