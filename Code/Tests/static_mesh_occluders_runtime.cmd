@@ -7,7 +7,7 @@ rem   usage:  static_mesh_occluders_runtime.cmd
 rem
 rem The .occ files are extracted from the stock archives on first run into
 rem %BF2_BUILD_OUT%\occ\. BF2_GAME_DIR overrides the game folder.
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0..\Build\vsdevcmd.cmd" x86
 set "TASK_ROOT=%~dp0.."
 if not defined BF2_GAME_DIR set "BF2_GAME_DIR=D:\B2BF Launcher\Battlefield2"
 if not defined BF2_BUILD_OUT set "BF2_BUILD_OUT=%~dp0..\Build\occluders_20260926"

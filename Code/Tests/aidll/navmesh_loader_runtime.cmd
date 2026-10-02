@@ -3,7 +3,7 @@ setlocal
 rem [TEMP] The navmesh loader: whole production loader/query TUs with the real Debug, strict x86
 rem link, driven over every stock level's .qtr/.clb pair (extracted read-only from each server.zip)
 rem and the synthetic version / island-count cases.
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0..\..\Build\vsdevcmd.cmd" x86
 if errorlevel 1 exit /b 1
 set "TASK_CODE=%~dp0..\.."
 if not defined BF2_NAVMESH_LOADER_OUT set "BF2_NAVMESH_LOADER_OUT=%TASK_CODE%\Build\claude_ai_c04nav_20260929\navmesh_loader"

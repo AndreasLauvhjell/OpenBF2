@@ -6,7 +6,7 @@ if not defined BF2_AIRCRAFT_FIXTURE_DIR (
   echo Set BF2_AIRCRAFT_FIXTURE_DIR to the observer input directory, or use tier2\run.py.
   exit /b 2
 )
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0..\Build\vsdevcmd.cmd" x86
 set "ROOT=%~dp0..\.."
 set "OUT=%BF2_AIRCRAFT_FIXTURE_DIR%"
 if not exist "%OUT%\bootmain.cpp" exit /b 2

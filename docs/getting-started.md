@@ -34,6 +34,11 @@ This compiles the engine archive and runs focused bitstream, ABI, object seriali
 and object/physics checks. It does not need a running server. For executable dependencies,
 all platforms, output locations, and runtime setup, follow the [build guide](building.md).
 
+The batch helpers under `Code\Build` and `Code\Tests` enter the Visual Studio environment
+through `Code\Build\vsdevcmd.cmd`. Set the `BF2_VSDEVCMD` environment variable to your own
+`VsDevCmd.bat` path, or let it auto-detect with `vswhere`; see the
+[Windows prerequisites](building.md#windows-prerequisites).
+
 ## Find your way around
 
 Read the [architecture](architecture.md) to trace startup, content loading, and image

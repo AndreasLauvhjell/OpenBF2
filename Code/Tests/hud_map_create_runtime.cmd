@@ -3,7 +3,7 @@ setlocal EnableDelayedExpansion
 rem [TEMP] Real builder createMapNode + real Bf2MenuMapNode construction/destruction/event
 rem face against a real System registry, information layer and EventManager. The renderer's
 rem loadTexture is the only recorder. /FORCE:UNRESOLVED covers uncalled map/builder helpers.
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0..\Build\vsdevcmd.cmd" x86
 set "TASK_ROOT=%~dp0..\BF2"
 if not defined BF2_BUILD_OUT set "BF2_BUILD_OUT=%~dp0..\Build\hud_map_create_20260914\runtime_o2"
 if not defined BF2_TEST_OPT set "BF2_TEST_OPT=/O2"

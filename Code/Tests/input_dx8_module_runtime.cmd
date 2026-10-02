@@ -1,7 +1,7 @@
 @echo off
 setlocal
 rem [TEMP] Native InputDX8Module lists/factory checks; no requested hardware device.
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0..\Build\vsdevcmd.cmd" x86
 if not defined BF2_TEST_DEDICATED set "BF2_TEST_DEDICATED=0"
 if not defined BF2_TEST_OPT set "BF2_TEST_OPT=/O2"
 if not defined BF2_BUILD_OUT set "BF2_BUILD_OUT=%~dp0..\Build\input_module_publication_20260906\client_o2"

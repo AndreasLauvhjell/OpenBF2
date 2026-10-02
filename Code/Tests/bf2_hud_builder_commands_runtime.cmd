@@ -2,7 +2,7 @@
 setlocal
 rem [TEMP] Native x86 real builder/helper fixture. /FORCE wider UI paths are uncalled.
 rem Production Node factory/defaults are linked; events7/9/13/14/17 return, event10 stops.
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0..\Build\vsdevcmd.cmd" x86
 set "TASK_ROOT=%~dp0..\.."
 if not defined BF2_BUILD_OUT set "BF2_BUILD_OUT=%~dp0..\Build\obj_bf2_hud_builder_commands_20260908"
 if not exist "%BF2_BUILD_OUT%" mkdir "%BF2_BUILD_OUT%"

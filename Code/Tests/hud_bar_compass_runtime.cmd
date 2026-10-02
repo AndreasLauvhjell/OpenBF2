@@ -3,7 +3,7 @@ setlocal
 rem [TEMP] Native x86 fixture for Bf2BarNode, Bf2CompassNode, Bf2EffectNode,
 rem Bf2ColorEffect and their sixteen HUD builder rows. /FORCE:UNRESOLVED only
 rem covers the split node, map node and logical data classes these never call.
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0..\Build\vsdevcmd.cmd" x86
 set "TASK_ROOT=%~dp0..\.."
 if not defined BF2_BUILD_OUT set "BF2_BUILD_OUT=%~dp0..\Build\obj_hud_bar_compass_20260914"
 if not exist "%BF2_BUILD_OUT%" mkdir "%BF2_BUILD_OUT%"

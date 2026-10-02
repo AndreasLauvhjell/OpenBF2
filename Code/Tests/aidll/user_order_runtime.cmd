@@ -1,7 +1,7 @@
 @echo off
 setlocal
 rem [TEMP] [CHOSEN, not recovered] Real UserOrderManager.cpp, strict isolated x86 runtime fixture.
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0..\..\Build\vsdevcmd.cmd" x86
 if errorlevel 1 exit /b 1
 set "TASK_CODE=%~dp0..\.."
 if not defined BF2_USER_ORDER_OUT set "BF2_USER_ORDER_OUT=%TASK_CODE%\Build\ai_user_order_validation_20260927"

@@ -27,7 +27,7 @@ rem   usage:  swiffplayer.cmd          VC7.1-compatible ABI (/MT + Memory.dll)
 rem           swiffplayer.cmd native   native host ABI (/MD, no Memory.dll)
 rem   Both modes accept BF2_SWIFFPLAYER_OUT and BF2_SWIFFPLAYER_BIN overrides.
 rem ===========================================================================
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0vsdevcmd.cmd" x86
 if errorlevel 1 exit /b 1
 if not "%~1"=="" if /i not "%~1"=="native" (
     echo Usage: swiffplayer.cmd [native]

@@ -1,7 +1,7 @@
 @echo off
 setlocal
 rem [TEMP] Typed file/class transport and object reader fixture; no replacement production bodies.
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0..\Build\vsdevcmd.cmd" x86
 set "TASK_ROOT=%~dp0..\BF2"
 if not defined BF2_BUILD_OUT set "BF2_BUILD_OUT=%~dp0..\Build\obj_bfmeme_class_stream_runtime_20260905"
 if not exist "%BF2_BUILD_OUT%" mkdir "%BF2_BUILD_OUT%"

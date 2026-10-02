@@ -14,7 +14,7 @@ rem           build.cmd nobuild         run that host only
 rem           build.cmd native          build and run the native-ABI host
 rem           build.cmd native nobuild  run the native-ABI host only
 rem ===========================================================================
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0..\..\Build\vsdevcmd.cmd" x86
 
 set HERE=%~dp0
 set ABI=%HERE%..\..\RendDX9Abi

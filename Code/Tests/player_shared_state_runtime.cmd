@@ -5,7 +5,7 @@ if not defined BF2_BUILD_OUT exit /b 2
 if not exist "%BF2_BUILD_OUT%\engine_objects.rsp" exit /b 2
 rem The response file grows during compilation; wait for both completed diagnostic links.
 if not exist "%BF2_BUILD_OUT%\count_factory_free.txt" exit /b 2
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0..\Build\vsdevcmd.cmd" x86
 set TESTOUT=%BF2_BUILD_OUT%\player_shared_state_runtime
 set PYROOT=%~dp0..\BF2\External\python-embedded\OBJ\python\release
 if not exist "%TESTOUT%" mkdir "%TESTOUT%"

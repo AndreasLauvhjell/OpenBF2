@@ -4,7 +4,7 @@ rem [TEMP] strict x86 actual-source mesh-particle (type 1) fixture, BOTH plugin 
 rem 2026-09-26 (G1). The manager TU and the REAL type-1 descriptor TU (ParticleSystemTemplateType1.cpp)
 rem are linked; the descriptor's constructor and setters build the template the instance runs on.
 if not defined BF2_BUILD_OUT exit /b 2
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0..\Build\vsdevcmd.cmd" x86
 set "TASK_ROOT=%~dp0..\.."
 if not defined BF2_TEST_OPT set "BF2_TEST_OPT=/O2"
 for %%A in (1 0) do (

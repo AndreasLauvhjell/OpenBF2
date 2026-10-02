@@ -10,7 +10,7 @@ rem
 rem   usage:  build.cmd          build and run
 rem           build.cmd nobuild  run only
 rem ===========================================================================
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0..\..\Build\vsdevcmd.cmd" x86
 
 set HERE=%~dp0
 set ABI=%HERE%..\..\RendDX9Abi

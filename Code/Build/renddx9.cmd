@@ -17,7 +17,7 @@ rem
 rem   usage:  renddx9.cmd          VC7.1-compatible ABI (/MT + Memory.dll)
 rem           renddx9.cmd native   native host ABI (/MD, no Memory.dll)
 rem ===========================================================================
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0vsdevcmd.cmd" x86
 
 for %%I in ("%~dp0..") do set CODE=%%~fI
 set ABI=%CODE%\RendDX9Abi

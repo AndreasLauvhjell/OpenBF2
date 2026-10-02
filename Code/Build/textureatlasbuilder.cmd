@@ -34,7 +34,7 @@ rem VALIDATE THE DLL'S FILES ONLY WITH THIS SCRIPT, RUN VIA THE PowerShell TOOL 
 rem returns 0 without building). Failures leave through :fail - an `exit /b 1` inside a block reaches
 rem a `cmd /c` caller as 0.
 rem ===========================================================================
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0vsdevcmd.cmd" x86
 if errorlevel 1 goto :fail
 if "%~1"=="" goto :args_ok
 if /i "%~1"=="native" goto :args_ok

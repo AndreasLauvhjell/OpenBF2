@@ -19,7 +19,7 @@ rem
 rem   usage:  build.cmd            compile all, link, report the gap count
 rem           build.cmd <file>     one translation unit
 rem ===========================================================================
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0vsdevcmd.cmd" x86
 for %%I in ("%~dp0..\BF2") do set ROOT=%%~fI
 set OUT=%~dp0obj
 rem Optional isolated-output seam for concurrent reconstruction agents.  The default remains the

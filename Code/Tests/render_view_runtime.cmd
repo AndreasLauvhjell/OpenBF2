@@ -2,7 +2,7 @@
 setlocal
 rem [TEMP][CHOSEN, not recovered] Actual renderer-view runtime, x86, no D3D device.
 rem Usage: render_view_runtime.cmd [native|compat] [O2|Od]
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0..\Build\vsdevcmd.cmd" x86
 set "TASK_ROOT=%~dp0..\.."
 set "TASK_ABI=native"
 set "TASK_OPT=O2"

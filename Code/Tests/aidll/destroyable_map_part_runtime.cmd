@@ -1,7 +1,7 @@
 @echo off
 setlocal
 rem [TEMP] Strict MSVC x86 destroyable-map-part fixture; no server and no FORCE link.
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0..\..\Build\vsdevcmd.cmd" x86
 if errorlevel 1 exit /b 1
 
 set "TASK_CODE=%~dp0..\.."

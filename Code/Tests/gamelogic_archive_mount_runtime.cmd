@@ -4,7 +4,7 @@ rem [TEMP] Bounded GameLogic::load archive-prefix regression linked to an isolat
 rem Usage: gamelogic_archive_mount_runtime.cmd <absolute CMake client build directory>
 if "%~1"=="" exit /b 2
 if not exist "%~1\CMakeFiles\bf2_client.dir\objects1.rsp" exit /b 2
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0..\Build\vsdevcmd.cmd" x86
 set "TASK_ROOT=%~dp0..\.."
 if not defined BF2_BUILD_OUT set "BF2_BUILD_OUT=%~dp0..\Build\obj_gamelogic_archive_mount_runtime"
 set "TESTOUT=%BF2_BUILD_OUT%\gamelogic_archive_mount_runtime"

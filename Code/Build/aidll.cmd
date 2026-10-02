@@ -25,7 +25,7 @@ rem
 rem   env:    BF2_AIDLL_OUT        per-agent object directory  (default Code\Build\obj_aidll)
 rem           BF2_AIDLL_BIN        per-agent output directory  (default Code\Build\bin_aidll)
 rem ===========================================================================
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0vsdevcmd.cmd" x86
 
 for %%I in ("%~dp0..") do set CODE=%%~fI
 set ROOT=%CODE%\BF2

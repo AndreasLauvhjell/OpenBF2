@@ -1,7 +1,7 @@
 @rem SCAFFOLDING TEST - not recovered source and not part of the BF2 build.
 @echo off
 setlocal
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0..\Build\vsdevcmd.cmd" x86
 pushd "%~dp0"
 cl /nologo /EHsc /O2 /std:c++14 /permissive /DDEDICATED=1 /FI"%~dp0..\BF2\Core\BuildConfig.h" bundle_serialization.cpp ^
   ..\BF2\Game\Objects\IObjectTemplate.cpp ^

@@ -40,6 +40,33 @@ import sys
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[2]
 
+
+def default_vcvars():
+    """Resolve VsDevCmd.bat: BF2_VSDEVCMD, then vswhere."""
+    override = os.environ.get('BF2_VSDEVCMD')
+    if override:
+        return Path(override)
+    program_files_x86 = os.environ.get('ProgramFiles(x86)', r'C:\Program Files (x86)')
+    vswhere = Path(program_files_x86) / 'Microsoft Visual Studio/Installer/vswhere.exe'
+    if vswhere.is_file():
+        try:
+            found = subprocess.run(
+                [str(vswhere), '-latest', '-products', '*',
+                 '-requires', 'Microsoft.VisualStudio.Component.VC.Tools.x86.x64',
+                 '-property', 'installationPath'],
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                universal_newlines=True, check=True)
+        except (OSError, subprocess.CalledProcessError):
+            found = None
+        if found is not None:
+            for line in found.stdout.splitlines():
+                candidate = Path(line.strip()) / 'Common7/Tools/VsDevCmd.bat'
+                if candidate.is_file():
+                    return candidate
+    raise RuntimeError('Visual Studio developer environment not found; '
+                       'set BF2_VSDEVCMD to your VsDevCmd.bat')
+
+
 # The gate lines, in the order the boot must produce them. Each is a DIFFERENT claim, and the run
 # reports which prefix it reached rather than one pass/fail - the stop IS the measurement.
 #
@@ -583,8 +610,7 @@ def main():
     parser.add_argument('--dll', type=Path,
                         default=ROOT / 'Code/Build/bin_aidll/AIDLL_w32ded.dll')
     parser.add_argument('--game-dir', type=Path, default=Path(r'D:\B2BF Launcher\Battlefield2'))
-    parser.add_argument('--vcvars', type=Path,
-                        default=Path(r'D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat'))
+    parser.add_argument('--vcvars', type=Path, default=None)
     parser.add_argument('--level', default='dalian_plant')
     parser.add_argument('--game-mode', default='gpm_coop')
     parser.add_argument('--frames', type=int, default=30)
@@ -601,6 +627,8 @@ def main():
                         help="chunk 03B's gate: count the AI templates and plug-ins the scripts made")
     args = parser.parse_args()
 
+    if args.vcvars is None:
+        args.vcvars = default_vcvars()
     args.out = args.out.resolve()
     args.out.mkdir(parents=True, exist_ok=True)
     manifest = args.build_out.resolve() / 'engine_objects.rsp'

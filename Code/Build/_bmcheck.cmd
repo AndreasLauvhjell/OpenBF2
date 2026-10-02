@@ -1,5 +1,5 @@
 @echo off
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0vsdevcmd.cmd" x86
 cl /nologo /c /MD /std:c++14 /EHsc /DDEDICATED=1 /FI"%~dp0..\BF2\Core\BuildConfig.h" /Fo"%~dp0obj\bootmain_test.obj" "%~dp0bootmain.cpp"
 set RC=%errorlevel%
 

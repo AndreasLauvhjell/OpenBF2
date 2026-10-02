@@ -1,7 +1,7 @@
 @echo off
 setlocal
 rem [TEMP] Strict x86 link of only real classifier bodies and lifetime observer.
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0..\Build\vsdevcmd.cmd" x86
 set TESTOUT=%~dp0..\Build\unresolved_wave1_filter_20260908\runtime
 if not exist "%TESTOUT%" mkdir "%TESTOUT%"
 cl /nologo /c /MDd /Od /Gy /std:c++14 /permissive /EHsc /Z7 /DDEDICATED=1 ^

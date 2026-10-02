@@ -5,7 +5,7 @@ rem EditorSpline and SplineControlPoint translation units linked against recorde
 rem editor or DLL is launched. BF2_TEST_ABI_NATIVE=0 builds the retail-compatible flavour, 1 the native.
 rem Roads step 3 (2026-10-01): RoadEditable (and the native flavour's HeightmapEventNode) join the
 rem list; road_objects_runtime.cpp models the seams it adds.
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0..\Build\vsdevcmd.cmd" x86
 set "ROOT=%~dp0..\BF2"
 set "ABI=%~dp0..\RendDX9Abi"
 if not defined BF2_TEST_ABI_NATIVE set "BF2_TEST_ABI_NATIVE=0"

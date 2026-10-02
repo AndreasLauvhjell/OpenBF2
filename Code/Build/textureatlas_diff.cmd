@@ -27,7 +27,7 @@ rem
 rem Nothing is written into the game directory. Work dir: Code\Build\obj_textureatlas_diff
 rem (inputs\, results\<retail|rebuilt>\<scenario>\, logs\).
 rem ===========================================================================
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0vsdevcmd.cmd" x86
 if errorlevel 1 goto :fail
 for %%I in ("%~dp0..") do set CODE=%%~fI
 set SRC=%~dp0textureatlas_diff

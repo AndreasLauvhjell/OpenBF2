@@ -15,7 +15,7 @@
 @rem ===========================================================================
 @echo off
 setlocal
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0..\Build\vsdevcmd.cmd" x86
 
 set STUBS=%~dp0
 set SRC=%~dp0..\BF2\Game\Main

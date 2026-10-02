@@ -3,7 +3,7 @@ setlocal
 rem [TEMP] Native x86 fixture for the recovered Bf2TransformNode::update body.
 rem /FORCE:UNRESOLVED covers uncalled System/Node suffix families; the exercised
 rem transform, NodeState, typed button and Node update path must execute normally.
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0..\Build\vsdevcmd.cmd" x86
 set "TASK_ROOT=%~dp0..\.."
 if not defined BF2_BUILD_OUT set "BF2_BUILD_OUT=%~dp0..\Build\obj_hud_bf2_transform_node_runtime_20260916"
 if not exist "%BF2_BUILD_OUT%" mkdir "%BF2_BUILD_OUT%"

@@ -5,7 +5,7 @@
 @rem would take another agent's objects with it.
 @echo off
 setlocal
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0..\Build\vsdevcmd.cmd" x86
 pushd "%~dp0"
 if not exist "obj_socket_loopback" mkdir "obj_socket_loopback"
 cl /nologo /EHsc /O2 /std:c++14 /permissive /Gy /DDEDICATED=1 /FI"%~dp0..\BF2\Core\BuildConfig.h" socket_loopback.cpp ^

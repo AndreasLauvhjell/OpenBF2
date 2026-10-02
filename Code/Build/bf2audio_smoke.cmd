@@ -10,7 +10,7 @@ rem   BF2_GAME_DIR   the reference game directory holding Memory.dll and
 rem                  BF2OpenAL.dll (read only; nothing is written there).
 rem   BF2_BF2AUDIO_BIN  where bf2audio.cmd put BF2Audio.dll (default bin_bf2audio).
 rem ===========================================================================
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0vsdevcmd.cmd" x86
 if errorlevel 1 exit /b 1
 for %%I in ("%~dp0..") do set CODE=%%~fI
 set BF2=%CODE%\BF2

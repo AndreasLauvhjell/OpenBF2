@@ -14,6 +14,6 @@ rem
 rem   usage:  ship.cmd                      full build into Code\Build\bin_ship
 rem           ship.cmd -SkipCompile         relink the existing objects only
 rem ===========================================================================
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0vsdevcmd.cmd" x86
 powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0ship.ps1" %*
 exit /b %errorlevel%

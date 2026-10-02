@@ -135,8 +135,9 @@ try {
 }
 ```
 
-Choose a unique `BF2_BUILD_OUT`: the full build cleans its output directory. Check the
-scripts' local toolchain paths as described in [Getting started](getting-started.md).
+Choose a unique `BF2_BUILD_OUT`: the full build cleans its output directory. The batch
+helpers resolve `VsDevCmd.bat` through `BF2_VSDEVCMD` or `vswhere`; see the
+[Windows prerequisites](building.md#windows-prerequisites).
 The client-dispatch fixture also takes an isolated output directory. It checks secondary
 interface pointers, forwarded arguments, and null-client/connection handling without sockets
 or game content; it does not exercise a production connection.

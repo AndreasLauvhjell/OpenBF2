@@ -3,7 +3,7 @@ setlocal
 rem [TEMP] Native x86 fixture for Bf2PictureNode and its eight HUD builder rows.
 rem /FORCE:UNRESOLVED only covers the split node, map node, logical data classes
 rem and the alpha-show effect, none of which this fixture calls.
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0..\Build\vsdevcmd.cmd" x86
 set "TASK_ROOT=%~dp0..\.."
 if not defined BF2_BUILD_OUT set "BF2_BUILD_OUT=%~dp0..\Build\obj_hud_picture_node_20260914"
 if not exist "%BF2_BUILD_OUT%" mkdir "%BF2_BUILD_OUT%"

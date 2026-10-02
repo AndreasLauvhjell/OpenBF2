@@ -1,7 +1,7 @@
 @echo off
 setlocal
 rem [TEMP] Exact selector, native chosen lifetimes and typed observers, strict x86.
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0..\..\Build\vsdevcmd.cmd" x86
 if errorlevel 1 exit /b 1
 set "TASK_CODE=%~dp0..\.."
 if not defined BF2_BOT_SELECTOR_OUT set "BF2_BOT_SELECTOR_OUT=%TASK_CODE%\Build\ai_radius_20260927\selector_regression"

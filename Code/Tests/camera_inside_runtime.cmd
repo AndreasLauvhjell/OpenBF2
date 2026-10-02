@@ -3,7 +3,7 @@ setlocal EnableDelayedExpansion
 rem [TEMP] Diagnostic /FORCE engine fixture: freshly compiled client Camera only.
 if not defined BF2_ENGINE_BUILD set "BF2_ENGINE_BUILD=%~dp0..\Build\obj_skinnedmesh_gate_20260922"
 if not exist "%BF2_ENGINE_BUILD%\engine_objects.rsp" exit /b 2
-call "D:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tools\VsDevCmd.bat" -arch=x86 -no_logo >nul 2>&1
+call "%~dp0..\Build\vsdevcmd.cmd" x86
 set "ROOT=%~dp0..\BF2"
 if not defined BF2_BUILD_OUT set "BF2_BUILD_OUT=%~dp0..\Build\camera_inside_weapon_agent_20260923"
 for %%D in ("%BF2_ENGINE_BUILD%") do set "ENGINE_ABS=%%~fD"
