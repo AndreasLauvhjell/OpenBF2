@@ -599,9 +599,6 @@ void vectorAssignRaw(vc71::vector_layout& dst, const vc71::vector_layout& src, u
 }
 
 
-// Copies the base queue payload, including nested 64-byte and 16-byte record vectors.
-// Ref-counted pointers release before addRef; keep the old != new guards for self-assignment.
-
 void renderQueueEntryCopyPayload(void* destEntry, void* sourceEntry)
 {
     unsigned char* const d = static_cast<unsigned char*>(destEntry);
@@ -609,20 +606,19 @@ void renderQueueEntryCopyPayload(void* destEntry, void* sourceEntry)
     if (d == a)
         return;
 
-    typedef void(__fastcall * RefFn)(void*, void*);
     struct Local
     {
         static void swapRef(unsigned char* dst, const unsigned char* src, unsigned int at)
         {
             void* const  oldRef = *reinterpret_cast<void* const*>(dst + at);
-            void* const  newRef = *reinterpret_cast<void* const*>(src + at);
-            if (oldRef == newRef)
+            if (oldRef == *reinterpret_cast<void* const*>(src + at))
                 return;
             if (oldRef)   // release first - shipped, and safe only behind the test above
-                reinterpret_cast<RefFn>((*reinterpret_cast<void***>(oldRef))[0x08 / 4])(oldRef, 0);
+                static_cast<IUnknown*>(oldRef)->Release();
+            void* const newRef = *reinterpret_cast<void* const*>(src + at);
             *reinterpret_cast<void**>(dst + at) = newRef;
             if (newRef)
-                reinterpret_cast<RefFn>((*reinterpret_cast<void***>(newRef))[0x04 / 4])(newRef, 0);
+                static_cast<IUnknown*>(newRef)->AddRef();
         }
     };
 
