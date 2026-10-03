@@ -170,14 +170,10 @@ bool HTTPRequest::validateUrlNotSpoofed(std::string host) const
 }
 std::string HTTPRequest::getGameSpyUrl() const
 {
-    // [PLATFORM] These are the actual reference-image strings.
-#if defined(_WIN32)
-    std::string url("http://BF2Web.openspy.net/ASP/"); // gamespy.com
+    // [CHOSEN, not recovered] Cross-platform OpenSpy policy, see #21. The reference
+    // images used BF2Web.gamespy.com (PE) and BF2Web.game.bf2.us (ELF), not openspy.net.
+    std::string url("http://BF2Web.openspy.net/ASP/");
     validateUrlNotSpoofed("BF2Web.openspy.net");
-#else
-    std::string url("http://BF2Web.game.bf2.us/ASP/");
-    validateUrlNotSpoofed("BF2Web.game.bf2.us");
-#endif
     // [TEMP] [CHOSEN, not recovered] [RETIRE-WHEN: local-stats-fixture]
     // BF2_STATS_URL overrides persistence URLs for local fixtures after validating the
     // original URL. Inactive when unset; announces activation once on stderr.
