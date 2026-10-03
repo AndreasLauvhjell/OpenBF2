@@ -16,7 +16,7 @@
 #include "../../Scene/Object/ObjectTypes/Game/IPlayerControlObject.h"   // getOccupingPlayer
 #include "Game/ControlPoint.h"                                // the control-point map's value type
 #include "ObjectLayoutAccess.h"                              // LayoutAccess::armorComponent (+0x3C)
-#include "Game/PlayerControlObject.h"                        // the concrete +0x180 dispatch
+#include "Game/Soldier.h"                                    // soldier occupancy dispatch
 #include "Game/EntryPoint.h"                                 // BFfindEntryPoint
 #include "ISoldier.h"
 #include "../Utility/Vars.h"
@@ -333,9 +333,10 @@ bool SpawnPoint::getActive(bool isAI, int team)
 
             if (classId == world::CID_SoldierTemplate)
             {
-                // The class-ID check permits direct dispatch without querying another interface.
+                // Soldiers and vehicles have different primary virtual tables.
+                // The class-ID check permits direct dispatch through Soldier.
                 world::IPlayer* occupant =
-                    static_cast<world::PlayerControlObject*>(hit)->getOccupingPlayer();
+                    static_cast<world::Soldier*>(hit)->getOccupingPlayer();
                 if (occupant && occupant->getIsAlive())
                     return false;               // somebody alive is standing here
             }
