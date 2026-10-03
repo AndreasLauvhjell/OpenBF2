@@ -704,8 +704,9 @@ void NetworkManager::callRemovedFromNetworkManager(NetworkableDescriptor* descri
 
 // Rebuilds changed-descriptor masks and scopable root groups for this frame's replication work.
 // Each property writes one dword into a twelve-dword mask; callers must not exceed twelve properties.
-// Scoping requires an active ghost and positive priority. Excludes child control objects without armor,
-// removes kit-template descriptors from the scopable set, and groups survivors by root object ID.
+// Scoping requires an active ghost and positive priority. Excludes child control objects that are
+// unarmored and unoccupied, removes kit-template descriptors from the scopable set, and groups
+// survivors by root object ID.
 namespace {
 
 // The twelve-way or the ELF emits at 0x846CC00 and again in the scopable pass.
@@ -789,11 +790,12 @@ NetworkManager::updateStateMasks()
             m_networkableStateMasks.push_back(
                 std::make_pair(static_cast<const NetworkableDescriptor*>(descriptor), mask));
 
-        // the include rule - see the note above.
-        void* const pco = object->queryInterface(world::IID_IPlayerControlObject);
+        // the include rule - see the note above
+        world::IPlayerControlObject* const pco = static_cast<world::IPlayerControlObject*>(object->queryInterface(world::IID_IPlayerControlObject));
         const bool include = (object->getParent() == 0)
                           || (pco == 0)
-                          || (object->getArmorComponent() != 0);
+                          || (object->getArmorComponent() != 0)
+                          || pco->isOccupied();
 
         if (include && networkable->m_ghostActive && networkable->m_basePriority > 0.0f)
         {
