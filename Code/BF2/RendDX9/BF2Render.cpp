@@ -30,6 +30,7 @@
 #include "../Geom/UndergrowthSystem.h"
 #include "../Geom/ParticleSystem/ParticleSystemManager.h"
 #include "../Geom/Terrain.h"
+#include "../Geom/ObjectDrawer.h"
 #include "../Geom/RoadEditableRenderer.h"   // IRoadEditableRenderer - the typed drawAll below
 #include "../RendMisc/IRenderer.h"
 #include "../RendMisc/IRenderView.h"
@@ -2407,10 +2408,12 @@ bool Renderer::renderFrame(double time, float deltaTime)
                     RD9_FRONTIER_AT("dice::hfe::dx9rend::Renderer::renderFrame (sub_10029C50 - the "
                                     "frame-time debug overlay, gated on +0x6AC)", this, 0x28);
                 }
-                if (g_ObjectDrawer && reinterpret_cast<unsigned char*>(g_ObjectDrawer)[0x70])
+                // Native object vectors shift the fields following them; use the flag member.
+                if (g_ObjectDrawer
+                    && reinterpret_cast<const geom::ObjectDrawer*>(g_ObjectDrawer)->isCullingDebugEnabled())
                 {
                     RD9_FRONTIER_AT("dice::hfe::dx9rend::Renderer::renderFrame (sub_10029BB0 - the "
-                                    "\"Culled:\" debug overlay, gated on the ObjectDrawer's +0x70, "
+                                    "\"Culled:\" debug overlay, gated on the ObjectDrawer's debug flag, "
                                     "which its constructor clears)", this, 0x28);
                 }
 

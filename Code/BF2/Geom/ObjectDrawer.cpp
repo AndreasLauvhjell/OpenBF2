@@ -1,9 +1,7 @@
 // Path:     attested - "C:\dice\Projects\BF2Branches\Patch_1_50\Code\BF2\Geom\ObjectDrawer.cpp",
 //           read as a literal at RendDX9 0x1021AF98.
-// Contents: recovered from RendDX9.dll (PE, symbols stripped).  The constructor, the IBase quartet
-//           and the five leaf slots are written; the seven larger slots are named frontiers.
-
-// See ObjectDrawer.h for the layout evidence and for why this class is NOT registered yet.
+// Contents: recovered from RendDX9.dll (PE, symbols stripped).
+// Occlusion evidence and validation: docs/recovery-notes/Geom/object-occlusion.md.
 
 #ifdef BF2_IMAGE_RENDDX9
 
@@ -27,6 +25,7 @@
 #include <math.h>
 
 #include <cstdio>
+#include <cstring>
 #include <new>
 
 namespace dice {
@@ -386,24 +385,9 @@ void objectDrawerQueryGrid(unsigned int slot, const void* frustum, ObjectDrawerS
 }
 
 
-// [TEMP] [CHOSEN, not recovered] [RETIRE-WHEN: RW-objectdrawer-occluders]
-// Reports skipped occlusion work and leaves the candidate set unchanged, drawing too much.
-// Reports include the caller, set size and a per-site hit count (first three, then every 256th).
-// Retire when silhouette-plane construction and the enabled occluder-cull arm are implemented
-// and validated against the geometry instance's face, edge and vertex tables.
-
-void objectDrawerOccluderFrontier(unsigned int& hits, const char* qualified, const char* what,
-                                  unsigned int setSize)
-{
-    ++hits;
-    if (hits > 3u && (hits & 0xFFu) != 0u)
-        return;
-    std::fprintf(stderr,
-                 "[FRONTIER] %s reached: %s - the set of %u object(s) is left UN-CULLED, "
-                 "REPORTED AND CONTINUED, hit %u\n",
-                 qualified, what, setSize, hits);
-    std::fflush(stderr);
-}
+void objectDrawerBuildOccluders(ObjectDrawer* self, ObjectDrawerSet& set);
+void objectDrawerCullObjects(ObjectDrawer* self, ObjectDrawerSet& set);
+void objectDrawerDestroyMembers(ObjectDrawer* self);
 
 // Submits each geometry in the object's chain using the drawer's view and occluder.
 // The unmodeled interface uses +0x18 for submission and +0xCC for the next geometry.
@@ -523,6 +507,11 @@ ObjectDrawer::ObjectDrawer()
     }
 }
 
+ObjectDrawer::~ObjectDrawer()
+{
+    objectDrawerDestroyMembers(this);
+}
+
 // the IBase quartet
 
 void ObjectDrawer::addRef()                                  // 0x1001A010, the shared body
@@ -541,10 +530,7 @@ int ObjectDrawer::release()
     const int remaining = --m_refCount;
     if (remaining == 0)
     {
-        // [FRONTIER] dice::hfe::geom::ObjectDrawer::~ObjectDrawer - the destructor at the address
-        // ObjectDrawer_release calls is not read yet.  Nothing releases this object in this build
-        // (it is never created), so the free below is the honest half of the pair rather than a
-        // fabricated teardown.
+        this->~ObjectDrawer();
         ::renddx9abi::engineFree(this);
     }
     return remaining;
@@ -629,17 +615,8 @@ void ObjectDrawer::updateVisible(float time)
 
     if (m_byte60)
     {
-        // [FRONTIER] the occluder pair - reports AND continues under the owner exception recorded
-        // beside objectDrawerOccluderFrontier above.  sub_100F9300 builds silhouette planes out of
-        // the visible set into the vector at +0x50; sub_100F8430 then tests every object against
-        // them and erases the culled ones with a memmove.  Neither is transcribed.
-        // [RETIRE-WHEN: RW-objectdrawer-occluders]
-        static unsigned int hits = 0;
-        objectDrawerOccluderFrontier(
-            hits, "dice::hfe::geom::ObjectDrawer::updateVisible",
-            "the occluder pair sub_100F9300 (silhouette planes into +0x50) + sub_100F8430 (the "
-            "cull), gated on +0x60 which the constructor sets to 1",
-            objectDrawerSetSize(m_visibleSet));
+        objectDrawerBuildOccluders(this, m_visibleSet);
+        objectDrawerCullObjects(this, m_visibleSet);
     }
 
     m_culledCount -= static_cast<int>(objectDrawerSetSize(m_visibleSet));
@@ -681,14 +658,7 @@ void ObjectDrawer::draw(float time)
 
     if (m_byte60)
     {
-        // [FRONTIER] sub_100F8430, the occlusion cull - see updateVisible and the owner exception
-        // recorded beside objectDrawerOccluderFrontier.
-        // [RETIRE-WHEN: RW-objectdrawer-occluders]
-        static unsigned int hits = 0;
-        objectDrawerOccluderFrontier(
-            hits, "dice::hfe::geom::ObjectDrawer::draw",
-            "the occlusion cull sub_100F8430, gated on +0x60 which the constructor sets to 1",
-            objectDrawerSetSize(m_drawSet));
+        objectDrawerCullObjects(this, m_drawSet);
     }
 
     m_dword78 -= objectDrawerSetSize(m_drawSet);
@@ -826,6 +796,352 @@ struct OcclusionBoxCorners
     }
 };
 
+
+// Frees each owned plane list while retaining capacity in the outer occluder list.
+void objectDrawerClearOccluders(ObjectDrawer* self)
+{
+    vc71::vector_layout& records = self->m_vector50;
+    for (char* p = records.first; p != records.last; p += sizeof(vc71::vector_layout))
+    {
+        vc71::vector_layout& planes = *reinterpret_cast<vc71::vector_layout*>(p);
+        if (planes.first)
+            ::renddx9abi::engineFree(planes.first);
+        planes.first = 0;
+        planes.last = 0;
+        planes.end = 0;
+    }
+    records.last = records.first;
+}
+
+// These private views describe the records produced by StaticMesh and its template.
+struct ObjectDrawerOccluderFace
+{
+    Plane3 plane;
+    vc71::vector_layout* edgeReferences;
+};
+
+struct ObjectDrawerOccluderRecord
+{
+    vc71::vector_layout faces;
+    vc71::vector_layout points;
+    vc71::vector_layout* edges;
+};
+
+static_assert(sizeof(ObjectDrawerOccluderFace) == 20, "world-space occluder face stride");
+static_assert(sizeof(ObjectDrawerOccluderRecord) == 36, "world-space occluder record stride");
+
+// Owns the local plane list while a separate copy is appended to the drawer's outer list.
+struct ObjectDrawerPlaneList
+{
+    vc71::vector_layout planes;
+
+    ObjectDrawerPlaneList()
+    {
+        planes.alloc = 0;
+        planes.first = 0;
+        planes.last = 0;
+        planes.end = 0;
+    }
+
+    ~ObjectDrawerPlaneList()
+    {
+        if (planes.first)
+            ::renddx9abi::engineFree(planes.first);
+    }
+
+    void append(const Plane3& plane)
+    {
+        if (!vc71::vectorPushBackIn(planes, sizeof(Plane3), &plane))
+            throw std::bad_alloc();
+    }
+
+    void appendCopyTo(vc71::vector_layout& records) const
+    {
+        ObjectDrawerPlaneList copy;
+        const unsigned int count = vc71::vectorSizeIn(planes, sizeof(Plane3));
+        if (count)
+        {
+            if (!vc71::vectorReserveIn(copy.planes, sizeof(Plane3), count))
+                throw std::bad_alloc();
+            ::memcpy(copy.planes.first, planes.first, count * sizeof(Plane3));
+            copy.planes.last = copy.planes.first + count * sizeof(Plane3);
+        }
+        if (!vc71::vectorPushBackIn(records, sizeof(vc71::vector_layout), &copy.planes))
+            throw std::bad_alloc();
+        copy.planes.first = 0;
+        copy.planes.last = 0;
+        copy.planes.end = 0;
+    }
+
+private:
+    ObjectDrawerPlaneList(const ObjectDrawerPlaneList&);
+    ObjectDrawerPlaneList& operator=(const ObjectDrawerPlaneList&);
+};
+
+void objectDrawerNormalizeOccluderNormal(Vec3& normal)
+{
+    const float lengthSquared = static_cast<float>(
+        static_cast<double>(normal.x) * normal.x
+        + static_cast<double>(normal.y) * normal.y
+        + static_cast<double>(normal.z) * normal.z);
+    const double epsilon = 1.1920928955078125e-7;
+    if (::fabs(static_cast<double>(lengthSquared) - 1.0) < epsilon)
+        return;
+    if (::fabs(static_cast<double>(lengthSquared)) < epsilon)
+    {
+        normal.x = normal.y = normal.z = 0.0f;
+        return;
+    }
+    const double inverse = 1.0 / ::sqrt(static_cast<double>(lengthSquared));
+    normal.x = static_cast<float>(inverse * normal.x);
+    normal.y = static_cast<float>(inverse * normal.y);
+    normal.z = static_cast<float>(inverse * normal.z);
+}
+
+// Builds camera-facing source and silhouette planes from nearby world-space occluders.
+// Requires a render view and the StaticMesh face/edge/point records to remain valid for the call.
+void objectDrawerBuildOccluders(ObjectDrawer* self, ObjectDrawerSet& objects)
+{
+    dx9rend::IRenderView* const view = static_cast<dx9rend::IRenderView*>(self->m_renderView);
+    const float* const camera = view->getViewMatrixPtr()->m + 12;
+    const float* const forward = view->getViewMatrixPtr()->m + 8;
+    objectDrawerClearOccluders(self);
+
+    for (world::IObject** cursor = objectDrawerSetBegin(objects);
+         cursor != objectDrawerSetEnd(objects); ++cursor)
+    {
+        world::IObject* const object = *cursor;
+        void* const geometry = world::object_detail::LayoutAccess::geometry(object);
+        if (!geometry)
+            continue;
+
+        typedef int (__fastcall* RecordCountFn)(void*, void*);
+        const int recordCount = reinterpret_cast<RecordCountFn>(
+            occlusionGeometrySlot(geometry, 0xE8))(geometry, 0);
+        if (!recordCount)
+            continue;
+
+        const Vec3& position = object->getAbsolutePosition();
+        const double dx = static_cast<double>(position.x) - camera[0];
+        const double dy = static_cast<double>(position.y) - camera[1];
+        const double dz = static_cast<double>(position.z) - camera[2];
+        if (static_cast<double>(self->m_float64) * self->m_float64 < dx * dx + dz * dz + dy * dy)
+            continue;
+
+        typedef const ObjectDrawerOccluderRecord* (__fastcall* RecordFn)(void*, void*, int);
+        for (int recordIndex = 0; recordIndex < recordCount; ++recordIndex)
+        {
+            const ObjectDrawerOccluderRecord* const record = reinterpret_cast<RecordFn>(
+                occlusionGeometrySlot(geometry, 0xEC))(geometry, 0, recordIndex);
+            vc71::vector_layout& edges = *record->edges;
+            const unsigned int edgeCount = vc71::vectorSizeIn(edges, 4u);
+            const unsigned int faceCount = vc71::vectorSizeIn(record->faces, sizeof(ObjectDrawerOccluderFace));
+            if (!faceCount)
+                continue;
+
+            ObjectDrawerPlaneList planes;
+            const ObjectDrawerOccluderFace* const faces =
+                reinterpret_cast<const ObjectDrawerOccluderFace*>(record->faces.first);
+            for (unsigned int faceIndex = 0; faceIndex < faceCount; ++faceIndex)
+            {
+                const ObjectDrawerOccluderFace& face = faces[faceIndex];
+                const Plane3& plane = face.plane;
+                // The shipped loop takes every iteration's reference count from the first face.
+                const unsigned int referenceCount = vc71::vectorSizeIn(*faces[0].edgeReferences, 2u);
+                const double distance = static_cast<double>(plane.normal.y) * camera[1]
+                    + static_cast<double>(plane.normal.x) * camera[0]
+                    + static_cast<double>(plane.normal.z) * camera[2] + plane.d;
+                unsigned char selected = 0;
+                // The original first comparison admits unordered values; the angle comparison does not.
+                if (!(distance <= 0.0))
+                {
+                    const double facing = -static_cast<double>(forward[2]) * plane.normal.z
+                        + -static_cast<double>(forward[1]) * plane.normal.y
+                        + -static_cast<double>(forward[0]) * plane.normal.x;
+                    float angleThreshold;
+                    ::memcpy(&angleThreshold, &self->m_dword6C, sizeof(angleThreshold));
+                    if (facing > angleThreshold)
+                    {
+                        planes.append(plane);
+                        selected = 1;
+                    }
+                }
+                for (unsigned int referenceIndex = 0; referenceIndex < referenceCount; ++referenceIndex)
+                {
+                    const unsigned char* const reference = reinterpret_cast<const unsigned char*>(
+                        face.edgeReferences->first + 2u * referenceIndex);
+                    unsigned char* const edge = reinterpret_cast<unsigned char*>(edges.first + 4u * reference[0]);
+                    edge[reference[1] ? 2 : 3] = selected;
+                }
+            }
+            if (!vc71::vectorSizeIn(planes.planes, sizeof(Plane3)))
+                continue;
+
+            const Vec3* const points = reinterpret_cast<const Vec3*>(record->points.first);
+            for (unsigned int edgeIndex = 0; edgeIndex < edgeCount; ++edgeIndex)
+            {
+                const unsigned char* const edge = reinterpret_cast<const unsigned char*>(edges.first + 4u * edgeIndex);
+                if (static_cast<unsigned int>(edge[2]) + edge[3] != 1u)
+                    continue;
+                const Vec3& a = points[edge[0]];
+                const Vec3& b = points[edge[1]];
+                const double ax = static_cast<double>(a.x) - camera[0];
+                const double ay = static_cast<double>(a.y) - camera[1];
+                const float az = static_cast<float>(static_cast<double>(a.z) - camera[2]);
+                const double ex = static_cast<double>(b.x) - a.x;
+                const double ey = static_cast<double>(b.y) - a.y;
+                const double ez = static_cast<double>(b.z) - a.z;
+                const float storedEz = static_cast<float>(ez);
+                Plane3 silhouette;
+                silhouette.normal.x = static_cast<float>(ez * ay - ey * az);
+                silhouette.normal.y = static_cast<float>(az * ex - storedEz * ax);
+                silhouette.normal.z = static_cast<float>(ey * ax - ay * ex);
+                objectDrawerNormalizeOccluderNormal(silhouette.normal);
+                if (edge[2])
+                {
+                    silhouette.normal.x = -silhouette.normal.x;
+                    silhouette.normal.y = -silhouette.normal.y;
+                    silhouette.normal.z = -silhouette.normal.z;
+                }
+                silhouette.d = static_cast<float>(-(static_cast<double>(silhouette.normal.z) * b.z
+                    + static_cast<double>(silhouette.normal.y) * b.y
+                    + static_cast<double>(silhouette.normal.x) * b.x));
+                planes.append(silhouette);
+            }
+            planes.appendCopyTo(self->m_vector50);
+        }
+    }
+}
+
+// Removes objects wholly behind any occluder's planes, retaining the order of survivors.
+// Precise mode tests transformed geometry bounds only when the sphere intersects a plane.
+void objectDrawerCullObjects(ObjectDrawer* self, ObjectDrawerSet& set)
+{
+    const bool precise = self->m_byte68 != 0;
+    OcclusionBoxCorners box;
+    unsigned int index = 0;
+    while (index < objectDrawerSetSize(set))
+    {
+        world::IObject* const object = objectDrawerSetBegin(set)[index];
+        const Vec3& centre = object->getAbsolutePosition();
+        const float radius = object->getVisualBoundingRadius();
+        void* const geometry = precise
+            ? world::object_detail::LayoutAccess::geometry(object) : 0;
+        bool boxBuilt = false;
+        bool hidden = false;
+
+        for (unsigned int occluder = 0;
+             self->m_vector50.first && occluder < occlusionVectorCount(
+                 self->m_vector50.first, self->m_vector50.last); ++occluder)
+        {
+            const vc71::vector_layout& planes = *reinterpret_cast<const vc71::vector_layout*>(
+                self->m_vector50.first + occluder * sizeof(vc71::vector_layout));
+            hidden = true;
+            for (const char* cursor = planes.first; cursor != planes.last; cursor += sizeof(Plane3))
+            {
+                const Plane3& plane = *reinterpret_cast<const Plane3*>(cursor);
+                const double distance = precise
+                    ? static_cast<double>(plane.normal.z) * centre.z
+                      + static_cast<double>(plane.normal.y) * centre.y
+                      + static_cast<double>(plane.normal.x) * centre.x + plane.d
+                    : static_cast<double>(plane.normal.z) * centre.z
+                      + static_cast<double>(plane.normal.x) * centre.x
+                      + static_cast<double>(centre.y) * plane.normal.y + plane.d;
+                if (precise && distance > 0.0f)
+                {
+                    hidden = false;
+                    break;
+                }
+                if (distance > -radius)
+                {
+                    if (!precise || !geometry)
+                    {
+                        hidden = false;
+                        break;
+                    }
+                    if (!boxBuilt)
+                    {
+                        box.setBounds(occlusionGeometryLocalBounds(geometry));
+                        box.transform(object->getAbsoluteTransformation());
+                        boxBuilt = true;
+                    }
+                    for (unsigned int corner = 0; corner < 8; ++corner)
+                    {
+                        const Vec3& point = box.corner[corner];
+                        if (static_cast<double>(point.z) * plane.normal.z
+                            + static_cast<double>(point.x) * plane.normal.x
+                            + static_cast<double>(plane.normal.y) * point.y + plane.d > 0.0)
+                        {
+                            hidden = false;
+                            break;
+                        }
+                    }
+                    if (!hidden)
+                        break;
+                }
+            }
+            if (hidden)
+                break;
+        }
+
+        if (hidden)
+        {
+            if (precise ? geometry : world::object_detail::LayoutAccess::geometry(object))
+                ++self->m_dword7C;
+            set.erase(set.begin() + index);
+        }
+        else
+        {
+            ++index;
+        }
+    }
+}
+
+void objectDrawerDestroyTreeNodes(void* node)
+{
+    while (static_cast<unsigned char*>(node)[0x19] == 0)
+    {
+        void** const links = static_cast<void**>(node);
+        objectDrawerDestroyTreeNodes(links[2]);
+        void* const left = links[0];
+        ::renddx9abi::engineFree(node);
+        node = left;
+    }
+}
+
+void objectDrawerDestroyTree(ObjectDrawerTreeHeader& tree)
+{
+    void** const head = static_cast<void**>(tree.head);
+    objectDrawerDestroyTreeNodes(head[1]);
+    head[1] = head;
+    tree.size = 0;
+    head[0] = head;
+    head[2] = head;
+    ::renddx9abi::engineFree(tree.head);
+    tree.head = 0;
+    tree.size = 0;
+}
+
+// Detaches the event listener and releases the drawer's owned storage and occluder.
+// The event manager must outlive the drawer. Render view and scene objects are borrowed.
+void objectDrawerDestroyMembers(ObjectDrawer* self)
+{
+    self->m_vptr = kObjectDrawerPrimaryVtable;
+    self->m_eventVptr = kObjectDrawerEventVtable;
+    ::dice::hfe::eventManager->unregisterEventHandler(
+        static_cast<EventCategory>(0), reinterpret_cast<IEventListener*>(&self->m_eventVptr));
+    objectDrawerClearOccluders(self);
+    if (self->m_vector50.first)
+        ::renddx9abi::engineFree(self->m_vector50.first);
+    self->m_vector50.first = self->m_vector50.last = self->m_vector50.end = 0;
+    ObjectDrawerSet().swap(self->m_drawSet);
+    ObjectDrawerSet().swap(self->m_visibleSet);
+    if (self->m_occluder)
+        self->m_occluder->release();
+    objectDrawerDestroyTree(self->m_tree1C);
+    objectDrawerDestroyTree(self->m_tree10);
+}
+
 } // anonymous namespace
 
 namespace {
@@ -936,7 +1252,6 @@ bool ObjectDrawer::isGeometryOccluded(void* geometry)
 // Tests whether an axis-aligned world-space box is hidden by an occluder.
 // bounds must be valid; enabled queries finalize its derived data in place.
 // Uses the origin-based radius around the box centre. An occluder with no planes hides it.
-// Without the silhouette builder's populated occluders, returns false (RW-objectdrawer-occluders).
 bool ObjectDrawer::isBoundsOccluded(LocalBoundingBox* bounds)
 {
     if (!m_byte60)
@@ -1026,8 +1341,6 @@ bool ObjectDrawer::isBoundsOccluded(LocalBoundingBox* bounds)
 
 // RefFactory_geom_ObjectDrawer - 0x100B0ADE.  operator new(0x8C), the constructor, then
 // queryInterface; the same shape as every other factory in this image.
-
-// declared AND NOT registered.  ModuleGeom does not list this class.  See the header.
 
 IBase* __fastcall createObjectDrawer(unsigned int iid, IBase* outer)
 {

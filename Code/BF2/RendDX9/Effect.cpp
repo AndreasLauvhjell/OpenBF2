@@ -321,8 +321,6 @@ void* Effect::queryInterface(unsigned int iid) const
 
 void* Effect::getShaderParameter(const vc71::string& name)
 {
-    RD9_TRACE("dice::hfe::dx9rend::Effect::getShaderParameter", 0x00);
-
     // The find, and then the create-and-cache. Both go through the shared helpers in Vc71Map.h,
     // which build a real BST with VC7.1's header convention - see the warning there about why the
     // shape matters to bind's traversals rather than to these lookups.

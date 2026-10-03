@@ -131,7 +131,6 @@ void __fastcall dlg_setName(void* s, void*, const vc71::string& n)
 // +0x28, sub_10096480. One byte store at +0x05 - see the field's note for why it is not "built".
 char __fastcall dlg_setFlag05(void* s, void*, char v)
 {
-    RD9_TRACE_AT("dice::hfe::geom::DebugLineGraphD3D::setFlag05", s, 0x28);
     static_cast<DebugLineGraphD3D*>(s)->setFlag05(static_cast<unsigned char>(v));
     return v;
 }
@@ -139,7 +138,6 @@ char __fastcall dlg_setFlag05(void* s, void*, char v)
 // Adds a sample through the void plugin slot. Returning a floating-point value would leave an unused x87 result.
 void __fastcall dlg_addSample(void* s, void*, float v)
 {
-    RD9_TRACE_AT("dice::hfe::geom::DebugLineGraphD3D::addSample", s, 0x40);
     static_cast<DebugLineGraphD3D*>(s)->addSample(v);
 }
 

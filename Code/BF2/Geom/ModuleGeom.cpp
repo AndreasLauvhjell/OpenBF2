@@ -108,11 +108,7 @@ IBase* __fastcall createBundledMeshTemplate(unsigned int iid, IBase* outer);
 // Factory for mesh-particle templates, published with MeshParticlesRenderer.
 IBase* __fastcall createMeshParticleMeshTemplate(unsigned int iid, IBase* outer);
 
-// Factory for scene traversal and geometry submission. Occlusion fallback reports and
-// continues with all frustum-visible candidates.
-// [RETIRE-WHEN:
-//     RW-objectdrawer-occluders] Replace the fallback after silhouette construction and
-// occluder culling are implemented and validated.
+// Factory for scene traversal, object occlusion and geometry submission.
 IBase* __fastcall createObjectDrawer(unsigned int iid, IBase* outer);
 
 // Factory for the manager coordinating nametag updates and renderer buffering.

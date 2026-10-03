@@ -45,6 +45,7 @@ class ObjectDrawer
 {
 public:
     ObjectDrawer();
+    ~ObjectDrawer();
 
     // the IBase quartet, primary slots +0x00..+0x0C
     void  addRef();                                          // +0x00  (shared, folded)
@@ -66,6 +67,9 @@ public:
     void            setOccluder(IBase* occluder);
     IBase*          getOccluder() const;                     // +0x34
 
+    // Whether the optional culling-count text overlay is enabled, independently of the counters.
+    bool isCullingDebugEnabled() const { return m_byte70 != 0; }
+
     // Draws visible objects, forwarding frame time to grid queries and visual updates.
     void  draw(float time);
     void  updateVisible(float time);                         // +0x14
@@ -83,6 +87,7 @@ public:
     // not const).
     bool  isBoundsOccluded(LocalBoundingBox* bounds);
 
+    // Offset comments identify retail x86 positions; native builds access named members.
     void* const*           m_vptr;                  // +0x00  ObjectDrawer's primary table
     void* const*           m_eventVptr;             // +0x04  the 1-slot ECCore handler subobject
     int                    m_refCount;              // +0x08  ctor 1
@@ -96,12 +101,9 @@ public:
     IBase*                 m_occluder;              // +0x2C  ctor 0; refcounted, slot +0x30
     ObjectDrawerSet        m_visibleSet;            // +0x30  getObjectVector(0)
     ObjectDrawerSet        m_drawSet;               // +0x40  getObjectVector(non-zero)
-    // +0x50 - the occluder records: 16-byte VC7.1 vectors of 16-byte Plane3s, filled by the
-    // silhouette builder sub_100F9300 (unwritten, RW-objectdrawer-occluders) and read by slots
-    // +0x38 / +0x3C and sub_100F8430. Unlike the two object sets above it is never handed to the
-    // host, so it keeps the retail sixteen-byte shape in both flavours (every
-    // +0x50..+0x58 access in 0x100F7C00..0x100FB100 is one of those five bodies, the constructor
-    // or the destructor).
+    // +0x50 - owned occlusion volumes: fixed-layout vectors of Plane3, rebuilt each enabled
+    // visibility update and read by object, geometry and bounds tests. Unlike the two object
+    // sets above it is never handed to the host, so it retains the fixed layout internally.
     vc71::vector_layout    m_vector50;              // +0x50
     unsigned char          m_byte60;                // +0x60  ctor 1
     unsigned char          m_pad61[3];
@@ -109,7 +111,7 @@ public:
     unsigned char          m_byte68;                // +0x68  ctor 1
     unsigned char          m_pad69[3];
     unsigned int           m_dword6C;               // +0x6C  ctor 0
-    unsigned char          m_byte70;                // +0x70  ctor 0
+    unsigned char          m_byte70;                // retail +0x70; culling debug overlay, ctor 0
     unsigned char          m_pad71[3];
     int                    m_culledCount;           // +0x74  ctor 0
     unsigned int           m_dword78;               // +0x78  ctor 0
@@ -121,7 +123,7 @@ public:
 };
 
 // The retail size holds only where the retail vector does - see the ABI note above.  In the
-// native flavour the three sets are the host's own twelve-byte std::vector and the object is
+// native flavour the two object sets are the host's own twelve-byte std::vector and the object is
 // correspondingly smaller, which is correct rather than a drift: nothing outside this DLL indexes
 // an ObjectDrawer by offset.  Its own factory allocates sizeof(ObjectDrawer).
 #if defined(_M_IX86) && !BF2_PLUGIN_ABI_NATIVE
