@@ -379,6 +379,8 @@ struct GameTemplateConsoleAccess
     {
         playerControlObject()->m_positionalSpeedModifier = modifier;
     }
+    static int getAutoUseAbility() { return playerControlObject()->m_autoUseAbility ? 1 : 0; }
+    static void setAutoUseAbility(int value) { playerControlObject()->m_autoUseAbility = value != 0; }
     // ConsoleClass1043 / 1044 (see the binding block): both executors read and store the template
     // field raw (ELF +0x2BC / +0x2C0, BF2.exe +0x3A0 / +0x3A4); neither image has an accessor.
     static U32 getCockpitLod() { return playerControlObject()->m_cockpitLod; }
@@ -770,6 +772,12 @@ BF2_CONSOLE_PROPERTY_FN_NAMED("3dMapIcon", int,
 BF2_CONSOLE_METHOD_1_ACTIVE(addVehicleType, GameTemplateConsoleAccess::addVehicleType,
                             getActiveTemplate(CID_SupplyObjectTemplate) != 0,
                             VehicleCategory, kObjTemplGameConsoleTag)
+
+// Stock vehicle seats opt into passive kit abilities with an integer normalized to a Boolean.
+BF2_CONSOLE_PROPERTY_FN(autoUseAbility, int,
+                        getActiveTemplate(CID_PlayerControlObjectTemplate) != 0,
+                        GameTemplateConsoleAccess::getAutoUseAbility(),
+                        GameTemplateConsoleAccess::setAutoUseAbility, kObjTemplGameConsoleTag)
 
 // Vehicle exit position, orientation, restrictions and inherited-speed settings.
 BF2_CONSOLE_PROPERTY_FN(hasRestrictedExit, bool,
