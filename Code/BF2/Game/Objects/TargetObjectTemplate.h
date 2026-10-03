@@ -10,6 +10,7 @@ namespace hfe {
 namespace world {
 
 class ArtilleryHandler;
+class LPTargetComp;
 struct GameTemplateConsoleAccess;
 
 // Time to live is stored in seconds and as a derived 30 Hz tick count.
@@ -34,6 +35,7 @@ protected:
     // arrangement. (Game/Objects/Game/TargetObject.h)
     friend class TargetObject;
     friend class ArtilleryHandler;                 // constructor selects local/networked targetType
+    friend class LPTargetComp;                      // target creation and deactivation lifetime
     friend struct GameTemplateConsoleAccess;       // recovered ObjectTemplate.* binding executors
 
     /* 0x17C */ int   targetType;                     // [INFERRED] int - an enum/type id; ctor 2

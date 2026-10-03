@@ -11,6 +11,7 @@
 
 #include "../GenericFireArm.h"
 #include "../../Game/TargetObject.h"
+#include "../../TargetObjectTemplate.h"
 #include "../../ICameraObject.h"
 #include "../../IObject.h"
 #include "../../IObjectTemplate.h"
@@ -54,38 +55,6 @@ GenericProjectile* projectileFromObject(IObject* object)
     if (!object || !object->queryInterface(IID_IProjectileObject))
         return 0;
     return static_cast<GenericProjectile*>(object);
-}
-
-void setTargetSourceId(IObject* object, int playerId)
-{
-#if defined(_MSC_VER) && defined(_M_IX86)
-    const unsigned int offset = 0x164;
-#else
-    const unsigned int offset = 0x14C;
-#endif
-    *reinterpret_cast<int*>(reinterpret_cast<unsigned char*>(object) + offset) = playerId;
-}
-
-int targetTemplateType(const IObjectTemplate* objectTemplate)
-{
-#if defined(_MSC_VER) && defined(_M_IX86)
-    const unsigned int offset = 0x22C;
-#else
-    const unsigned int offset = 0x17C;
-#endif
-    return *reinterpret_cast<const int*>(
-        reinterpret_cast<const unsigned char*>(objectTemplate) + offset);
-}
-
-float targetTemplateTimeToLive(const IObjectTemplate* objectTemplate)
-{
-#if defined(_MSC_VER) && defined(_M_IX86)
-    const unsigned int offset = 0x230;
-#else
-    const unsigned int offset = 0x180;
-#endif
-    return *reinterpret_cast<const float*>(
-        reinterpret_cast<const unsigned char*>(objectTemplate) + offset);
 }
 
 float length(const Vec3& value)
@@ -182,7 +151,7 @@ void LPTargetComp::initComponent(WeaponInitEvent& event)
         IObjectTemplate* const targetTemplate = m_lpTemplate->getTargetObjectTemplate();
         if (targetTemplate)
         {
-            if (targetTemplateType(targetTemplate) == 3)
+            if (static_cast<const TargetObjectTemplate*>(targetTemplate)->targetType == 3)
             {
                 m_ownedTarget = static_cast<TargetObject*>(targetTemplate->createObject());
                 if (m_ownedTarget)
@@ -252,7 +221,7 @@ void LPTargetComp::enableTargetObject()
     if (target)
     {
         target->setTargetActive(true, true);
-        setTargetSourceId(target, firearm()->getPlayer()->getId());
+        target->setTargetPlayerId(firearm()->getPlayer()->getId());
     }
 }
 
@@ -271,7 +240,7 @@ void LPTargetComp::fireStop(bool)
     {
         objectManager->postMessage(
             target, static_cast<TemplateMessage>(30),
-            targetTemplateTimeToLive(target->getTemplate()));
+            static_cast<const TargetObjectTemplate*>(target->getTemplate())->timeToLive);
     }
 }
 
