@@ -8,12 +8,10 @@
 #include <cstdlib>
 namespace dice { namespace hfe {
 namespace {
-// [PLATFORM] ELF static init 0x82F53D0 / PE 0x76F7B0.
-#ifdef _WIN32
-const std::string playerInfoUrl = "http://stage-net.gamespy.com/bf2/getplayerinfo.aspx?pid=";
-#else
-const std::string playerInfoUrl = "http://stage-net.game.bf2.us/bf2/getplayerinfo.aspx?pid=";
-#endif
+// [CHOSEN, not recovered] Cross-platform OpenSpy policy, see #21. The reference images
+// (ELF static init 0x82F53D0 / PE 0x76F7B0) used stage-net.game.bf2.us (ELF) and
+// stage-net.gamespy.com (PE), not openspy.net.
+const std::string playerInfoUrl = "http://stage-net.openspy.net/bf2/getplayerinfo.aspx?pid=";
 }
 GHTTPBool cbCompleted(GHTTPRequest, GHTTPResult result, char* body, GHTTPByteCount, void* data)
 {
