@@ -1668,6 +1668,7 @@ if(BUILD_TESTING AND MSVC)
         "${BF2_ROOT}/Scene/Object/Object.cpp"
         "${BF2_ROOT}/Scene/Object/ObjectPredicator.cpp"
         "${BF2_ROOT}/Scene/Object/ObjectUtil.cpp"
+        "${BF2_ROOT}/Scene/Object/ObjectTypes/Game/IPlayerControlObject.cpp"
         "${BF2_ROOT}/Game/Utility/Vars.cpp"
         "${BF2_ROOT}/Physics/IPhysicsNode.cpp"
         "${BF2_ROOT}/Physics/IResponsePhysics.cpp"

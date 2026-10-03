@@ -8,6 +8,8 @@
 #include "BundleTemplate.h"
 #include "Bundle.h"
 #include "../../../Scene/Object/ObjectTypes/Base/ObjectTemplateManager.h"
+#include "../../../Scene/Object/ObjectTypes/Game/IPlayerControlObject.h"
+#include "../../../Sound/ISoundObjectTemplate.h"
 
 #include <sstream>
 
@@ -20,76 +22,6 @@ int BundleTemplate::mActiveMemberId = -1;
 namespace {
 
 const unsigned int IID_ISoundObjectTemplate = 0x00985FD2u;
-
-// No original header path is visible in either dedicated-server image.  This local view is the
-// complete dice::hfe::ISoundObjectTemplate table through the one operation used by BundleTemplate;
-// declaring only that final method would dispatch +0x10 instead of its recovered +0x74 slot.
-class ISoundObjectTemplateView : public IBase
-{
-public:
-    virtual void setIsUsed() = 0;
-    virtual void setFilename(const std::string&) = 0;
-    virtual std::string getFilename() const = 0;
-    virtual void setVolumeEnvelope(const std::string&) = 0;
-    virtual std::string getVolumeEnvelope() const = 0;
-    virtual void setPitchEnvelope(const std::string&) = 0;
-    virtual std::string getPitchEnvelope() const = 0;
-    virtual void setLoopCount(int) = 0;
-    virtual int getLoopCount() const = 0;
-    virtual void setVolume(float) = 0;
-    virtual float getVolume() const = 0;
-    virtual void setPitch(float) = 0;
-    virtual float getPitch() const = 0;
-    virtual void setMinDistance(float) = 0;
-    virtual float getMinDistance() const = 0;
-    virtual void setHalfVolumeDistance(float) = 0;
-    virtual float getHalfVolumeDistance() const = 0;
-    virtual void setReverbLevel(float) = 0;
-    virtual float getReverbLevel() const = 0;
-    virtual void setSoundRadius(float) = 0;
-    virtual float getSoundRadius() const = 0;
-    virtual void setLowSamples(int) = 0;
-    virtual int getLowSamples() const = 0;
-    virtual void setMediumSamples(int) = 0;
-    virtual int getMediumSamples() const = 0;
-    virtual void setRelativeTransformation(const Mat4*) = 0;
-};
-
-
-// The original Game/Objects/Game/IPlayerControlObject.h path is attested, but that interface has
-// not otherwise been reconstructed.  Preserve the exact target slots without guessing the 66
-// operations that precede the recovered driver-decal tail.
-class IPlayerControlObjectView : public IBase
-{
-public:
-#define BF2_PCO_ABI_SLOT(n) virtual void unused##n() = 0
-    BF2_PCO_ABI_SLOT(00); BF2_PCO_ABI_SLOT(01); BF2_PCO_ABI_SLOT(02);
-    BF2_PCO_ABI_SLOT(03); BF2_PCO_ABI_SLOT(04); BF2_PCO_ABI_SLOT(05);
-    BF2_PCO_ABI_SLOT(06); BF2_PCO_ABI_SLOT(07); BF2_PCO_ABI_SLOT(08);
-    BF2_PCO_ABI_SLOT(09); BF2_PCO_ABI_SLOT(10); BF2_PCO_ABI_SLOT(11);
-    BF2_PCO_ABI_SLOT(12); BF2_PCO_ABI_SLOT(13); BF2_PCO_ABI_SLOT(14);
-    BF2_PCO_ABI_SLOT(15); BF2_PCO_ABI_SLOT(16); BF2_PCO_ABI_SLOT(17);
-    BF2_PCO_ABI_SLOT(18); BF2_PCO_ABI_SLOT(19); BF2_PCO_ABI_SLOT(20);
-    BF2_PCO_ABI_SLOT(21); BF2_PCO_ABI_SLOT(22); BF2_PCO_ABI_SLOT(23);
-    BF2_PCO_ABI_SLOT(24); BF2_PCO_ABI_SLOT(25); BF2_PCO_ABI_SLOT(26);
-    BF2_PCO_ABI_SLOT(27); BF2_PCO_ABI_SLOT(28); BF2_PCO_ABI_SLOT(29);
-    BF2_PCO_ABI_SLOT(30); BF2_PCO_ABI_SLOT(31); BF2_PCO_ABI_SLOT(32);
-    BF2_PCO_ABI_SLOT(33); BF2_PCO_ABI_SLOT(34); BF2_PCO_ABI_SLOT(35);
-    BF2_PCO_ABI_SLOT(36); BF2_PCO_ABI_SLOT(37); BF2_PCO_ABI_SLOT(38);
-    BF2_PCO_ABI_SLOT(39); BF2_PCO_ABI_SLOT(40); BF2_PCO_ABI_SLOT(41);
-    BF2_PCO_ABI_SLOT(42); BF2_PCO_ABI_SLOT(43); BF2_PCO_ABI_SLOT(44);
-    BF2_PCO_ABI_SLOT(45); BF2_PCO_ABI_SLOT(46); BF2_PCO_ABI_SLOT(47);
-    BF2_PCO_ABI_SLOT(48); BF2_PCO_ABI_SLOT(49); BF2_PCO_ABI_SLOT(50);
-    BF2_PCO_ABI_SLOT(51); BF2_PCO_ABI_SLOT(52); BF2_PCO_ABI_SLOT(53);
-    BF2_PCO_ABI_SLOT(54); BF2_PCO_ABI_SLOT(55); BF2_PCO_ABI_SLOT(56);
-    BF2_PCO_ABI_SLOT(57); BF2_PCO_ABI_SLOT(58); BF2_PCO_ABI_SLOT(59);
-    BF2_PCO_ABI_SLOT(60); BF2_PCO_ABI_SLOT(61); BF2_PCO_ABI_SLOT(62);
-    BF2_PCO_ABI_SLOT(63); BF2_PCO_ABI_SLOT(64); BF2_PCO_ABI_SLOT(65);
-#undef BF2_PCO_ABI_SLOT
-    virtual void setDriverDecalObject(IObject*) = 0;
-    virtual IObject* getDriverDecalObject() const = 0;
-    virtual void addDriverDecalTransformation(const Mat4&) = 0;
-};
 
 IObjectTemplate* resolveTemplate(const BundleTemplate* owner,
                                  BundleTemplate::TemplateInfo* info)
@@ -268,8 +200,8 @@ void BundleTemplate::addBundleChilds(IObject* object) const
         if (!objectTemplate)
             continue;
 
-        ISoundObjectTemplateView* soundTemplate =
-            static_cast<ISoundObjectTemplateView*>(
+        ISoundObjectTemplate* soundTemplate =
+            static_cast<ISoundObjectTemplate*>(
                 objectTemplate->queryInterface(IID_ISoundObjectTemplate));
         if (soundTemplate)
             soundTemplate->setRelativeTransformation(&info->m_transformation);
@@ -321,11 +253,11 @@ void BundleTemplate::addDriverDecals(IObject* object) const
                 << "Can only add static decals to objects with collision";
         }
 
-        IPlayerControlObjectView* playerControlObject = 0;
+        IPlayerControlObject* playerControlObject = 0;
         for (IObject* parent = object; parent && !playerControlObject;
              parent = parent->getParent())
         {
-            playerControlObject = static_cast<IPlayerControlObjectView*>(
+            playerControlObject = static_cast<IPlayerControlObject*>(
                 parent->queryInterface(IID_IPlayerControlObject));
         }
 
