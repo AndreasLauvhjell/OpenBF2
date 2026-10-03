@@ -138,7 +138,8 @@ def package(args):
             for entry, notice in sorted(package_notices.items()):
                 archive.writestr(name + "/" + entry, notice)
         checksum = archive_path.with_suffix(".zip.sha256")
-        checksum.write_text("{}  {}\n".format(sha256(archive_path), archive_path.name), encoding="utf-8")
+        # Linux sha256sum reads CR from Windows CRLF as part of the filename.
+        checksum.write_bytes("{}  {}\n".format(sha256(archive_path), archive_path.name).encode("ascii"))
         print(archive_path)
 
 
