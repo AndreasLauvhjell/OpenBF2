@@ -346,6 +346,35 @@ struct GameTemplateConsoleAccess
     {
         playerControlObject()->m_specialToggleWeaponInput = input;
     }
+    static io::PlayerInputMap getRegulateYawInput()
+    { return static_cast<io::PlayerInputMap>(playerControlObject()->m_regulateYawInput); }
+    static void setRegulateYawInput(io::PlayerInputMap value)
+    { playerControlObject()->m_regulateYawInput = value; }
+    static io::PlayerInputMap getRegulatePitchInput()
+    { return static_cast<io::PlayerInputMap>(playerControlObject()->m_regulatePitchInput); }
+    static void setRegulatePitchInput(io::PlayerInputMap value)
+    { playerControlObject()->m_regulatePitchInput = value; }
+    static io::PlayerInputMap getRegulateRollInput()
+    { return static_cast<io::PlayerInputMap>(playerControlObject()->m_regulateRollInput); }
+    static void setRegulateRollInput(io::PlayerInputMap value)
+    { playerControlObject()->m_regulateRollInput = value; }
+    static io::PlayerInputMap getRegulateVerticalPosInput()
+    { return static_cast<io::PlayerInputMap>(playerControlObject()->m_regulateVerticalPosInput); }
+    static void setRegulateVerticalPosInput(io::PlayerInputMap value)
+    { playerControlObject()->m_regulateVerticalPosInput = value; }
+    static Vec2 getRegulateYaw() { return playerControlObject()->m_regulateYaw; }
+    static void setRegulateYaw(const Vec2& value) { playerControlObject()->m_regulateYaw = value; }
+    static Vec2 getRegulatePitch() { return playerControlObject()->m_regulatePitch; }
+    static void setRegulatePitch(const Vec2& value) { playerControlObject()->m_regulatePitch = value; }
+    static Vec2 getRegulateRoll() { return playerControlObject()->m_regulateRoll; }
+    static void setRegulateRoll(const Vec2& value) { playerControlObject()->m_regulateRoll = value; }
+    static Vec2 getRegulateVerticalPos() { return playerControlObject()->m_regulateVerticalPos; }
+    static void setRegulateVerticalPos(const Vec2& value)
+    { playerControlObject()->m_regulateVerticalPos = value; }
+    static float getMaxVertRegAngle() { return playerControlObject()->m_maxVertRegAngle; }
+    static void setMaxVertRegAngle(float value) { playerControlObject()->m_maxVertRegAngle = value; }
+    static float getNoVertRegAngle() { return playerControlObject()->m_noVertRegAngle; }
+    static void setNoVertRegAngle(float value) { playerControlObject()->m_noVertRegAngle = value; }
     static void setSoldierExitLocation(const Vec3& position, const Vec3& rotation)
     {
         playerControlObject()->setSoldierExitLocation(position, rotation);
@@ -852,6 +881,48 @@ BF2_CONSOLE_PROPERTY_FN_RANGED(specialToggleWeaponInput, io::PlayerInputMap,
                                GameTemplateConsoleAccess::getSpecialToggleWeaponInput(),
                                GameTemplateConsoleAccess::setSpecialToggleWeaponInput,
                                0, 64, kObjTemplGameConsoleTag)
+
+// Stock vehicle scripts configure stabilization through these live template properties.
+// Input mappings include PINone; gain pairs and attitude thresholds are stored without clamping.
+BF2_CONSOLE_PROPERTY_FN_RANGED(regulateYawInput, io::PlayerInputMap,
+                               getActiveTemplate(CID_PlayerControlObjectTemplate) != 0,
+                               GameTemplateConsoleAccess::getRegulateYawInput(),
+                               GameTemplateConsoleAccess::setRegulateYawInput,
+                               0, 64, kObjTemplGameConsoleTag)
+BF2_CONSOLE_PROPERTY_FN_RANGED(regulatePitchInput, io::PlayerInputMap,
+                               getActiveTemplate(CID_PlayerControlObjectTemplate) != 0,
+                               GameTemplateConsoleAccess::getRegulatePitchInput(),
+                               GameTemplateConsoleAccess::setRegulatePitchInput,
+                               0, 64, kObjTemplGameConsoleTag)
+BF2_CONSOLE_PROPERTY_FN_RANGED(regulateRollInput, io::PlayerInputMap,
+                               getActiveTemplate(CID_PlayerControlObjectTemplate) != 0,
+                               GameTemplateConsoleAccess::getRegulateRollInput(),
+                               GameTemplateConsoleAccess::setRegulateRollInput,
+                               0, 64, kObjTemplGameConsoleTag)
+BF2_CONSOLE_PROPERTY_FN_RANGED(regulateVerticalPosInput, io::PlayerInputMap,
+                               getActiveTemplate(CID_PlayerControlObjectTemplate) != 0,
+                               GameTemplateConsoleAccess::getRegulateVerticalPosInput(),
+                               GameTemplateConsoleAccess::setRegulateVerticalPosInput,
+                               0, 64, kObjTemplGameConsoleTag)
+BF2_CONSOLE_PROPERTY_FN(regulateYaw, Vec2, getActiveTemplate(CID_PlayerControlObjectTemplate) != 0,
+                        GameTemplateConsoleAccess::getRegulateYaw(),
+                        GameTemplateConsoleAccess::setRegulateYaw, kObjTemplGameConsoleTag)
+BF2_CONSOLE_PROPERTY_FN(regulatePitch, Vec2, getActiveTemplate(CID_PlayerControlObjectTemplate) != 0,
+                        GameTemplateConsoleAccess::getRegulatePitch(),
+                        GameTemplateConsoleAccess::setRegulatePitch, kObjTemplGameConsoleTag)
+BF2_CONSOLE_PROPERTY_FN(regulateRoll, Vec2, getActiveTemplate(CID_PlayerControlObjectTemplate) != 0,
+                        GameTemplateConsoleAccess::getRegulateRoll(),
+                        GameTemplateConsoleAccess::setRegulateRoll, kObjTemplGameConsoleTag)
+BF2_CONSOLE_PROPERTY_FN(regulateVerticalPos, Vec2,
+                        getActiveTemplate(CID_PlayerControlObjectTemplate) != 0,
+                        GameTemplateConsoleAccess::getRegulateVerticalPos(),
+                        GameTemplateConsoleAccess::setRegulateVerticalPos, kObjTemplGameConsoleTag)
+BF2_CONSOLE_PROPERTY_FN(maxVertRegAngle, float, getActiveTemplate(CID_PlayerControlObjectTemplate) != 0,
+                        GameTemplateConsoleAccess::getMaxVertRegAngle(),
+                        GameTemplateConsoleAccess::setMaxVertRegAngle, kObjTemplGameConsoleTag)
+BF2_CONSOLE_PROPERTY_FN(noVertRegAngle, float, getActiveTemplate(CID_PlayerControlObjectTemplate) != 0,
+                        GameTemplateConsoleAccess::getNoVertRegAngle(),
+                        GameTemplateConsoleAccess::setNoVertRegAngle, kObjTemplGameConsoleTag)
 
 // TargetObjectTemplate: PE active gate 0x4BCA00. The TargetType metadata range really is 0..4;
 // value 4 is accepted even though the named TargetType writer stops at TTUnique (3).
