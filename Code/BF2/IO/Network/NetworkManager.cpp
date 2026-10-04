@@ -814,7 +814,7 @@ NetworkManager::updateStateMasks()
                 list = found->second;
             }
 
-            list->push_front(std::make_pair(netObject, descriptor));
+            list->push_back(std::make_pair(netObject, descriptor));
         }
 
         ++it;
