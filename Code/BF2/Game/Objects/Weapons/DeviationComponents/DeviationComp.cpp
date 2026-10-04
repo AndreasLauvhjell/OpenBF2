@@ -63,8 +63,8 @@ bool DeviationComp::isSelectable() const { return true; }
 void DeviationComp::fireStop(bool) {}
 bool DeviationComp::requestFire(bool, bool) { return true; }
 
-// . The component perturbs the projectile velocity along the firearm transform's
-// first two axes, then grows the accumulated fire deviation. The normal-table index deliberately
+// Adds velocity-relative spread along the projectile's up/right axes, then grows the
+// accumulated fire deviation. The normal-table index deliberately
 // includes the current input index so prediction consumes the same samples as retail.
 void DeviationComp::postFire(WeaponFireEvent& event)
 {
@@ -118,17 +118,17 @@ void DeviationComp::postFire(WeaponFireEvent& event)
             deviationY += m_cachedDeviationY;
         }
 
-        // Retail deliberately dispatches getDevMod twice rather than caching it: once for each
-        // transform axis contribution. Preserve both observable virtual calls.
-        const float deviationXScale = firearm()->getDevMod() * deviationX;
-        speed.x += transform.m[4] * deviationXScale;
-        speed.y += transform.m[5] * deviationXScale;
-        speed.z += transform.m[6] * deviationXScale;
+        // Spread is a percentage of weapon velocity. Retail queries velocity separately for
+        // each axis and scales the transform before multiplying by the deviation sample.
+        const float velocityScaleX = firearm()->getVelocity() / 100.0f;
+        speed.x += (transform.m[4] * velocityScaleX) * deviationX;
+        speed.y += (transform.m[5] * velocityScaleX) * deviationX;
+        speed.z += (transform.m[6] * velocityScaleX) * deviationX;
 
-        const float deviationYScale = firearm()->getDevMod() * deviationY;
-        speed.x += transform.m[0] * deviationYScale;
-        speed.y += transform.m[1] * deviationYScale;
-        speed.z += transform.m[2] * deviationYScale;
+        const float velocityScaleY = firearm()->getVelocity() / 100.0f;
+        speed.x += (transform.m[0] * velocityScaleY) * deviationY;
+        speed.y += (transform.m[1] * velocityScaleY) * deviationY;
+        speed.z += (transform.m[2] * velocityScaleY) * deviationY;
     }
 
     m_fireDeviation += m_template->getFireDevAdd();
