@@ -1978,11 +1978,11 @@ void Bf2MenuMapNode::clearMapIcons()
 
 // 7746E0, virtual +124. [INFERRED] void return/name.
 void Bf2MenuMapNode::paintMapIcon(hfe::Vec2 position, float rotation,
-                                  hfe::Vec2 size, int texture, System* system,
+                                  hfe::Vec2 size, unsigned int texture, System* system,
                                   const Rect* adjusted, const Rect* bounds,
                                   const Color* color, RenderContext* context)
 {
-    if (texture <= 0) return;
+    if (texture == 0) return;
     position.x -= static_cast<float>(std::floor(position.x + 0.5f));
     position.y -= static_cast<float>(std::floor(position.y + 0.5f));
     const float left = adjusted->x + adjusted->width * 0.5f

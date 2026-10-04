@@ -270,7 +270,7 @@ private:
                               bool compareTeam);           // +F0 7788B0
     virtual int getSmallSquadIcon(int squadId);            // +FC 772ED0
     virtual void paintMapIcon(hfe::Vec2 position, float rotation,
-                              hfe::Vec2 size, int texture, System* system,
+                              hfe::Vec2 size, unsigned int texture, System* system,
                               const Rect* adjusted, const Rect* bounds,
                               const Color* color, RenderContext* context);
     virtual void paintMapIcons(System* system, const Rect* adjusted,
