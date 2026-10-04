@@ -6,6 +6,7 @@
 #include "../ObjectTypes/Base/ObjectTemplateManager.h"    // the argc-0 arm's active template
 #include "../ObjectManager.h"                             // the message rows' argc-0 active object
 #include "ObjectTemplateAdm.h"
+#include "../../../Game/Objects/IObject.h"                // world::IObject* in the executors
 
 #include <sstream>
 #include <string>
@@ -155,6 +156,122 @@ BF2_TOOL_OBJECT_MESSAGE_ROW(ConsoleClass140, "forceStart", forceStart)
 BF2_TOOL_OBJECT_MESSAGE_ROW(ConsoleClass141, "forceStop",  forceStop)
 #undef BF2_TOOL_OBJECT_MESSAGE_ROW
 
+// Object.active (ELF ConsoleClass131 at 0xacad70, executor 0xac1d60; PE ctor 0x71647D): a get/set
+// property over the active object. A name or `id<n>` resolves through the proxy; selecting an object
+// also selects its template through the adm's activateObject. Its command name is the "active" tail
+// of the shared "is active" literal.
+namespace {
+class ConsoleClassObjectActive : public ::dice::hfe::ConsoleObjectBaseImpl
+{
+public:
+    ConsoleClassObjectActive()
+    {
+        m_objectName     = ::dice::hfe::consoleDefaultName();
+        m_access         = ::dice::hfe::consoleDefaultAccess();
+        m_category       = ::dice::hfe::consoleDefaultCategory();
+        m_functionName   = "active";
+        m_type           = 1;
+        m_minNoArgs      = 0;
+        m_maxNoArgs      = 1;
+        m_returnType     = "world::IObject_ptrproxy";
+        m_hasReturnValue = false;
+        m_isDynamic      = false;
+        m_argTypes[0]    = "world::IObject_ptrproxy";
+        m_argNeedsConversion[0] = (std::string(m_argTypes[0]) == "std::string") ? 0 : -1;
+        ::dice::hfe::consoleBindingList(kToolObjectConsoleTag).push_back(this);
+    }
+    virtual bool isObjectActive() const { return true; }
+    virtual void executeObjectMethod()
+    {
+        if (m_argCount == 1)
+        {
+            m_hasReturnValue = false;
+            objectTemplateAdm.setActiveObject(BF2_CC_ARG(world::IObject_ptrproxy, 0).ptr);
+        }
+        else if (m_argCount == 0)
+        {
+            m_hasReturnValue = true;
+            m_returnValue.ptr = world::objectManager->getActiveObject();
+        }
+    }
+    virtual void setArgFromString(int index, const std::string& value)
+    {
+        if (index == 1)
+        {
+            static world::IObject_ptrproxy s;
+            std::istringstream in(value);
+            in >> s;
+            m_args[0] = reinterpret_cast<std::string*>(&s);
+        }
+    }
+    BF2_CC_RETURN_AS_STRING
+    BF2_CC_COMMON_HOOKS
+private:
+    world::IObject_ptrproxy m_returnValue;
+};
+static ConsoleClassObjectActive s_consoleClassObjectActive;
+} // namespace
+
+// Object.delete (ELF ConsoleClass133 at 0xaca990, executor 0xac2dc0): deletes the named or active
+// object through ObjectTemplateAdm::deleteObject.
+namespace {
+class ConsoleClassObjectDelete : public ::dice::hfe::ConsoleObjectBaseImpl
+{
+public:
+    ConsoleClassObjectDelete()
+    {
+        m_objectName     = ::dice::hfe::consoleDefaultName();
+        m_access         = ::dice::hfe::consoleDefaultAccess();
+        m_category       = ::dice::hfe::consoleDefaultCategory();
+        m_functionName   = "delete";
+        m_type           = 0;
+        m_minNoArgs      = 0;
+        m_maxNoArgs      = 1;
+        m_returnType     = "void";
+        m_hasReturnValue = false;
+        m_isDynamic      = false;
+        m_argTypes[0]    = "world::IObject_ptrproxy";
+        m_argNeedsConversion[0] = (std::string(m_argTypes[0]) == "std::string") ? 0 : -1;
+        ::dice::hfe::consoleBindingList(kToolObjectConsoleTag).push_back(this);
+    }
+    virtual bool isObjectActive() const { return true; }
+    virtual void executeObjectMethod()
+    {
+        m_hasReturnValue = false;
+        world::IObject* object = (m_argCount == 1)
+            ? BF2_CC_ARG(world::IObject_ptrproxy, 0).ptr
+            : world::objectManager->getActiveObject();
+        objectTemplateAdm.deleteObject(object);
+    }
+    virtual void setArgFromString(int index, const std::string& value)
+    {
+        if (index == 1)
+        {
+            static world::IObject_ptrproxy s;
+            std::istringstream in(value);
+            in >> s;
+            m_args[0] = reinterpret_cast<std::string*>(&s);
+        }
+    }
+    BF2_CC_NO_RETURN_AS_STRING
+    BF2_CC_COMMON_HOOKS
+};
+static ConsoleClassObjectDelete s_consoleClassObjectDelete;
+} // namespace
+
+// Object.printScript (ELF ConsoleClass136 at 0xaca680, executor 0xaca580): the object's creation
+// script as console text. argc 0 serialises the active object; argc 1 the parsed proxy.
+BF2_CONSOLE_METHOD_0_1_RET_STATIC_ACTIVE(printScript, objectTemplateAdm.printObjectCreationScript,
+                                         std::string, true, world::IObject_ptrproxy,
+                                         world::objectManager->getActiveObject(), kToolObjectConsoleTag)
+
+// Object.listObjectsOfTemplate (ELF ConsoleClass195 at 0xac7660, executor 0xac7560): every grid
+// object whose template pointer matches the named or active template, one row per line.
+BF2_CONSOLE_METHOD_0_1_RET_STATIC_ACTIVE(listObjectsOfTemplate, objectTemplateAdm.listObjectsOfTemplate,
+                                         std::string, true, world::IObjectTemplate_ptrproxy,
+                                         world::objectTemplateManager->getActiveObjectTemplate(),
+                                         kToolObjectConsoleTag)
+
 // Selects an active template from class name and template arguments. The class lookups
 // are performed but their results are discarded; activeSafe does not enforce class equality.
 BF2_CONSOLE_OBJECT("ObjectTemplate", 2, 0)
@@ -221,6 +338,75 @@ void consoleObjectTemplateActiveSafe(const std::string& className, world::IObjec
 }
 } // namespace
 BF2_CONSOLE_METHOD_2(activeSafe, consoleObjectTemplateActiveSafe, std::string, world::IObjectTemplate_ptrproxy, kToolObjectConsoleTag)
+
+// ObjectTemplate.type (ELF ConsoleClass161 at 0xac8670): the selected/named template's registered
+// class name ("Kit", "Soldier", ...).
+BF2_CONSOLE_METHOD_0_1_RET_STATIC_ACTIVE(type, objectTemplateAdm.getTemplateType, std::string, true,
+                                         world::IObjectTemplate_ptrproxy,
+                                         world::objectTemplateManager->getActiveObjectTemplate(),
+                                         kToolObjectConsoleTag)
+
+// ObjectTemplate.printScript (ELF ConsoleClass157 at 0xac8a90 -> printTemplateCreationScript): the
+// selected/named template's .con text. FH2 parses the setOnlyForHuman / setOnlyForAI flags out of
+// this reply.
+BF2_CONSOLE_METHOD_0_1_RET_STATIC_ACTIVE(printScript, objectTemplateAdm.printTemplateCreationScript,
+                                         std::string, true, world::IObjectTemplate_ptrproxy,
+                                         world::objectTemplateManager->getActiveObjectTemplate(),
+                                         kToolObjectConsoleTag)
+
+// ObjectTemplate.listObjectsOfTemplate (ELF ConsoleClass137 at 0xaca3a0, executor 0xaca2a0): the
+// same object rows as the Object binding, keyed on the named or active template.
+BF2_CONSOLE_METHOD_0_1_RET_STATIC_ACTIVE(listObjectsOfTemplate, objectTemplateAdm.listObjectsOfTemplate,
+                                         std::string, true, world::IObjectTemplate_ptrproxy,
+                                         world::objectTemplateManager->getActiveObjectTemplate(),
+                                         kToolObjectConsoleTag)
+
+// ObjectTemplate.delete (ELF ConsoleClass153 at 0xac9030, executor 0xac2a00): removes the named or
+// active template, destroying its objects first.
+namespace {
+class ConsoleClassObjectTemplateDelete : public ::dice::hfe::ConsoleObjectBaseImpl
+{
+public:
+    ConsoleClassObjectTemplateDelete()
+    {
+        m_objectName     = ::dice::hfe::consoleDefaultName();
+        m_access         = ::dice::hfe::consoleDefaultAccess();
+        m_category       = ::dice::hfe::consoleDefaultCategory();
+        m_functionName   = "delete";
+        m_type           = 0;
+        m_minNoArgs      = 0;
+        m_maxNoArgs      = 1;
+        m_returnType     = "void";
+        m_hasReturnValue = false;
+        m_isDynamic      = false;
+        m_argTypes[0]    = "world::IObjectTemplate_ptrproxy";
+        m_argNeedsConversion[0] = (std::string(m_argTypes[0]) == "std::string") ? 0 : -1;
+        ::dice::hfe::consoleBindingList(kToolObjectConsoleTag).push_back(this);
+    }
+    virtual bool isObjectActive() const { return true; }
+    virtual void executeObjectMethod()
+    {
+        m_hasReturnValue = false;
+        const world::IObjectTemplate* objectTemplate = (m_argCount == 1)
+            ? BF2_CC_ARG(world::IObjectTemplate_ptrproxy, 0).ptr
+            : world::objectTemplateManager->getActiveObjectTemplate();
+        objectTemplateAdm.deleteTemplate(objectTemplate);
+    }
+    virtual void setArgFromString(int index, const std::string& value)
+    {
+        if (index == 1)
+        {
+            static world::IObjectTemplate_ptrproxy s;
+            std::istringstream in(value);
+            in >> s;
+            m_args[0] = reinterpret_cast<std::string*>(&s);
+        }
+    }
+    BF2_CC_NO_RETURN_AS_STRING
+    BF2_CC_COMMON_HOOKS
+};
+static ConsoleClassObjectTemplateDelete s_consoleClassObjectTemplateDelete;
+} // namespace
 
 // Handed to the console registry by tool::ModuleToolObject::init (Core/ModuleRegistry.cpp).
 ConsoleObjectList& toolObjectConsoleObjects()

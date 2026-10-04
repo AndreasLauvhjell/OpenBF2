@@ -708,6 +708,45 @@ private:                                                                        
 static BF2_CC_NAME BF2_CC_INSTANCE;                                                                \
 }
 
+// Registers a command accepting zero or one argument with a typed result and an availability check.
+// The executor supplies the receiver itself: with no argument it evaluates argZeroExpr (the active
+// template/object) exactly as the shipped executor reads objectTemplateManager/objectManager; with
+// one it passes the parsed proxy's pointer, which stays null for an unknown name. The file-static
+// generated methods (ObjectTemplate.type/printScript, Object.listObjectsOfTemplate) carry
+// m_isDynamic=false.
+#define BF2_CONSOLE_METHOD_0_1_RET_STATIC_ACTIVE(fnName, target, RET, activeExpr, A0, argZeroExpr, listTag) \
+namespace {                                                                                        \
+class BF2_CC_NAME : public ::dice::hfe::ConsoleObjectBaseImpl                                      \
+{                                                                                                  \
+    BF2_CC_HEAD(fnName, 0, 0, 1, #RET, false)                                                      \
+            m_argTypes[0] = #A0;                                                                   \
+    BF2_CC_TAIL(1, listTag)                                                                        \
+    virtual bool isObjectActive() const { return (activeExpr); }                                   \
+    virtual void executeObjectMethod()                                                             \
+    {                                                                                              \
+        if (m_argCount == 0)                                                                       \
+        {                                                                                          \
+            m_hasReturnValue = true;                                                               \
+            m_returnValue = target(argZeroExpr);                                                   \
+        }                                                                                          \
+        else if (m_argCount == 1)                                                                  \
+        {                                                                                          \
+            m_hasReturnValue = true;                                                               \
+            m_returnValue = target(BF2_CC_ARG(A0, 0).ptr);                                         \
+        }                                                                                          \
+    }                                                                                              \
+    virtual void setArgFromString(int index, const std::string& value)                             \
+    {                                                                                              \
+        BF2_CC_CONVERT(A0, 1)                                                                      \
+    }                                                                                              \
+    BF2_CC_RETURN_AS_STRING                                                                        \
+    BF2_CC_COMMON_HOOKS                                                                            \
+private:                                                                                           \
+    RET m_returnValue;                                                                             \
+};                                                                                                 \
+static BF2_CC_NAME BF2_CC_INSTANCE;                                                                \
+}
+
 // Registers a returning command accepting one or two arguments. The target supplies the status text.
 #define BF2_CONSOLE_METHOD_1_2_RET_ACTIVE(fnName, target, RET, activeExpr, A0, A1, listTag)         \
 namespace {                                                                                        \

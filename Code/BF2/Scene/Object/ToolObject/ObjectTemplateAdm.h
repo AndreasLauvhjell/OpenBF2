@@ -8,12 +8,15 @@
 
 #include <string>
 
+#include "../../../Core/Ids.h"
+#include "../../../Core/SmartItf.h"
 #include "../../../Math/Vec3.h"
 
 namespace dice {
 namespace hfe {
 
 namespace world { class IObject; class IObjectTemplate; }
+namespace io { class IMemStream; }
 
 namespace tool {
 
@@ -66,14 +69,42 @@ public:
     void forceStart(world::IObject* object);
     void forceStop(world::IObject* object);
 
-    // [FRONTIER] Remaining editor object/template persistence, listing, and layer operations
-    // require their corresponding implementations.
+    // Console text producers behind ObjectTemplate.type/printScript/listObjectsOfTemplate and
+    // Object.listObjectsOfTemplate. getTemplateType is the registered class name alone;
+    // getObjectTemplateInfo prefixes the quoted template name and appends " of primitive <class>";
+    // getObjectInfo is one `<name> with ID <id> of template <info>` row; listObjectsOfTemplate joins
+    // the rows of every grid object whose template pointer matches, each followed by a newline.
+    std::string getTemplateType(const world::IObjectTemplate* objectTemplate);
+    std::string getObjectTemplateInfo(const world::IObjectTemplate* objectTemplate);
+    std::string getObjectInfo(const world::IObject* object);
+    std::string listObjectsOfTemplate(const world::IObjectTemplate* objectTemplate);
+
+    // Serialises an object/template to console script through the tool script writer (the
+    // IConsoleSaveable arm of the supplied IBase). Both write into the admin's owned memory
+    // stream (m_memStream), which initMemStream creates once and clears on every reuse.
+    std::string printObjectCreationScript(world::IObject* object);
+    std::string printTemplateCreationScript(const world::IObjectTemplate* objectTemplate);
+
+    // Object.delete / ObjectTemplate.delete. deleteObject removes the object and clears the active
+    // cursor when it named the removed object; deleteTemplate first destroys every object of the
+    // template, then removes the template and clears the active cursor when it named it.
+    void deleteObject(world::IObject* object);
+    void deleteTemplate(const world::IObjectTemplate* objectTemplate);
+
+    // [FRONTIER] Remaining editor object/template persistence and layer operations require their
+    // corresponding implementations.
 
 private:
+    // Lazily creates m_memStream (through the CID_MemStream factory) or clears the existing one.
+    void initMemStream();
+
     unsigned char m_flag0;                           // +0x000
     unsigned char m_flag1;                           // +0x001
     Layer         m_layers[128];                     // +0x004
     int           m_unresolved404;                   // +0x404
+    // Attested at +0x808; the intervening fields are not yet reconstructed, so this model places it
+    // after m_unresolved404 rather than at the shipped offset.
+    SmartItf<io::IMemStream, &io::IID_IMemStream> m_memStream;
 };
 
 // The file-scope instance ModuleToolObject.cpp's console executors address directly (0x8AB0B40 -
