@@ -49,14 +49,12 @@ const unsigned int kRefillCarryTicks = 30;
 
 } // namespace
 
-// IWeaponAmmoComp - the four interface-level bodies. All are 5-10 bytes in the ELF and AmmoComp
-// never overrides any of them, so these ARE the shipped behaviour for both leaves.
 IWeaponAmmoComp::~IWeaponAmmoComp() {}
 
 void IWeaponAmmoComp::reload(ReloadState) {}
 void IWeaponAmmoComp::postReload() {}
 void IWeaponAmmoComp::outOfAmmo(bool) {}
-bool IWeaponAmmoComp::canBeRefilled() { return false; }
+bool IWeaponAmmoComp::canBeRefilled() { return true; }
 
 // THE vector IS filled three different ways AND IS never left empty, which is the invariant the
 // whole class leans on. nrOfMags copies of magSize is the normal case; nrOfMags == -1 with a real

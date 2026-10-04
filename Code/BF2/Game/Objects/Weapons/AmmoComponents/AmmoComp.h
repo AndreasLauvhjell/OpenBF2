@@ -21,7 +21,7 @@ class GenericFireArm;
 class IWeaponObject;
 
 // Ammo component interface; own slots follow the destructor after IWeaponComp's inherited surface.
-// Keep the existing interface-level empty/false defaults rather than converting them to pure declarations.
+// Keep the inherited reload defaults and external-resupply capability as concrete methods.
 class IWeaponAmmoComp : public IWeaponComp
 {
 public:
