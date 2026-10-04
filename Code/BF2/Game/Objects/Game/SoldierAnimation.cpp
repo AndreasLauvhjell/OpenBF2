@@ -1316,8 +1316,9 @@ void Soldier::enableRagDoll()
 
     anim::Skeleton* const skeleton = m_collisionSkeleton;
     applyAnimationsOnSkeleton(0.0f, true);
-    const Mat4 identity = Mat4::getIdentity();
-    skeleton->transform(&identity, -1);
+    Mat4 skeletonOffset = Mat4::getIdentity();
+    skeletonOffset.m[13] = -1.0f;
+    skeleton->transform(&skeletonOffset, -1);
 
     m_ragDoll = anim::g_ragDollTemplate->makeInstance(getAbsoluteTransformation(), velocity,
                                                       *m_collisionSkeleton);
