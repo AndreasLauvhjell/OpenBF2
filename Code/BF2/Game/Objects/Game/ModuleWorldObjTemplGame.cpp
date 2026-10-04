@@ -833,6 +833,16 @@ BF2_CONSOLE_PROPERTY(soldierExitRotation, Vec3,
                      GameTemplateConsoleAccess::playerControlObject(),
                      setSoldierExitRotation, getSoldierExitRotation, kObjTemplGameConsoleTag)
 
+// Stock parachutes preserve the soldier's camera pitch when entering and leaving the seat.
+BF2_CONSOLE_OBJECT("ObjectTemplate", 2, 15)
+BF2_CONSOLE_PROPERTY(maintainCameraOnExit, bool,
+                     GameTemplateConsoleAccess::playerControlObject(),
+                     setMaintainCameraOnExit, getMaintainCameraOnExit, kObjTemplGameConsoleTag)
+BF2_CONSOLE_PROPERTY(maintainCameraOnEnter, bool,
+                     GameTemplateConsoleAccess::playerControlObject(),
+                     setMaintainCameraOnEnter, getMaintainCameraOnEnter, kObjTemplGameConsoleTag)
+BF2_CONSOLE_OBJECT("ObjectTemplate", 2, 9)
+
 // ConsoleClass1020/1021: ELF executors 0x862E9F0/0x862F1D0 and folded PE 0x4B3150
 // accept exactly (std::string, Vec3, Vec3), gate on CID_PlayerControlObjectTemplate, and
 // dispatch seatInformation. The duplicate retail converters have the same argument types.
