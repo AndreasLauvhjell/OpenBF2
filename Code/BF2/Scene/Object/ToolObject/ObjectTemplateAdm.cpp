@@ -3,11 +3,18 @@
 
 #include "ObjectTemplateAdm.h"
 
+#include "../../../Core/Ids.h"                          // io::IID_IConsoleSaveable
+#include "../../../Game/IGame.h"                        // game / IGame::destroyObject
 #include "../../../Game/Objects/IObject.h"
 #include "../../../Game/Objects/IObjectTemplate.h"
+#include "../../../IO/Console/IConsoleSaveable.h"
+#include "../../../IO/Stream/MemStream.h"
 #include "../../../Math/Mat4.h"
 #include "../ObjectManager.h"
 #include "../ObjectTypes/Base/ObjectTemplateManager.h"
+
+#include <map>
+#include <sstream>
 
 namespace dice {
 namespace hfe {
@@ -174,6 +181,161 @@ const world::IObjectTemplate* ObjectTemplateAdm::getTemplateFromName(const std::
     if (name.empty())
         return world::objectTemplateManager->getActiveObjectTemplate();
     return world::objectTemplateManager->getTemplate(name);
+}
+
+namespace {
+
+// tool::makeConsoleScript (ELF 0x6a6dc0): resolve the object's IConsoleSaveable face and let it
+// write the script into the stream. Returns whether a writer ran.
+bool makeConsoleScript(const IBase* object, io::IStream* stream)
+{
+    if (!object || !stream)
+        return false;
+    io::IConsoleSaveable* saveable = static_cast<io::IConsoleSaveable*>(
+        object->queryInterface(io::IID_IConsoleSaveable));
+    if (!saveable)
+        return false;
+    return saveable->makeScript(stream);
+}
+
+// tool::getAsString (ELF 0x6a82d0): return the bytes the writer left in the stream.
+// [CHOSEN, not recovered] This body is deliberately NOT the shipped one. The shipped body sizes the
+// result with the strlen-based std::string(const char*) constructor, then writes a NUL at
+// _M_p + getSize() (the valgrind "Invalid write of size 1" overrun): whenever getSize() exceeds
+// strlen(getPtr()) that write runs past the string's allocation. This version copies getSize() bytes
+// instead, which is byte-for-byte identical for the script text these callers produce (no embedded
+// NUL, so size == strlen) and avoids the out-of-bounds write. Restore the shipped construction only
+// with evidence that the overrun is wanted.
+std::string getAsString(io::IMemStream* stream)
+{
+    const unsigned int size = static_cast<unsigned int>(stream->getSize());
+    if (!size)
+        return std::string();
+    return std::string(static_cast<const char*>(stream->getPtr()), size);
+}
+
+} // namespace
+
+// ObjectTemplateAdm::getTemplateType (ELF 0x6a8060): the registered class name, or the shipped
+// miss text when no template is selected.
+std::string ObjectTemplateAdm::getTemplateType(const world::IObjectTemplate* objectTemplate)
+{
+    std::ostringstream out;
+    if (objectTemplate)
+        out << world::objectTemplateManager->getClassNameFromTemplateClassID(objectTemplate->getClassID());
+    else
+        out << "No object template";
+    return out.str();
+}
+
+// ObjectTemplateAdm::getObjectTemplateInfo (ELF 0x6a7db0): `"<name>" of primitive <class>`.
+std::string ObjectTemplateAdm::getObjectTemplateInfo(const world::IObjectTemplate* objectTemplate)
+{
+    std::ostringstream out;
+    if (objectTemplate)
+        out << "\"" << objectTemplate->getName() << "\" of primitive "
+            << world::objectTemplateManager->getClassNameFromTemplateClassID(objectTemplate->getClassID());
+    else
+        out << "No object template";
+    return out.str();
+}
+
+// ObjectTemplateAdm::getObjectInfo (ELF 0x6a9390): one object row. The template part is the full
+// getObjectTemplateInfo text, not the bare template name. Unnamed objects print Untitled.
+std::string ObjectTemplateAdm::getObjectInfo(const world::IObject* object)
+{
+    std::ostringstream out;
+    if (object)
+    {
+        const std::string& name = object->getName();
+        if (!name.empty())
+            out << "\"" << name << "\"";
+        else
+            out << "\"Untitled\"";
+        out << " with ID " << object->getObjectId()
+            << " of template " << getObjectTemplateInfo(object->getTemplate());
+    }
+    else
+        out << "No object";
+    return out.str();
+}
+
+// ObjectTemplateAdm::listObjectsOfTemplate (ELF 0x6ab520): every grid object whose template pointer
+// matches, one getObjectInfo row plus a newline each.
+std::string ObjectTemplateAdm::listObjectsOfTemplate(const world::IObjectTemplate* objectTemplate)
+{
+    std::string result;
+    const std::map<unsigned int, world::IObject*>& objects =
+        world::objectManager->getAllObjectsFromGrid();
+    for (std::map<unsigned int, world::IObject*>::const_iterator it = objects.begin();
+         it != objects.end(); ++it)
+    {
+        world::IObject* object = it->second;
+        if (object->getTemplate() == objectTemplate)
+            result += getObjectInfo(object) + "\n";
+    }
+    return result;
+}
+
+// ObjectTemplateAdm::initMemStream (ELF 0x6a7120): create the admin's owned memory stream once
+// through the CID_MemStream factory, or clear the existing one so the next writer starts at zero.
+void ObjectTemplateAdm::initMemStream()
+{
+    if (m_memStream)
+        m_memStream->clear();
+    else
+        m_memStream.create(io::CID_MemStream);
+}
+
+// ObjectTemplateAdm::printObjectCreationScript (ELF 0x6a83b0): write the object's script into the
+// admin's stream, then read it back as text.
+std::string ObjectTemplateAdm::printObjectCreationScript(world::IObject* object)
+{
+    initMemStream();
+    makeConsoleScript(object, m_memStream);
+    return getAsString(m_memStream);
+}
+
+// ObjectTemplateAdm::printTemplateCreationScript (ELF 0x6a8410): the template variant.
+std::string ObjectTemplateAdm::printTemplateCreationScript(const world::IObjectTemplate* objectTemplate)
+{
+    initMemStream();
+    makeConsoleScript(objectTemplate, m_memStream);
+    return getAsString(m_memStream);
+}
+
+// ObjectTemplateAdm::deleteObject (ELF 0x6a8980): the shipped body reads the active-object cursor
+// (and drops it), routes the removal through the game singleton, then clears the cursor when it
+// named the object.
+void ObjectTemplateAdm::deleteObject(world::IObject* object)
+{
+    if (!object)
+        return;
+    world::objectManager->getActiveObject();
+    if (game)
+        game->destroyObject(object);                                        // IGame +0xA0
+    if (object == world::objectManager->getActiveObject())
+        world::objectManager->setActiveObject(0);                           // +0x94
+}
+
+// ObjectTemplateAdm::deleteTemplate (ELF 0x6a7570): destroy every object of the template, remove
+// the template, then clear the active-template cursor when it named the removed template.
+void ObjectTemplateAdm::deleteTemplate(const world::IObjectTemplate* objectTemplate)
+{
+    if (!objectTemplate)
+        return;
+    const std::map<unsigned int, world::IObject*>& objects =
+        world::objectManager->getAllObjectsFromGrid();
+    for (std::map<unsigned int, world::IObject*>::const_iterator it = objects.begin();
+         it != objects.end(); ++it)
+    {
+        if (it->second->getTemplate() == objectTemplate && game)
+            game->destroyObject(it->second);                                // IGame +0xA0
+    }
+    world::objectTemplateManager->deleteTemplate(                            // +0x44
+        const_cast<world::IObjectTemplate*>(objectTemplate));
+    if (objectTemplate == world::objectTemplateManager->getActiveObjectTemplate())
+        world::objectTemplateManager->setActiveObjectTemplate(0);            // +0x54
 }
 
 } // namespace tool

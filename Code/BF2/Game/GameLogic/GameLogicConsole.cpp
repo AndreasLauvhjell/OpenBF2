@@ -56,6 +56,11 @@ void gameLogicSetDefaultNumberOfTicketsEx(U32 maxPlayers, U32 team, U32 tickets)
 {
     gameLogic->setDefaultNumberOfTicketsEx(maxPlayers, team, tickets);
 }
+
+U32 gameLogicGetDefaultNumberOfTicketsEx(U32 maxPlayers, U32 team)
+{
+    return gameLogic->getDefaultNumberOfTicketsEx(maxPlayers, team);
+}
 void gameLogicSetTicketLossPerMin(U32 team, float rate)
 {
     gameLogic->setTicketLossPerMin(team, rate);
@@ -117,6 +122,9 @@ BF2_CONSOLE_METHOD_2_STATIC_ACTIVE(setDefaultNumberOfTickets,
 BF2_CONSOLE_METHOD_3_STATIC_ACTIVE(setDefaultNumberOfTicketsEx,
                                    gameLogicSetDefaultNumberOfTicketsEx, gameLogic != 0,
                                    U32, U32, U32, kGameLogicConsoleTag)
+BF2_CONSOLE_METHOD_2_RET_ACTIVE(getDefaultNumberOfTicketsEx,
+                                gameLogicGetDefaultNumberOfTicketsEx, U32,
+                                gameLogic != 0, U32, U32, kGameLogicConsoleTag)
 BF2_CONSOLE_METHOD_2_STATIC_ACTIVE(setTicketLossPerMin, gameLogicSetTicketLossPerMin,
                                    gameLogic != 0, U32, float, kGameLogicConsoleTag)
 BF2_CONSOLE_METHOD_1_STATIC_ACTIVE(setTicketLossAtEndPerMin,
@@ -150,8 +158,13 @@ BF2_CONSOLE_PROPERTY(supplyDropNumSecsToLive, float, gameLogic,
                      setSupplyDropNumSecsToLive, getSupplyDropNumSecsToLive,
                      kGameLogicConsoleTag)
 BF2_CONSOLE_PROPERTY(supplyDropHeight, float, gameLogic,
-                     setSupplyDropHeight, getSupplyDropHeight, kGameLogicConsoleTag)
+                     setSupplyDropHeight, getSupplyDropHeight,
+                     kGameLogicConsoleTag)
 
+// ConsoleClass142
+BF2_CONSOLE_PROPERTY(maximumLevelViewDistance, float, gameLogic,
+                     setMaximumLevelViewDistance, getMaximumLevelViewDistance,
+                     kGameLogicConsoleTag)
 // ELF ConsoleClass156 0x8534C40 / PE executor 0x4383FF. The write arm calls the nonvirtual
 // GameLogic::setEnableVoHelp; the read arm dispatches IGameLogic +0x22C.
 BF2_CONSOLE_PROPERTY(enableVoHelp, bool, static_cast<GameLogic*>(gameLogic),

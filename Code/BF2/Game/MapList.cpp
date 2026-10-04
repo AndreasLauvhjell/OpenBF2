@@ -232,6 +232,31 @@ const MapList::Entry* MapList::getEntry(int idx) const
     return &m_entries[idx];
 }
 
+// maplist.list formatting, recovered from MapList::formatListForConsole (ELF 0x4199b0), the
+// formatter the list executor calls. The false arm emits `<index>: "<name>" <gameMode> <mapSize>`
+// and omits the size when it is zero; the true arm emits the bare `<name> <gameMode> <mapSize>` line.
+std::string MapList::formatListForConsole(bool bare) const
+{
+    std::ostringstream out;
+    int index = 0;
+    for (std::deque<Entry>::const_iterator it = m_entries.begin(); it != m_entries.end(); ++it)
+    {
+        if (bare)
+        {
+            out << it->name << " " << it->gameMode << " " << it->mapSize << "\n";
+        }
+        else
+        {
+            out << index << ": \"" << it->name << "\" " << it->gameMode;
+            if (it->mapSize)
+                out << " " << it->mapSize;
+            out << "\n";
+        }
+        ++index;
+    }
+    return out.str();
+}
+
 // Requires the map in the current mod. sp1 skips mode validation; other modes
 // must be supported by the map. For bf2/xpack, a nonempty list requires the first
 // entry's mode. Validation failures log and return false.

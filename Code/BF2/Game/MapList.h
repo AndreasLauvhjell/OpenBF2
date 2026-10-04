@@ -65,7 +65,10 @@ public:
     // Reads the map-list payload using embedded counts. The size argument is ignored, so malformed data can overread.
     void updateFromDataBlock(const unsigned char*, unsigned int);
     void assertDataBlockValid() const;
-    void formatListForConsole(bool) const;
+    // Formats the rotation as one line per entry. `bare` selects the command form the console
+    // reports; the ELF executor ConsoleClass761 (0xa91d4b) calls it with false for `maplist.list`.
+    // false -> `index: "name" gameMode [mapSize]` (size omitted at zero), true -> `name gameMode size`.
+    std::string formatListForConsole(bool bare) const;
 
 // [CHOSEN] Public storage supports console bindings. Offset comments describe the ELF layout only; STL layouts vary.
 public:
