@@ -167,12 +167,8 @@ void StickyCollisionComp::activate()
             static_cast<GenericProjectile*>(m_initObject));
 }
 
-// updateComponent - 0x828BC00, 247 B. this IS where THE stick actually happens, one tick after
-// handleCollision decided on it.
-// THE guard IS three-part: the latch is set, we are the authority (server, or a client running
-// local prediction for this projectile), and the projectile is not already parented.
-// THE event IS only sent when WE ARE NOT locally predicting. A client that predicted the
-// stick itself must not also broadcast it; the server, which never predicts, always does.
+// Applies a pending attachment unless the projectile is awaiting destruction.
+// The server broadcasts it; a locally predicting client only applies it locally.
 void StickyCollisionComp::updateComponent(float, unsigned int)
 {
     IObject* const projectile = m_initObject;
@@ -182,7 +178,7 @@ void StickyCollisionComp::updateComponent(float, unsigned int)
     if (!gameLogic->isServer() &&
         !static_cast<GenericProjectile*>(projectile)->getLocalPredict())
         return;
-    if (projectile->getParent())
+    if (projectile->getObjectInDestroyList())
         return;
 
     m_pendingStick = false;
@@ -302,7 +298,7 @@ void StickyCollisionComp::resetProjectile(bool keepParent)
 
 // handleCollision - 0x828BEB0, 3,564 B. IT decides; IT does NOT stick.
 bool StickyCollisionComp::handleCollision(IObject* target, const Vec3& velocity, const Vec3& normal,
-                                          const Vec3& collisionOffset, int collisionType, int b,
+                                          const Vec3& collisionOffset, int collisionType, int targetMaterial,
                                           int collisionTypeOverride,
                                           CollisionFaceInfo* face1, CollisionFaceInfo* face2)
 {
@@ -333,7 +329,7 @@ bool StickyCollisionComp::handleCollision(IObject* target, const Vec3& velocity,
     // returned byte is tested immediately in both ports; a rejected GameLogic collision stops all
     // sticky processing.
     const bool handled = gameLogic->handleCollisionForProjectile(
-        projectile, target, velocity, normal, collisionOffset, type, b, face1, face2);
+        projectile, target, velocity, normal, collisionOffset, type, targetMaterial, face1, face2);
     if (!handled)
         return handled;
 
@@ -436,8 +432,8 @@ bool StickyCollisionComp::handleCollision(IObject* target, const Vec3& velocity,
         m_hostHandle = WeakPtr<IObject>();
     }
 
-    // the last three gates
-    Material* const material = materials()->getMaterialPtr(static_cast<unsigned int>(type));
+    // Water rejection uses the struck surface's material, not the projectile's material.
+    Material* const material = materials()->getMaterialPtr(static_cast<unsigned int>(targetMaterial));
     if (!material || material->getHasWaterPhysics())
         return handled;                         // nothing sticks to water
 

@@ -153,9 +153,7 @@ StickyProjectileEvent::StickyProjectileEvent(world::GenericProjectile* projectil
 
     if (projectile)
     {
-        world::IObject* asObject = reinterpret_cast<world::IObject*>(projectile);
-        m_projectileNetId = *reinterpret_cast<const unsigned short*>(
-            reinterpret_cast<const unsigned char*>(asObject->getNetworkable()) + 4);   // slot 54
+        m_projectileNetId = projectile->getNetworkable()->m_networkableId;
 
         world::IPlayer* owner = projectile->getPlayer();
         if (owner)
