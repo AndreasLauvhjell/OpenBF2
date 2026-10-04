@@ -154,15 +154,22 @@ bool PlayerActionManager::processReceivedPacket(io::BitStream* stream)
     return true;
 }
 
-// Queues only actions newer than the connection's input high-water mark. Requires
-// a player when count is nonzero. Returns false only for a zero count; changing
-// players does not reset the high-water mark.
+// Queues only actions newer than the connection's input high-water mark. Returns false
+// for a zero count or when no player is bound; changing players does not reset the
+// high-water mark.
 bool PlayerActionManager::processRcvdPlayerActions(int count)
 {
     if (!count)
         return false;
 
-    // NO NULL check - see above.
+    // [CHOSEN, not recovered] BF2NULL fix, https://github.com/B2BF/OpenBF2/issues/27.
+    // Retail dereferences m_player unguarded here (PE 0x616F9F, the advisory's faulting
+    // instruction). A connection has no player until its ClientInfo creates one, or at all
+    // when that creation is refused, so a client that sends an action block in that window
+    // crashes the server. Such actions are dropped without moving the high-water mark.
+    if (!m_player)
+        return false;
+
     ActionBuffer* const buffer = m_player->getActionBuffer();
 
     for (int i = 0; i < count; ++i)
