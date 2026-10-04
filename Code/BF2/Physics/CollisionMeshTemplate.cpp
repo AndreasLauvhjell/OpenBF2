@@ -149,16 +149,25 @@ bool CollisionMeshTemplate::isLodValid(int geom, int lod) const
     return static_cast<unsigned int>(slot) < g.lods.size() && g.lods[slot] != 0;
 }
 
-// getValidLod (0x83A1710, 43 B non-const / 0x83A16C0 71 B const): the Lod at remap[lod]. no
-// range or null check in the ELF - a caller passing an absent layer walks the vector out of
-// bounds. As shipped; the loader only calls it on slots it just created.
+// getValidLod - the Lod at remap[lod]. The two shipped variants differ on absent layers: the
+// non-const body (retail ELF 0x71c800) indexes lods[remap[lod]] unchecked, while the const body
+// (retail ELF 0x719810) clamps the remapped slot into [0, lods.size()-1] before indexing.
+// getBoundingBox is const and relies on that clamp, so an absent layer (colRemap == -1) resolves
+// to lod 0 instead of walking the vector out of bounds. (PE: 0x83A1710 / 0x83A16C0.)
 CollisionLod* CollisionMeshTemplate::getValidLod(int geom, int lod)
 {
     return m_lods[geom].lods[m_lods[geom].colRemap[lod]];
 }
 const CollisionLod* CollisionMeshTemplate::getValidLod(int geom, int lod) const
 {
-    return m_lods[geom].lods[m_lods[geom].colRemap[lod]];
+    const CollisionGeom& g = m_lods[geom];
+    int slot = g.colRemap[lod];
+    const int count = static_cast<int>(g.lods.size());
+    if (slot >= count)
+        slot = count - 1;
+    if (slot < 0)
+        slot = 0;
+    return g.lods[slot];
 }
 
 // push the vertex, grow the bounding box.
