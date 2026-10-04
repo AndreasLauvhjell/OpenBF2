@@ -921,7 +921,8 @@ void GenericProjectile::detonate(bool forced)
                  m_detonationComp ? 1 : 0);
     if (m_dword1BC + m_template->m_armingDelayTicks <= currentTick)
     {
-        const Vec3 position = getAbsolutePosition();
+        // Keep the position reference live across collision-position relocation below.
+        const Vec3& position = getAbsolutePosition();
         BF2_FX_TRACE("projectile impact arm: %s taken=%d pos=(%.1f %.1f %.1f)",
                      m_template->getName().c_str(),
                      ((!gameLogic->isServer() && getNetworkable())
