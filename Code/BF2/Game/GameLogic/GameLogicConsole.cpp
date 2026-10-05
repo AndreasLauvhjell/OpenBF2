@@ -2,6 +2,7 @@
 // unit; the object name is normalized to gameLogic by console registration.
 // togglePause uses access level 1; the following setters use access level 2.
 #include "../../Core/ConsoleObjectMacro.h"
+#include "../../Core/SettingsRepostitory.h"   // settings->boolGet("GSIsServer") - the getters' gate
 #include "../IGameLogic.h"
 #include "GameLogic.h"            // the messages.* bindings reach the concrete class
 #include "VoiceMessages.h"
@@ -42,6 +43,32 @@ void gameLogicSetTeamFlag(int team, const std::string& flagTemplate)
 void gameLogicSetTeamName(int team, const std::string& name)
 {
     gameLogic->setTeamName(team, name);
+}
+
+// Pre-spawn free-camera transform. Linux64 server ELF 0x87D9A0 (ConsoleClass199) and win32 client
+// 0x43B055 both read two Vec3 arguments and call GameLogic::setBeforeSpawnCamera directly.
+void gameLogicSetBeforeSpawnCamera(Vec3 position, Vec3 direction)
+{
+    static_cast<GameLogic*>(gameLogic)->setBeforeSpawnCamera(position, direction);
+}
+
+// The two camera getters select the server gameLogic exactly as ConsoleClass322..325 do: the
+// GSIsServer setting first, then the published gameLogic pointer.
+GameLogic* gameLogicCameraReadTarget()
+{
+    if (!settings->boolGet(std::string("GSIsServer"), false))
+        return 0;
+    return static_cast<GameLogic*>(gameLogic);
+}
+
+Vec3 gameLogicGetBeforeSpawnCameraPosition()
+{
+    return gameLogicCameraReadTarget()->getBeforeSpawnCameraPosition();
+}
+
+Vec3 gameLogicGetBeforeSpawnCameraDirection()
+{
+    return gameLogicCameraReadTarget()->getBeforeSpawnCameraDirection();
 }
 
 // Stock GameLogicInit.con and level Init.con ticket policy. PE constructors/executors:
@@ -116,6 +143,16 @@ BF2_CONSOLE_METHOD_2_STATIC_ACTIVE(setTeamFlag, gameLogicSetTeamFlag, gameLogic 
                                    int, std::string, kGameLogicConsoleTag)
 BF2_CONSOLE_METHOD_2_STATIC_ACTIVE(setTeamName, gameLogicSetTeamName, gameLogic != 0,
                                    int, std::string, kGameLogicConsoleTag)
+BF2_CONSOLE_METHOD_2_STATIC_ACTIVE(setBeforeSpawnCamera, gameLogicSetBeforeSpawnCamera,
+                                   gameLogic != 0, Vec3, Vec3, kGameLogicConsoleTag)
+// ConsoleClass201/202 - exec 0x88F7C0 / 0x88F620, 0 args, dynamic, return Vec3; active only while
+// GSIsServer is set. The setter above uses the plain gameLogic check instead.
+BF2_CONSOLE_METHOD_0_RET_ACTIVE(getBeforeSpawnCameraPosition,
+                                gameLogicGetBeforeSpawnCameraPosition, Vec3,
+                                gameLogicCameraReadTarget() != 0, kGameLogicConsoleTag)
+BF2_CONSOLE_METHOD_0_RET_ACTIVE(getBeforeSpawnCameraDirection,
+                                gameLogicGetBeforeSpawnCameraDirection, Vec3,
+                                gameLogicCameraReadTarget() != 0, kGameLogicConsoleTag)
 BF2_CONSOLE_METHOD_2_STATIC_ACTIVE(setDefaultNumberOfTickets,
                                    gameLogicSetDefaultNumberOfTickets, gameLogic != 0,
                                    U32, U32, kGameLogicConsoleTag)
