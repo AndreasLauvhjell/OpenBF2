@@ -60,7 +60,7 @@ protected:
                                      bool cachePresent,
                                      bool localCaptureActive) override; // +13C 7CF5A0
     void paintMapIcon(hfe::Vec2 position, float rotation, hfe::Vec2 size,
-                      int texture, System* system, const Rect* adjusted,
+                      unsigned int texture, System* system, const Rect* adjusted,
                       const Rect* bounds, const Color* color,
                       RenderContext* context) override;
     void collectLocalPlayerIcon() override;                              // +12C 7CEDD0, 583 B
