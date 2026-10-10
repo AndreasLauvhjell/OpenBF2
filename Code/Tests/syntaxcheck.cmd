@@ -525,6 +525,8 @@ cl %FLAGS% "%~dp0..\BF2\Game\GameServer\BanList.cpp"
 if errorlevel 1 set /a RC+=1
 cl %FLAGS% "%~dp0..\BF2\Game\GameServer\BanListConsole.cpp"
 if errorlevel 1 set /a RC+=1
+cl %FLAGS% "%~dp0..\BF2\Game\Main\OpenBF2Console.cpp"
+if errorlevel 1 set /a RC+=1
 cl %FLAGS% "%~dp0..\BF2\Game\Common\DataBlockManager.cpp"
 cl %FLAGS% "%~dp0..\BF2\Game\Common\StringManager.cpp"
 if errorlevel 1 set /a RC+=1
@@ -1191,6 +1193,20 @@ if errorlevel 1 set /a RC+=1
 cl %FLAGS0% /DBF2_IMAGE_RENDDX9 "%~dp0..\BF2\Geom\QuadPatchEditable.cpp"
 if errorlevel 1 set /a RC+=1
 cl %FLAGS0% /DBF2_IMAGE_RENDDX9 "%~dp0..\BF2\Geom\SurroundingPatchEditable.cpp"
+if errorlevel 1 set /a RC+=1
+@rem Terrain and object lightmaps (2026-10-05): the terrain light sampler, the generator, the mesh
+@rem light sampler, the editor flavour's `lightmapGeneration` rows (empty without BF2_IMAGE_EDITOR, so
+@rem it is checked with it too) and the native-only StaticMeshRenderer atlas rows (renddx9.cmd builds
+@rem all five).
+cl %FLAGS0% /DBF2_IMAGE_RENDDX9 "%~dp0..\BF2\Geom\TerrainLightSampling.cpp"
+if errorlevel 1 set /a RC+=1
+cl %FLAGS0% /DBF2_IMAGE_RENDDX9 "%~dp0..\BF2\Geom\LightmapGeneration\LightmapGeneration.cpp"
+if errorlevel 1 set /a RC+=1
+cl %FLAGS0% /DBF2_IMAGE_RENDDX9 "%~dp0..\BF2\Geom\LightmapGeneration\MeshLightSampling.cpp"
+if errorlevel 1 set /a RC+=1
+cl %FLAGS0% /DBF2_IMAGE_RENDDX9 /DBF2_IMAGE_EDITOR=1 "%~dp0..\BF2\Geom\LightmapGeneration\LightmapGenerationConsole.cpp"
+if errorlevel 1 set /a RC+=1
+cl %FLAGS0% /DBF2_IMAGE_RENDDX9 "%~dp0..\BF2\Geom\StaticMeshRendererConsole.cpp"
 if errorlevel 1 set /a RC+=1
 @rem IO/Tokenizer.cpp (RW-240): dice::hfe::Tokenizer, whose bodies compile only under BF2_IMAGE_RENDDX9 (renddx9.cmd builds it).
 cl %FLAGS0% /DBF2_IMAGE_RENDDX9 "%~dp0..\BF2\IO\Tokenizer.cpp"

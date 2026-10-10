@@ -1266,11 +1266,11 @@ bf2_set_image(bf2_client 0)
 target_compile_definitions(bf2_client PRIVATE BF2_PLUGIN_ABI_NATIVE=1 _ITERATOR_DEBUG_LEVEL=0)
 set_target_properties(bf2_client PROPERTIES
     VS_DEBUGGER_WORKING_DIRECTORY "${BF2_GAME_DIR}"
-    VS_DEBUGGER_COMMAND_ARGUMENTS "+modPath mods/bf2 +fullscreen 0 +multi 1 +restart 1"
+    VS_DEBUGGER_COMMAND_ARGUMENTS "+modPath mods/bf2 +fullscreen 0 +multi 1"
 )
 
-# Owner-requested intro skip; the movie implementation and its frontier remain intact.
-set(BF2_CLIENT_RUN_ARGS "+modPath;mods/bf2;+fullscreen;0;+multi;1;+restart;1"
+# Normal startup includes the movies; +restart remains an optional explicit skip.
+set(BF2_CLIENT_RUN_ARGS "+modPath;mods/bf2;+fullscreen;0;+multi;1"
     CACHE STRING "Arguments for the diagnostic bf2_client_run target (a CMake ;-list).")
 add_custom_target(bf2_client_run
     COMMAND "$<TARGET_FILE:bf2_client>" ${BF2_CLIENT_RUN_ARGS}

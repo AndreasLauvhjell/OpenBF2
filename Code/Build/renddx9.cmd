@@ -181,6 +181,9 @@ set SOURCES=^
  "%BF2%\Geom\TerrainEditableGetSets.cpp" ^
  "%BF2%\Geom\QuadPatchEditable.cpp" ^
  "%BF2%\Geom\SurroundingPatchEditable.cpp" ^
+ "%BF2%\Geom\TerrainLightSampling.cpp" ^
+ "%BF2%\Geom\LightmapGeneration\LightmapGeneration.cpp" ^
+ "%BF2%\Geom\LightmapGeneration\MeshLightSampling.cpp" ^
  "%BF2%\Geom\ObjectDrawer.cpp" ^
  "%BF2%\Geom\XpLightManager.cpp" ^
  "%BF2%\Geom\NametagManager.cpp" ^
@@ -234,6 +237,11 @@ rem whole assignment and left every ConsoleObject symbol unresolved at link time
 set CONSOLE_SOURCES= "%BF2%\Core\ConsoleObjectBase.cpp" "%ABI%\NativeConsoleObjects.cpp" "%BF2%\Geom\LightManagerConsole.cpp" "%BF2%\Geom\HemiMapManager\HemiMapManagerConsole.cpp" "%BF2%\Geom\SkyDomeConsole.cpp" "%BF2%\Geom\TerrainConsole.cpp" "%BF2%\RendDX9\RendererConsole.cpp" "%BF2%\Geom\NametagManagerConsole.cpp" "%BF2%\Geom\Overgrowth\OverGrowthConsole.cpp" "%BF2%\Geom\UndergrowthSystemConsole.cpp" "%BF2%\Geom\DecalSystem\DecalManagerConsole.cpp"
 rem RD1 (2026-09-30): the `Object.geometry.loadMesh` row - native console ABI, like the list above.
 set CONSOLE_SOURCES=!CONSOLE_SOURCES! "%BF2%\Geom\ObjectGeometryConsole.cpp"
+rem The 2006 editor's `lightmapGeneration` rows - native console ABI; the TU is empty unless
+rem BF2_IMAGE_EDITOR (the BF2_RENDDX9_EDITOR=1 flavour) is set.
+set CONSOLE_SOURCES=!CONSOLE_SOURCES! "%BF2%\Geom\LightmapGeneration\LightmapGenerationConsole.cpp"
+rem The StaticMeshRenderer atlas rows (loadAllLightMapFiles / loadAllLightMapFilesDLL) - native console ABI.
+set CONSOLE_SOURCES=!CONSOLE_SOURCES! "%BF2%\Geom\StaticMeshRendererConsole.cpp"
 rem Roads step 3 (2026-10-01): the native host's EventNode shape for the HeightmapEventNode
 rem RoadEditable::projectToTerrain posts.
 set CONSOLE_SOURCES=!CONSOLE_SOURCES! "%BF2%\Geom\HeightmapEventNode.cpp"

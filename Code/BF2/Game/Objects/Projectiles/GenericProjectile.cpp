@@ -13,6 +13,7 @@
 #include <cstring>
 
 #include "GenericProjectileTemplate.h"
+#include "GrenadeTrace.h"
 #include "../../GameEvents/MissileInitEvent.h"
 #include "../../IGame.h"
 #include "../../IGameLogic.h"                       // gameLogic - launch authority/list gate
@@ -408,6 +409,11 @@ void GenericProjectile::destroy(bool force)
 {
     typedef object_detail::LayoutAccess L;
 
+    if (grenade_trace::selected(this))
+    {
+        grenade_trace::log(this, "destroy", "force=%d", force ? 1 : 0);
+        grenade_trace::retire(this);
+    }
     resetProjectile(!force);
     if (m_geometrySwap224 && static_cast<void*>(m_geometrySwap224) != L::geometry(this))
     {
@@ -870,6 +876,17 @@ bool GenericProjectile::handleCollision(IObject* other,
     m_vec1D8.z = absolutePosition.z + vecC.z;
     assignObjectWeakBlock(m_targetObjectWeak, other);
 
+    if (grenade_trace::selected(this))
+    {
+        grenade_trace::log(this, "collision",
+            "other=%u material=%d recorded_material=%d int_a=%d "
+            "a=(%.9g,%.9g,%.9g) b=(%.9g,%.9g,%.9g) c=(%.9g,%.9g,%.9g) "
+            "impact=(%.9g,%.9g,%.9g)",
+            other ? other->getObjectId() : 0u, materialId, m_dword1C4, intA,
+            vecA.x, vecA.y, vecA.z, vecB.x, vecB.y, vecB.z, vecC.x, vecC.y, vecC.z,
+            m_vec1D8.x, m_vec1D8.y, m_vec1D8.z);
+    }
+
     // Missile debugging still performs the target/position calls even though their result is discarded.
     // [PLATFORM] This build reads the debug counter through GameLogic instead of the ELF's direct global load.
     if (gameLogic->getDebugMissiles() && m_seekComp)
@@ -970,6 +987,12 @@ void GenericProjectile::detonate(bool forced)
         return;
     }
 
+    if (grenade_trace::selected(this))
+    {
+        grenade_trace::log(this, "detonate", "forced=%d cached_position=(%.9g,%.9g,%.9g)",
+            forced ? 1 : 0, m_absoluteTransformation.m[12],
+            m_absoluteTransformation.m[13], m_absoluteTransformation.m[14]);
+    }
     hideProjectile();
     const float destroyDelay = getNetworkable() && gameLogic->isServer() ? 0.5f : 0.0f;
     objectManager->postMessage(this, static_cast<TemplateMessage>(32), destroyDelay);
