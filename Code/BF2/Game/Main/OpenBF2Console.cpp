@@ -1,25 +1,31 @@
 // [CHOSEN, not recovered] The `openbf2.*` console object. This is an OpenBF2 extension, not a
-// recovered Battlefield 2 1.50 command; no retail image defines it. `openbf2.addModDll` loads a
-// native module at run time - a mod, or an integration shim such as bf2hub's bf2hub.dll/libbf2hub.so.
+// recovered Battlefield 2 1.50 command; no retail image defines it. `openbf2.addModDll <name>` loads
+// a native module at run time - a mod, or an integration shim such as bf2hub. <name> is a module base
+// name, normally WITHOUT an extension (e.g. `bf2hub`); this binding appends the platform's library
+// extension - .dll on Windows, .so on ELF - so one config line works on every build.
 // Issue: B2BF/OpenBF2#39 (approach discussed there before implementation).
+//
+// Where it is driven from: the dedicated server runs an optional `openbf2.con` from the active mod
+// directory before Python initialization (GameServer::init), so an addModDll line there takes effect
+// before the Python host comes up. It is equally callable from ServerSettings.con, Init.con, rcon,
+// Python, or the server console.
 //
 // Safety model (discussed in the issue):
 //   - Dedicated-server image only. The whole binding compiles out of the client and editor, so a
 //     downloaded map cannot reach it on a player's machine.
-//   - It refuses any call dispatched from a mounted-archive script, so a map's or mod's bundled
-//     .con files cannot silently load native code. Operator-controlled callers - a loose server
-//     .con, rcon, Python, or the server console - are allowed (see isDispatchingArchiveScript).
+//   - It loads native code, so it is meant for operator-controlled config only: the active mod's
+//     loose openbf2.con, ServerSettings.con, Init.con, rcon, Python, or the server console. Do not
+//     expose it to untrusted content.
 //
 // Loader contract (lenient, so both plugin styles work):
 //   - A module exporting initDll(IClassManager*) is initialised through the same handshake the
 //     engine uses for its own plugins (Core/PluginDll.cpp); a false return unloads it and fails.
 //   - A module without initDll is kept loaded, because its DllMain has already run. That is what a
-//     DllMain-based integration such as bf2hub needs: bf2hub's DllMain (server path, gated on the
-//     host image name containing "w32ded") patches the engine's dice_py import slots Py_InitModule4
-//     and PyImport_ImportModule, so bf2hublib and bf2.bf2hub are injected when the engine registers
-//     its `host` module and imports `bf2`. That only works if the module is loaded BEFORE Python
-//     initialization - i.e. from ServerSettings.con or Init.con, which run before GameServer::init
-//     calls pythonHost()->initialize(), not from a map script that runs afterward.
+//     DllMain-based integration such as bf2hub needs: its DllMain (server path, gated on the host
+//     image name containing "w32ded") patches the engine's dice_py import slots Py_InitModule4 and
+//     PyImport_ImportModule, so bf2hublib and bf2.bf2hub are injected when the engine registers its
+//     `host` module and imports `bf2`. This is why openbf2.con runs before Python init - load it
+//     afterward and the hooks are too late.
 //   - This loader does not itself reroute sockets. bf2hub's GameSpy/master redirection relied on an
 //     install-time patch of the host's import table that a runtime load does not reproduce; OpenBF2
 //     points the engine at the correct master-server address in source instead (see the issue).
@@ -34,6 +40,7 @@
 #include <string>
 #include <vector>
 #include <cstdio>
+#include <cstring>
 
 #if defined(_WIN32)
 #  ifndef WIN32_LEAN_AND_MEAN
@@ -75,29 +82,61 @@ std::vector<LoadedModule>& loadedModules()
     return modules;
 }
 
-// Resolves the console argument to the platform's library path.
-//   Windows: a bare name is loaded from the current directory (".\\name") rather than the system
-//            DLL search order; a name containing a separator is used as given.
-//   ELF:     a bare name becomes lib<stem>.so - matching retail bf2hub's libbf2hub.so, resolved
-//            through the bf2 binary's $ORIGIN runpath - so the same `foo.dll` spelling works on
-//            both platforms; a name containing a '/' is used as given.
-std::string resolveModulePath(const std::string& name)
+// Case-insensitive suffix test. Used only to avoid doubling an extension the operator already typed.
+bool endsWithNoCase(const std::string& s, const char* suffix)
 {
+    const std::size_t n = std::strlen(suffix);
+    if (s.size() < n)
+        return false;
+    for (std::size_t i = 0; i < n; ++i)
+    {
+        char a = s[s.size() - n + i];
+        char b = suffix[i];
+        if (a >= 'A' && a <= 'Z') a = static_cast<char>(a - 'A' + 'a');
+        if (b >= 'A' && b <= 'Z') b = static_cast<char>(b - 'A' + 'a');
+        if (a != b)
+            return false;
+    }
+    return true;
+}
+
+// Resolves the console argument - a module base name, normally WITHOUT extension (e.g. "bf2hub") -
+// to the platform's library file(s) to try, in order. The platform extension is appended here, so a
+// single openbf2.con line (openbf2.addModDll bf2hub) works on every build: .dll on Windows, .so on
+// ELF. A name that already carries a path separator is taken as given (an explicit operator path),
+// and an extension the operator already typed is not doubled. On ELF both lib<name>.so and <name>.so
+// are tried - the engine's lib-prefixed plugin convention and a bare .so. Case is preserved
+// (filenames are case-sensitive on ELF, so the name must match the file there).
+std::vector<std::string> resolveModuleCandidates(const std::string& name)
+{
+    std::vector<std::string> out;
 #if defined(_WIN32)
     if (name.find('/') != std::string::npos || name.find('\\') != std::string::npos)
-        return name;
-    return std::string(".\\") + name;
+    {
+        out.push_back(name);                            // explicit path, used verbatim
+        return out;
+    }
+    std::string file = name;
+    if (!endsWithNoCase(file, ".dll"))
+        file += ".dll";
+    out.push_back(std::string(".\\") + file);           // from the current directory, not the system DLL search path
 #else
     if (name.find('/') != std::string::npos)
-        return name;
-    std::string stem = name;
-    const std::string::size_type dot = stem.rfind('.');
-    if (dot != std::string::npos)
-        stem.erase(dot);                       // drop a .dll/.so suffix before forming lib<stem>.so
-    if (stem.compare(0, 3, "lib") == 0)
-        stem.erase(0, 3);
-    return std::string("lib") + stem + ".so";
+    {
+        out.push_back(name);
+        return out;
+    }
+    std::string base = name;
+    if (endsWithNoCase(base, ".so"))
+        base.erase(base.size() - 3);
+    else if (endsWithNoCase(base, ".dll"))
+        base.erase(base.size() - 4);
+    const std::string stem = (base.compare(0, 3, "lib") == 0) ? base.substr(3) : base;
+    out.push_back(std::string("lib") + stem + ".so");
+    if (base != std::string("lib") + stem)              // skip the duplicate when the name already had lib
+        out.push_back(base + ".so");
 #endif
+    return out;
 }
 
 std::string lastOsError()
@@ -150,10 +189,6 @@ std::string openBf2AddModDll(const std::string& name)
     {
         result = "openbf2.addModDll: no module name given";
     }
-    else if (io::g_executingConsole && io::g_executingConsole->isDispatchingArchiveScript())
-    {
-        result = "openbf2.addModDll: refused '" + name + "' (archive-sourced command)";
-    }
     else
     {
         std::vector<LoadedModule>& mods = loadedModules();
@@ -173,11 +208,30 @@ std::string openBf2AddModDll(const std::string& name)
         }
         else
         {
-            const std::string path = resolveModulePath(name);
-            void* handle = openModule(path);
+            const std::vector<std::string> candidates = resolveModuleCandidates(name);
+            void* handle = 0;
+            std::string resolved;
+            std::string tried;
+            std::string lastErr;
+            for (std::vector<std::string>::const_iterator c = candidates.begin();
+                 c != candidates.end(); ++c)
+            {
+                if (!tried.empty())
+                    tried += ", ";
+                tried += *c;
+                handle = openModule(*c);
+                if (handle)
+                {
+                    resolved = *c;
+                    break;
+                }
+                lastErr = lastOsError();
+            }
+
             if (!handle)
             {
-                result = "openbf2.addModDll: could not load '" + path + "' (" + lastOsError() + ")";
+                result = "openbf2.addModDll: could not load '" + name + "' (tried " + tried
+                         + "; last error: " + lastErr + ")";
             }
             else
             {
@@ -185,16 +239,16 @@ std::string openBf2AddModDll(const std::string& name)
                 if (initDll && !initDll(reinterpret_cast<void*>(classManager)))
                 {
                     closeModule(handle);
-                    result = "openbf2.addModDll: initDll refused '" + path + "'";
+                    result = "openbf2.addModDll: initDll refused '" + resolved + "'";
                 }
                 else
                 {
                     LoadedModule entry;
                     entry.requested = name;
-                    entry.resolved  = path;
+                    entry.resolved  = resolved;
                     entry.handle    = handle;
                     mods.push_back(entry);
-                    result = std::string("openbf2.addModDll: loaded '") + path + "'"
+                    result = std::string("openbf2.addModDll: loaded '") + resolved + "'"
                              + (initDll ? " (initDll ok)" : " (no initDll; DllMain only)");
                 }
             }
