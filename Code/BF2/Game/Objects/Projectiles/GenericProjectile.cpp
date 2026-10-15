@@ -430,8 +430,8 @@ void GenericProjectile::destroy(bool force)
 
 // disableCachedObject - 0x8280400, 274 B - THE warm-UP park. resetProjectile(false) first (the
 // inactive path for a never-activated carcass), the SimpleObject chain, then the template's two
-// tracer caches lazy-resolve (name -> template, only while unset and the name is non-empty), the
-// geometry drop behind an unrecovered gate, and the seven comp pointers zeroed.
+// tracer caches lazy-resolve (name -> template, only while unset and the name is non-empty), a
+// tracer-capable round drops its geometry, and the seven comp pointers are zeroed.
 void GenericProjectile::disableCachedObject()
 {
     resetProjectile(false);
@@ -444,11 +444,10 @@ void GenericProjectile::disableCachedObject()
     if (!tpl->m_field214 && tpl->m_string20C.length())
         tpl->m_field214 = world::objectTemplateManager->getTemplate(tpl->m_string20C);
 
-    // the ELF gates a setComponent(geom::IID_IGeometry, 0) on an object virtual this tree has
-    // not identified (vptr-indexed in the raw at 0x82804C8). The gate's answer on a fresh warm-up
-    // carcass is not established; a bounded stop here would kill the drain, and dropping the
-    // geometry of a cache carcass is a client-render concern - deferred with the class's other
-    // resource arms. [CHOSEN, not recovered] [RETIRE-WHEN: genericprojectile-class]
+    // The gate is hasTracer (ELF primary +0x244; PE IProjectileObject face +0xD0). It is false on a
+    // dedicated server, where tracer templates are never resolved.
+    if (hasTracer())
+        setComponent(geom::IID_IGeometry, 0);
 
     m_collisionComp = 0;
     m_detonationComp = 0;
@@ -501,8 +500,10 @@ void GenericProjectile::resetProjectile(bool a2)
     dropWeakBlock(m_targetObjectWeak);
     m_targetObjectWeak = 0;
 
+    // The collision component's resetProjectile slot, not preResetProjectile: StickyCollisionComp
+    // re-enables its parked physics here.
     if (m_collisionComp)
-        m_collisionComp->preResetProjectile(a2);
+        m_collisionComp->resetProjectile(a2);
     if (m_soundComp)
         m_soundComp->reset();
 
@@ -694,6 +695,59 @@ void GenericProjectile::handleUpdate(float dt, unsigned int flags)
                 target.y = ourPos.y + remaining * (tracerPos.y - m_startPos.y);
                 target.z = ourPos.z + remaining * (tracerPos.z - m_startPos.z);
                 tracerObject->setAbsolutePosition(target);
+            }
+        }
+
+        // The tracer then faces its own velocity. Rows are right = (0,1,0) x direction and
+        // up = direction x right - neither renormalised, as shipped - then the direction and the
+        // tracer's current translation. A direction within 0.0001 of vertical takes a fixed basis.
+        if (tracerNode)
+        {
+            Vec3 direction = tracerNode->getPositionalSpeed();
+            const float speedSquared = direction.y * direction.y + direction.x * direction.x
+                                     + direction.z * direction.z;
+            if (speedSquared > 0.025f)
+            {
+                normaliseVec3(direction);
+
+                Vec3 right;
+                Vec3 up;
+                if (fabsf(direction.x) < 0.000099999997f && fabsf(direction.z) < 0.000099999997f)
+                {
+                    right.x = 1.0f; right.y = 0.0f; right.z = 0.0f;
+                    up.x = 0.0f;    up.y = 0.0f;
+                    direction.x = 0.0f;
+                    direction.z = 0.0f;
+                    if (direction.y <= 0.0f)
+                    {
+                        direction.y = -1.0f;
+                        up.z = 1.0f;
+                    }
+                    else
+                    {
+                        direction.y = 1.0f;
+                        up.z = -1.0f;
+                    }
+                }
+                else
+                {
+                    right.x = direction.z;
+                    right.y = 0.0f;
+                    right.z = -direction.x;
+                    up.x = direction.y * right.z - direction.z * right.y;
+                    up.y = direction.z * right.x - direction.x * right.z;
+                    up.z = direction.x * right.y - direction.y * right.x;
+                }
+
+                const Mat4& current = tracerObject->getAbsoluteTransformation();
+                Mat4 frame = Mat4::getIdentity();
+                frame.m[0] = right.x;     frame.m[1] = right.y;     frame.m[2] = right.z;
+                frame.m[4] = up.x;        frame.m[5] = up.y;        frame.m[6] = up.z;
+                frame.m[8] = direction.x; frame.m[9] = direction.y; frame.m[10] = direction.z;
+                frame.m[12] = current.m[12];
+                frame.m[13] = current.m[13];
+                frame.m[14] = current.m[14];
+                tracerObject->setAbsoluteTransformation(frame);
             }
         }
     }
