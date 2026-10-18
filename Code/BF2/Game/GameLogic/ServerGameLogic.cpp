@@ -1864,6 +1864,9 @@ bool ServerGameLogic::selectTeam(world::IPlayer* player, int team)
     if (!player)
         return false;
 
+    if (team <= 0 || team >= 3)
+        return false;
+
     player->setTeam(team, false);                                   // vt - the validating setter
 
     {
