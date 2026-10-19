@@ -2286,7 +2286,7 @@ unsigned int ServerGameLogic::getDefaultNumberOfTickets(unsigned int team)
     std::string mode;
     if (game)
         mode = game->getCurrentMapGameMode();
-    if (compareIgnoreCase(mode.c_str(), "gpm_coop") != 0)
+    if (compareIgnoreCase(mode.c_str(), "gpm_coop") == 0) // if coop then force to 16
         return getDefaultNumberOfTicketsEx(16, team);
     return getDefaultNumberOfTicketsEx(game->getCurrentMapMaxPlayers(), team);
 }
