@@ -2279,8 +2279,8 @@ unsigned int ServerGameLogic::getDefaultNumberOfTicketsEx(unsigned int maxPlayer
     return static_cast<unsigned int>(it->second);
 }
 
-// getDefaultNumberOfTickets - 0x81037C0, 272 B: coop asks the map with the MAP's max players,
-// everything else with 16.
+// getDefaultNumberOfTickets - 0x81037C0, 272 B: every game mode asks the map with the MAP's max players,
+// coop always uses 16.
 unsigned int ServerGameLogic::getDefaultNumberOfTickets(unsigned int team)
 {
     std::string mode;
