@@ -1,6 +1,7 @@
 #include "BfNewListBoxNode.h"
 #if !DEDICATED
 #include "BfListBoxData.h"
+#include "ColorEscape.h"
 #include "DifFontMetadata.h"
 #include "Font.h"
 #include "../External/BFMeme/Action.h"
@@ -451,6 +452,14 @@ void BfNewListBoxNode::paintSelf(System* system, const NodeState*, const Rect* b
                     controlLength = 2;
                 }
                 if (sentinel && (next == 'C' || next == 'c')) {
+                    // [CHOSEN, not recovered] Retail never copies the four payload characters
+                    // into the buffer; the colour escape in ColorEscape.h needs them. The copy
+                    // stops at the terminator and never writes past the buffer.
+                    for (int i = 2; i != 6 && characterIndex + i < 256; ++i) {
+                        characters[characterIndex + i] =
+                            m_data->getCharacterElement(system, row, characterIndex + i);
+                        if (!characters[characterIndex + i]) break;
+                    }
                     characterIndex += 6;
                 } else if (controlLength) {
                     characterIndex += controlLength;
@@ -571,6 +580,8 @@ void BfNewListBoxNode::paintSelf(System* system, const NodeState*, const Rect* b
                     static_cast<double>(alignedY) + m_data->m_field024 + m_data->m_field024));
 
                 bool alternateColor = false;
+                bool escapeColorSet = false; // [CHOSEN, not recovered] see ColorEscape.h
+                Color escapeColor = {0.0f, 0.0f, 0.0f, 0.0f};
                 int bufferIndex = 0;
                 int glyphElementIndex = 0;
                 while (characters[bufferIndex]) {
@@ -584,6 +595,9 @@ void BfNewListBoxNode::paintSelf(System* system, const NodeState*, const Rect* b
                     }
                     if (sentinel && (next == 'C' || next == 'c')) {
                         alternateColor = !alternateColor;
+                        const int payload = bufferIndex + 2;
+                        escapeColorSet = alternateColor && readColorEscape(
+                            [&](int i) { return characters[payload + i]; }, &escapeColor);
                         bufferIndex += 6;
                         continue;
                     }
@@ -592,7 +606,9 @@ void BfNewListBoxNode::paintSelf(System* system, const NodeState*, const Rect* b
                         continue;
                     }
 
-                    if (alternateColor) {
+                    if (escapeColorSet) {
+                        currentColor = escapeColor;
+                    } else if (alternateColor) {
                         currentColor = {0.9960784316f, 0.6392157078f,
                                         0.1686274558f, 1.0f};
                     } else {

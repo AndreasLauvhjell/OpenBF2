@@ -23,8 +23,10 @@ protected:
     // [INFERRED] spelling for the shadow and highlight passes every drawText
     // body performs once per glyph; retail inlines the identical code at all
     // three sites. Nonvirtual, so the published table is unchanged.
+    // highlightColor replaces the fixed highlight tint when non-null; it is the
+    // [CHOSEN, not recovered] colour escape described in ColorEscape.h.
     bool paintGlyph(System*, int character, int position, Quad& glyphQuad,
-                    RenderContext*, bool highlight);
+                    RenderContext*, bool highlight, const Color* highlightColor);
     bool m_wordWrap;                // +18, true from the constructor
     unsigned char m_padding19[3];   // untouched
     int m_shadowFont;               // +1C, zero means reuse the ordinary font

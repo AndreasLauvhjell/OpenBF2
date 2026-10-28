@@ -1,6 +1,7 @@
 // BF2 menu text styles with left, right and centered alignment. [INFERRED] Source placement.
 #include "Bf2Style.h"
 #if !DEDICATED
+#include "ColorEscape.h"
 #include "../External/BFMeme/Data.h"
 #include "../External/BFMeme/Effect.h"
 #include "../External/BFMeme/Node.h"
@@ -66,7 +67,8 @@ bool Bf2Style::setTexture(int texture)
 // The shadow pass then the glyph pass, exactly as all three bodies inline them.
 // Returns false when either draw refuses, which makes the caller stop at once.
 bool Bf2Style::paintGlyph(System* system, int character, int position,
-                         Quad& glyphQuad, RenderContext* context, bool highlight)
+                         Quad& glyphQuad, RenderContext* context, bool highlight,
+                         const Color* highlightColor)
 {
     if (m_texture) glyphQuad.texture2 = m_texture;
     if (m_shadowFont || m_shadowOffsetX != 0.0f || m_shadowOffsetY != 0.0f) {
@@ -93,7 +95,11 @@ bool Bf2Style::paintGlyph(System* system, int character, int position,
     Color saved = {1.0f, 1.0f, 1.0f, 1.0f};
     if (highlight && effect) {
         saved = readEffectColorField(effect);
-        effect->setColor(highlightRed, highlightGreen, highlightBlue, 1.0f);
+        if (highlightColor) // [CHOSEN, not recovered] see ColorEscape.h
+            effect->setColor(highlightColor->r, highlightColor->g,
+                             highlightColor->b, highlightColor->a);
+        else
+            effect->setColor(highlightRed, highlightGreen, highlightBlue, 1.0f);
     }
     if (!drawContextCharacter(context, system, character, m_font, position, &glyphQuad))
         return false;
@@ -114,6 +120,9 @@ void Bf2Style::drawText(System* system, Data* data, int elementIndex,
     const float lineHeight = system->getFontHeight(m_font);
     Rect glyphRect = {0.0f, 0.0f, 0.0f, 0.0f, bounds->z};
     float escapeChannels[4] = {0.0f, 0.0f, 0.0f, 0.0f}; // written, never read
+    int escapePayload[4] = {0, 0, 0, 0}; // [CHOSEN, not recovered] see ColorEscape.h
+    Color escapeColor = {0.0f, 0.0f, 0.0f, 0.0f};
+    bool escapeColorSet = false;
     int position = 0;
     bool highlight = false;
     prepareFont();
@@ -168,9 +177,13 @@ void Bf2Style::drawText(System* system, Data* data, int elementIndex,
                 highlight = !highlight;
                 for (int i = 0; i != 4; ++i) {
                     position += 1;
-                    escapeChannels[i] = escapeDigit(
-                        data->getCharacterElement(system, elementIndex, position) - '0');
+                    const int payloadCharacter =
+                        data->getCharacterElement(system, elementIndex, position);
+                    escapePayload[i] = payloadCharacter;
+                    escapeChannels[i] = escapeDigit(payloadCharacter - '0');
                 }
+                escapeColorSet = highlight && readColorEscape(
+                    [&](int i) { return escapePayload[i]; }, &escapeColor);
             } else if (code == 'L' || code == 'l') {
                 penX = bounds->x;
                 penY += lineHeight;
@@ -188,7 +201,8 @@ void Bf2Style::drawText(System* system, Data* data, int elementIndex,
             glyphRect.width = metrics.width;
             positionGlyph(&glyphRect, &metrics, &penX, &penY);
             Quad glyphQuad(&glyphRect, clip);
-            if (!paintGlyph(system, character, position, glyphQuad, context, highlight))
+            if (!paintGlyph(system, character, position, glyphQuad, context, highlight,
+                            escapeColorSet ? &escapeColor : nullptr))
                 return;
             penX += metrics.rightBearing + metrics.width;
             if (!(penX < right)) {
@@ -237,6 +251,9 @@ void Bf2RightAlignedStyle::drawText(System* system, Data* data, int elementIndex
     const int length = data->getStringLength(system);
     Rect glyphRect = {0.0f, 0.0f, 0.0f, 0.0f, bounds->z};
     float escapeChannels[4] = {0.0f, 0.0f, 0.0f, 0.0f}; // written, never read
+    int escapePayload[4] = {0, 0, 0, 0}; // [CHOSEN, not recovered] see ColorEscape.h
+    Color escapeColor = {0.0f, 0.0f, 0.0f, 0.0f};
+    bool escapeColorSet = false;
     bool highlight = false;
     prepareFont();
     int index = length - 1;
@@ -255,9 +272,13 @@ void Bf2RightAlignedStyle::drawText(System* system, Data* data, int elementIndex
                 highlight = !highlight;
                 for (int i = 0; i != 4; ++i) {
                     index += 1;
-                    escapeChannels[i] = escapeDigit(
-                        data->getCharacterElement(system, elementIndex, index) - '0');
+                    const int payloadCharacter =
+                        data->getCharacterElement(system, elementIndex, index);
+                    escapePayload[i] = payloadCharacter;
+                    escapeChannels[i] = escapeDigit(payloadCharacter - '0');
                 }
+                escapeColorSet = highlight && readColorEscape(
+                    [&](int i) { return escapePayload[i]; }, &escapeColor);
             } else if (code == 'L' || code == 'l') {
                 penX = right;
                 penY += lineHeight;
@@ -271,7 +292,8 @@ void Bf2RightAlignedStyle::drawText(System* system, Data* data, int elementIndex
             penX -= metrics.rightBearing + metrics.width;
             positionGlyph(&glyphRect, &metrics, &penX, &penY);
             Quad glyphQuad(&glyphRect, clip);
-            if (!paintGlyph(system, character, index, glyphQuad, context, highlight))
+            if (!paintGlyph(system, character, index, glyphQuad, context, highlight,
+                            escapeColorSet ? &escapeColor : nullptr))
                 return;
             penX -= metrics.leftBearing;
             // The edge test truncates the pen to an integer first.
@@ -315,6 +337,9 @@ void Bf2CenterAlignedStyle::drawText(System* system, Data* data, int elementInde
     float penY = bounds->y;
     Rect glyphRect = {0.0f, 0.0f, 0.0f, 0.0f, bounds->z};
     float escapeChannels[4] = {0.0f, 0.0f, 0.0f, 0.0f}; // written, never read
+    int escapePayload[4] = {0, 0, 0, 0}; // [CHOSEN, not recovered] see ColorEscape.h
+    Color escapeColor = {0.0f, 0.0f, 0.0f, 0.0f};
+    bool escapeColorSet = false;
     bool highlight = false;
     prepareFont();
     float lineWidth = 0.0f;
@@ -333,9 +358,13 @@ void Bf2CenterAlignedStyle::drawText(System* system, Data* data, int elementInde
                     highlight = !highlight;
                     for (int i = 0; i != 4; ++i) {
                         scan += 1;
-                        escapeChannels[i] = escapeDigit(
-                            data->getCharacterElement(system, elementIndex, scan) - '0');
+                        const int payloadCharacter =
+                            data->getCharacterElement(system, elementIndex, scan);
+                        escapePayload[i] = payloadCharacter;
+                        escapeChannels[i] = escapeDigit(payloadCharacter - '0');
                     }
+                    escapeColorSet = highlight && readColorEscape(
+                        [&](int i) { return escapePayload[i]; }, &escapeColor);
                 }
                 scan += 1;
                 continue;
@@ -356,7 +385,8 @@ void Bf2CenterAlignedStyle::drawText(System* system, Data* data, int elementInde
             glyphRect.width = metrics.width;
             positionGlyph(&glyphRect, &metrics, &penX, &penY);
             Quad glyphQuad(&glyphRect, clip);
-            if (!paintGlyph(system, glyph, index, glyphQuad, context, highlight))
+            if (!paintGlyph(system, glyph, index, glyphQuad, context, highlight,
+                            escapeColorSet ? &escapeColor : nullptr))
                 return;
             penX += metrics.rightBearing + metrics.width;
         }
