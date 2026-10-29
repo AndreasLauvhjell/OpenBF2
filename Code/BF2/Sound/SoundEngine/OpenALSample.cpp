@@ -569,6 +569,9 @@ int OpenALSample::start(int startSample, int loops)
     al_Sourcef(m_source, AL_PITCH, 1.0f);
     al_Sourcef(m_source, AL_GAIN, 0.0f);
     al_Sourcei(m_source, AL_LOOPING, 0);
+    // [CHOSEN, not recovered] Not in retail. Sources are pooled, so the property is set for every
+    // start: 2D samples play their channels directly, 3D samples keep full spatialisation.
+    setDirectChannels(m_source, !is3D());
     if (startBuffers(startSample, loops))
     {
         ALfloat zero[3] = { 0.0f, 0.0f, 0.0f };

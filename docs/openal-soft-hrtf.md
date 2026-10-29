@@ -61,9 +61,18 @@ the configuration files read, the device opened, the mix format and whether HRTF
 enabled (for example `Full HRTF rendering enabled, using "Built-In HRTF"`). No log file means
 `OpenAL32.dll` was never loaded, usually because another provider was selected.
 
-## Known limitation
+## Direct channels for music and 2D sources
 
-Under HRTF, OpenAL Soft renders every multi-channel buffer as virtual speakers at ±30 degrees
-through the HRTF filters. The stereo menu and loading music and stereo 2D samples therefore sound
-further away and coloured compared with the retail providers. 3D sources, which are mono, get full
-HRTF spatialisation.
+Under HRTF, OpenAL Soft renders a multi-channel buffer as virtual speakers at ±30 degrees through
+the HRTF filters, which makes stereo music and stereo 2D samples sound further away and coloured.
+`[CHOSEN, not recovered]`, not in retail (issue pending): when the loaded OpenAL reports
+`AL_SOFT_direct_channels`, `OpenALProvider::open` sets `g_directChannelsAvailable` and traces
+`AL_SOFT_direct_channels available: Yes`. Then:
+
+- the music thread sets `AL_DIRECT_CHANNELS_SOFT` on its source;
+- `OpenALSample::start` sets it on 2D samples and clears it on 3D samples, because sources are
+  pooled.
+
+Music and stereo 2D sources play straight to the output channels, while 3D sources keep full HRTF
+spatialisation. The property has no effect on mono buffers. `BF2OpenAL.dll` and Creative's
+OpenAL do not report the extension, so the retail provider paths never receive it.

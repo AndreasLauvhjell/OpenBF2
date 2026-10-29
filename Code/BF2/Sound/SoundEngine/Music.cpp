@@ -61,6 +61,9 @@ void __cdecl musicThreadMain(win32::Thread* thread)
     ALuint source = 0;
     al_GenSources(1, &source);
     threadError(errors, "alGenSources");
+    // [CHOSEN, not recovered] Not in retail: the stereo music bypasses HRTF virtualisation.
+    setDirectChannels(source, true);
+    threadError(errors, "alSourcei (AL_DIRECT_CHANNELS_SOFT)");
     ALuint buffers[12];
     genBuffersAccessible(12, buffers);
     threadError(errors, "alGenStreamingBuffers");

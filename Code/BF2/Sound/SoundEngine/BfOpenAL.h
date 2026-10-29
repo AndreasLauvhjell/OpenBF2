@@ -200,6 +200,16 @@ extern PFN_EAXSet                 eax_Set;                    // ds:OpenALProvid
 extern PFN_EAXGet                 eax_Get;                    // ds:1004642C
 extern bool                       g_eaxAvailable;             // ds:EAX3.0 (or Emulated)
 
+// [CHOSEN, not recovered] Not in retail. AL_SOFT_direct_channels (OpenAL Soft) lets 2D sources
+// with multi-channel buffers - the music stream and stereo 2D samples - play straight to the
+// output channels instead of being virtualised as speakers, which matters under HRTF. The flag is
+// set by OpenALProvider::open only when the loaded OpenAL reports the extension, so the retail
+// BF2OpenAL.dll path never receives the property. Issue: pending.
+const ALenum AL_DIRECT_CHANNELS_SOFT = 0x1033;
+extern bool                       g_directChannelsAvailable;
+// Sets AL_DIRECT_CHANNELS_SOFT on `source` when the extension is available; no-op otherwise.
+void setDirectChannels(ALuint source, bool enable);
+
 // BfOpenAL.cpp's own functions
 bool loadOpenAL(const char* fileName);      // LoadLibrary + the 39 GetProcAddress calls
 int  unloadOpenAL();                        // FreeLibrary and null every pointer

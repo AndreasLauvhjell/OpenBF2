@@ -58,6 +58,14 @@ int                        g_openALFlags = 0;
 PFN_EAXSet                 eax_Set = 0;
 PFN_EAXGet                 eax_Get = 0;
 bool                       g_eaxAvailable = false;
+bool                       g_directChannelsAvailable = false;   // [CHOSEN, not recovered]
+
+// [CHOSEN, not recovered] See BfOpenAL.h.
+void setDirectChannels(ALuint source, bool enable)
+{
+    if (g_directChannelsAvailable)
+        al_Sourcei(source, AL_DIRECT_CHANNELS_SOFT, enable ? 1 : 0);
+}
 
 const EAXGUID g_eaxListenerGuid = { 0xA8FA6882, 0xB476, 0x11D3, { 0xBD, 0xB9, 0x00, 0xC0, 0xF0, 0x2D, 0xDF, 0x87 } };
 const EAXGUID g_eaxBufferGuid   = { 0xA8FA6881, 0xB476, 0x11D3, { 0xBD, 0xB9, 0x00, 0xC0, 0xF0, 0x2D, 0xDF, 0x87 } };

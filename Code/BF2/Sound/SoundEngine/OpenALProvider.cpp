@@ -158,6 +158,9 @@ int OpenALProvider::open(const std::string& name)
     }
     if (p.wantEax)
         detectEax();
+    // [CHOSEN, not recovered] Not in retail: see g_directChannelsAvailable in BfOpenAL.h.
+    g_directChannelsAvailable = al_IsExtensionPresent("AL_SOFT_direct_channels") != 0;
+    g_soundTrace->info(sndFormat("AL_SOFT_direct_channels available: %s", g_directChannelsAvailable ? "Yes" : "No"), kFile, 0); // no retail line
     al_GetError();                                  // clear whatever the probes left
     setDopplerFactor(m_dopplerFactor);
     al_DistanceModel(AL_INVERSE_DISTANCE_CLAMPED);
@@ -187,6 +190,7 @@ void OpenALProvider::close()
     eax_Set = 0;
     eax_Get = 0;
     g_eaxAvailable = false;
+    g_directChannelsAvailable = false;              // [CHOSEN, not recovered]
     if (m_context)
         alc_DestroyContext(m_context);
     m_context = 0;
