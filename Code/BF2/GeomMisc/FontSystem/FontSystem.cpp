@@ -86,13 +86,13 @@ public:
                                   unsigned int colour);     // +0x14  0x10087A90   written
     virtual void drawText(float x, float y, const vc71::string& text);   // +0x18  0x10087130  written
     virtual int  getHeight();                               // +0x1C  0x10087150   written
-    // [FRONTIER] Remaining character metrics, scaling and default-color virtuals need typed implementations.
-    virtual void slot_0x20();
-    virtual void slot_0x24();
+    virtual int  getCharWidth(char c);                      // +0x20  0x100871B0   read
+    virtual int  getTextWidth(const vc71::string& text);    // +0x24  0x10087160   read
+    // [FRONTIER] The two scaling virtuals need typed implementations.
     virtual void slot_0x28();
     virtual void slot_0x2C();
-    virtual void slot_0x30();
-    virtual void slot_0x34();                               // 0x10087210   the last slot
+    virtual void setColour(unsigned int colour);            // +0x30  0x10087200   read
+    virtual unsigned int getColour();                       // +0x34  0x10087210   the last slot
 
     // , `retn 10h` - not a vtable slot. Its only caller in the image is
     // NameTagRenderer::bufferItem (0x101B2467), which blits a player's name into the name texture.
@@ -474,14 +474,39 @@ int FontPorted::getHeight()
         RD9_FRONTIER("dice::hfe::geom::Font::Ported::" #method, slotOffset);    \
     }
 
-RD9_FP_FRONTIER(slot_0x20, 0x20)
-RD9_FP_FRONTIER(slot_0x24, 0x24)
 RD9_FP_FRONTIER(slot_0x28, 0x28)
 RD9_FP_FRONTIER(slot_0x2C, 0x2C)
-RD9_FP_FRONTIER(slot_0x30, 0x30)
-RD9_FP_FRONTIER(slot_0x34, 0x34)
 
 #undef RD9_FP_FRONTIER
+
+// Advance of one character in pixels: the space width for ' ', otherwise the glyph advance
+// truncated toward zero plus the between-character spacing. The scale factors do not apply.
+int FontPorted::getCharWidth(char c)
+{
+    if (c == ' ')
+        return m_spaceWidth;
+    return static_cast<int>(m_glyphs[static_cast<unsigned char>(c)].width) + m_betweenWidth;
+}
+
+// Sum of getCharWidth over every character, dispatched virtually per character.
+int FontPorted::getTextWidth(const vc71::string& text)
+{
+    int width = 0;
+    for (unsigned int i = 0; i < text.size(); ++i)
+        width += getCharWidth(text.c_str()[i]);
+    return width;
+}
+
+// Sets the colour drawText uses.
+void FontPorted::setColour(unsigned int colour)
+{
+    m_colour = colour;
+}
+
+unsigned int FontPorted::getColour()
+{
+    return m_colour;
+}
 
 // RefFactory_geom_Font_Ported, 0x1007C7C0. Same shape and __fastcall convention as the others.
 IBase* __fastcall createFontPorted(unsigned int iid, IBase* outer)
@@ -588,6 +613,22 @@ int fontPortedGetHeight(IBase* font)
 void fontPortedDrawText(IBase* font, float x, float y, const vc71::string& text)
 {
     static_cast<FontPorted*>(font)->drawText(x, y, text);
+}
+
+// Typed font adapters for DebugTextWriter's render and the renderer's frame-rate overlay.
+int fontPortedGetTextWidth(IBase* font, const vc71::string& text)
+{
+    return static_cast<FontPorted*>(font)->getTextWidth(text);
+}
+
+void fontPortedSetColour(IBase* font, unsigned int colour)
+{
+    static_cast<FontPorted*>(font)->setColour(colour);
+}
+
+unsigned int fontPortedGetColour(IBase* font)
+{
+    return static_cast<FontPorted*>(font)->getColour();
 }
 
 } // namespace geom

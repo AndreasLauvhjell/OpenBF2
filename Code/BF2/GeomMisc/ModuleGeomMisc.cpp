@@ -12,10 +12,12 @@ namespace dice {
 namespace hfe {
 namespace geom {
 
-// DebugTextWriter.cpp. Declared rather than pulled through a header - three symbols.
+// DebugTextWriter.cpp. Declared rather than pulled through a header.
 IBase* __fastcall createDebugTextWriter(unsigned int iid, IBase* outer);
 extern const unsigned int IID_IDebugTextWriter;
 extern const unsigned int CID_DebugTextWriter;
+IBase* __fastcall createDebugTextWriterManager(unsigned int iid, IBase* outer);
+extern const unsigned int CID_DebugTextWriterManager;
 
 // FontSystem/FontSystem.cpp.
 IBase* __fastcall createFontPorted(unsigned int iid, IBase* outer);
@@ -90,6 +92,13 @@ void ModuleGeomMisc::getClassList(RD9_HOST_VECTOR_PARAMETER(ClassRegInfo, hostVe
     info.name    = "dice.hfe.geom.DebugTextWriter";
     info.create  = RD9_CLASS_FACTORY(&createDebugTextWriter);
     out.push_back(info);
+
+    // The manager both writers register with; the renderer flushes it at the end of each scene.
+    ClassRegInfo writerManager;
+    writerManager.classId = CID_DebugTextWriterManager;   // 81042
+    writerManager.name    = "dice.hfe.geom.DebugTextWriterManager";
+    writerManager.create  = RD9_CLASS_FACTORY(&createDebugTextWriterManager);
+    out.push_back(writerManager);
 
     // Font implementation used by the console overlay.
     ClassRegInfo font;
@@ -191,6 +200,8 @@ void ModuleGeomMisc::getClassList(RD9_HOST_VECTOR_PARAMETER(ClassRegInfo, hostVe
     // The line above predates roads step 2 and still counts eleven; these two make thirteen.
     ::renddx9abi::logf("ModuleGeomMisc::getClassList: +2 road-editor classes registered "
                        "(dice.hfe.geom.EditorSpline cid 81033, dice.hfe.geom.PerlinNoise cid 81035)");
+    ::renddx9abi::logf("ModuleGeomMisc::getClassList: +1 class registered "
+                       "(dice.hfe.geom.DebugTextWriterManager cid 81042)");
 }
 
 

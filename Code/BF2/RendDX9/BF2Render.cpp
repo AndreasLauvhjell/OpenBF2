@@ -61,6 +61,8 @@
 #endif
 
 #include <cstring>
+#include <cstdarg>
+#include <cstdio>
 
 namespace dice {
 namespace hfe {
@@ -195,6 +197,13 @@ extern IBase* g_Terrain;
 const float* roadCompiledRendererFadeOut();
 unsigned int roadCompiledRendererDepthBiasBits();
 unsigned int roadCompiledRendererSlopeScaleDepthBiasBits();
+// ModuleGeomMisc.cpp, DebugTextWriter.cpp and FontSystem/FontSystem.cpp - the proportional debug
+// text writer and the typed forwards the frame-rate overlay uses.
+extern IBase* g_DebugTextWriter;
+void debugTextWriterSetColour(IBase* writer, unsigned int colour);                 // +0x20
+void debugTextWriterDrawText(IBase* writer, int x, int y, const vc71::string& text,
+                             int alignment);                                       // +0x40
+unsigned int fontPortedGetColour(IBase* font);                                     // +0x34
 }
 
 namespace dx9rend {
@@ -403,6 +412,7 @@ private:
     void hudManagerFramePrep(float timeF);
     void geometryStreamTick();                // sub_1002DF20 - the streaming scan (budget 25.0)
     void roadQueuePass();                     // sub_1002A560 - terrain-gated road queue flush
+    void drawFrameRate();                     // sub_10029C50 - the renderer.drawFps overlay
 
     // The base occupies +0x000..+0x537 and is accessed through RendDX9Base's overlay.
     // The primary vptr is already declared, so storage starts at +0x004.
@@ -1465,9 +1475,9 @@ void Renderer::setDebugTextWriterFont(const char* singletonName, const char* fon
     }
 
     void** vtbl = *reinterpret_cast<void***>(writer);
-    typedef bool (__thiscall* SetFontFn)(void*, const vc71::string&);
+    typedef bool (__thiscall* SetFontFn)(void*, const renddx9abi::HostString&);
 
-    vc71::string path(fontPath);
+    const renddx9abi::HostString path(fontPath);
     const bool ok = reinterpret_cast<SetFontFn>(vtbl[0x10 / 4])(writer, path);
 
     ::renddx9abi::logf("Renderer::initialize: step 6 - %s.setFont(\"%s\") -> %s "
@@ -1750,6 +1760,50 @@ void Renderer::hudManagerFramePrep(float timeF)
 
     float* m = viewGetMatrixPtr(getRenderView());
     hostCalls::hudUpdate(hud, timeF, player, m[8], m[9], m[10]);                        // +0x28
+}
+
+
+// sub_10074AB0 - the image's printf-into-a-std::string helper, reproduced TU-locally as
+// NametagManager.cpp and QuadPatch.cpp already do. 0xFFF limit; an overflow is replaced by the
+// fixed warning.
+namespace {
+char g_rendererFormatBuffer[0x1000];
+
+vc71::string rendererFormatString(const char* format, ...)
+{
+    va_list args;
+    va_start(args, format);
+    const int written = ::_vsnprintf(g_rendererFormatBuffer, 0xFFF, format, args);
+    va_end(args);
+
+    if (written != -1)
+        g_rendererFormatBuffer[written] = '\0';
+    else
+        ::sprintf(g_rendererFormatBuffer, "%s",
+                  "WARNING: The original message was too long for formatString(). \n");
+    return vc71::string(g_rendererFormatBuffer);
+}
+} // anonymous namespace
+
+// The renderer.drawFps overlay: queues "<fps> / <ms per frame>" at (6, 6) on the proportional
+// debug text writer in the renderer's text colour (+0x1C), then sets the writer back to the console
+// font's colour. Only value 1 draws. Statistics collection is paused around the call.
+
+void Renderer::drawFrameRate()
+{
+    unsigned char* const self = reinterpret_cast<unsigned char*>(this);
+    const unsigned char statsWere = statsSwapEnabled(0);
+    const unsigned int consoleColour = geom::fontPortedGetColour(static_cast<IBase*>(m_consoleFont));
+    IBase* const writer = geom::g_DebugTextWriter;
+    geom::debugTextWriterSetColour(writer, *reinterpret_cast<const unsigned int*>(self + 0x1C));
+    if (*reinterpret_cast<const int*>(self + 0x6AC) == 1)
+    {
+        const vc71::string text = rendererFormatString("%.1f / %.1f", m_frameRate,
+                                                       1000.0 / m_frameRate);
+        geom::debugTextWriterDrawText(writer, 6, 6, text, 0);
+    }
+    geom::debugTextWriterSetColour(geom::g_DebugTextWriter, consoleColour);
+    statsSwapEnabled(statsWere);
 }
 
 
@@ -2403,11 +2457,8 @@ bool Renderer::renderFrame(double time, float deltaTime)
                 }
 
                 // [FRONTIER] Separate debug flags gate frame-time and culling text overlays.
-                if (dw[427])                                   // +0x6AC
-                {
-                    RD9_FRONTIER_AT("dice::hfe::dx9rend::Renderer::renderFrame (sub_10029C50 - the "
-                                    "frame-time debug overlay, gated on +0x6AC)", this, 0x28);
-                }
+                if (dw[427])                                   // +0x6AC renderer.drawFps
+                    drawFrameRate();
                 // Native object vectors shift the fields following them; use the flag member.
                 if (g_ObjectDrawer
                     && reinterpret_cast<const geom::ObjectDrawer*>(g_ObjectDrawer)->isCullingDebugEnabled())
@@ -2828,6 +2879,18 @@ bool rendererGetDrawHud()
 void rendererSetDrawHud(bool on)
 {
     static_cast<unsigned char*>(g_rendererBase)[1713] = on;
+}
+
+// renderer.drawFps (ctor 0x1005CEB0, arms 0x1005D000): the int renderFrame tests before the
+// frame-rate overlay; the SET arm stores the parsed int unchanged.
+int rendererGetDrawFps()
+{
+    return *reinterpret_cast<const int*>(static_cast<const unsigned char*>(g_rendererBase) + 1708);
+}
+
+void rendererSetDrawFps(int value)
+{
+    *reinterpret_cast<int*>(static_cast<unsigned char*>(g_rendererBase) + 1708) = value;
 }
 
 void rendererCaptureHemiState(HemiRenderState& state)

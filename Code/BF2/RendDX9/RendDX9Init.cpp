@@ -1772,6 +1772,10 @@ void constructD3DHalf(void* renderer)
     //               present() answers false until an endScene clears it.
     b->framePresented = 1;
 
+    //   0x1000B964  mov dword ptr [esi+1Ch], 0FFFF0000h - opaque red, the colour the
+    //               renderer.drawFps overlay hands the debug text writer.
+    *reinterpret_cast<unsigned int*>(b->opaque010 + (0x1C - 0x10)) = 0xFFFF0000u;
+
     // 1000BA84 constructs the embedded VideoOptions before Direct3DCreate9 and
     // before initializeD3DSubsystems can fail. Hoisting its vptr into the later
     // initialize body left a null table on device failure at Renderer step15.

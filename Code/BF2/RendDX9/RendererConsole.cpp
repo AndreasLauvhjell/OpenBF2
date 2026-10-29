@@ -33,6 +33,9 @@ int  rendererGetBundledMeshLod();
 // BF2Render.cpp - drawHud's arms (0x1005CCC0) over the renderer byte +0x6B1.
 bool rendererGetDrawHud();
 void rendererSetDrawHud(bool on);
+// BF2Render.cpp - drawFps's arms (0x1005D000) over the renderer dword +0x6AC.
+int  rendererGetDrawFps();
+void rendererSetDrawFps(int value);
 
 namespace {
 
@@ -110,9 +113,17 @@ BF2_CONSOLE_PROPERTY_FN(forceSkinnedMeshLod, int, g_Renderer != 0,
 BF2_CONSOLE_PROPERTY_FN(forceBundledMeshLod, int, g_Renderer != 0,
                         rendererGetBundledMeshLod(), rendererSetBundledMeshLod, kRendererConsoleTag)
 
+// The draw toggles carry access level 1, so the in-game console may use them; the shipped
+// initialiser sets these defaults again ahead of drawHud.
+BF2_CONSOLE_OBJECT("renderer", 1, 0)
+
 // drawHud - ctor 0x1005CB70 (type "bool"), active while g_Renderer exists (0x1005B930).
 BF2_CONSOLE_PROPERTY_FN(drawHud, bool, g_Renderer != 0,
                         rendererGetDrawHud(), rendererSetDrawHud, kRendererConsoleTag)
+
+// drawFps - ctor 0x1005CEB0 (type "int"), active while g_Renderer exists (0x1005B930).
+BF2_CONSOLE_PROPERTY_FN(drawFps, int, g_Renderer != 0,
+                        rendererGetDrawFps(), rendererSetDrawFps, kRendererConsoleTag)
 
 } // anonymous namespace
 

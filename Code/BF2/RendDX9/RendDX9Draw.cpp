@@ -12,6 +12,12 @@
 
 namespace dice {
 namespace hfe {
+
+namespace geom {
+extern IBase* g_DebugTextWriterManager;               // dword_10247C58 - ModuleGeomMisc.cpp
+void debugTextWriterManagerRenderAll(IBase* manager); // DebugTextWriter.cpp - manager +0x18
+}
+
 namespace dx9rend {
 
 extern void* g_rendererBase;    // dword_1023B970 - RendDX9Init.cpp
@@ -171,21 +177,15 @@ bool rendererBeginScene(const unsigned int* clearRgb, bool doClear)
 
 // Ends the scene, clears frame flags and handles pending screenshot capture.
 
-extern void* g_endSceneOverlayHook;   // dword_10247C58 - never published on the recovered paths
-void* g_endSceneOverlayHook = 0;
-
 bool rendererEndScene()
 {
     unsigned char* b = base();
     if (!b[256])
         return false;
 
-    if (g_endSceneOverlayHook)
-    {
-        typedef void (__fastcall* HookFn)(void*, void*);
-        reinterpret_cast<HookFn>((*static_cast<void***>(g_endSceneOverlayHook))[6])(
-            g_endSceneOverlayHook, 0);
-    }
+    // Flush the debug text writers into this scene.
+    if (geom::g_DebugTextWriterManager)
+        geom::debugTextWriterManagerRenderAll(geom::g_DebugTextWriterManager);
 
     if (device()->EndScene() < 0)
     {
