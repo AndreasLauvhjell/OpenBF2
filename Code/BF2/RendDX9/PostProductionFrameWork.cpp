@@ -12,6 +12,7 @@
 #include "../../RendDX9Abi/Vc71String.h"
 #include "RendDX9Base.h"
 #include "Texture.h"          // textureReleaseRef for the listener's lost slot
+#include "../Geom/Terrain.h"  // the water-fog range setter raises Terrain +0x41C
 
 #include <new>
 #include <string.h>
@@ -444,6 +445,34 @@ void postProductionGetWaterFogColor255(float rgb[3])
     rgb[0] = F(o, 0x50) * 255.0f;
     rgb[1] = F(o, 0x54) * 255.0f;
     rgb[2] = F(o, 0x58) * 255.0f;
+}
+
+// renderer.waterFogStartEndAndBase's write arm (0x1004FD50): the start/end/base/max record into
+// both water-fog range slots (B at +0x6C first, then A at +0x5C), then the terrain's
+// lighting-dirty byte when a terrain exists.
+void postProductionSetWaterFogRange(const float range[4])
+{
+    void* const o = g_PostProductionFrameWorkOwner;
+    F(o, 0x6C) = range[0];
+    F(o, 0x70) = range[1];
+    F(o, 0x74) = range[2];
+    F(o, 0x78) = range[3];
+    F(o, 0x5C) = range[0];
+    F(o, 0x60) = range[1];
+    F(o, 0x64) = range[2];
+    F(o, 0x68) = range[3];
+    if (geom::Terrain* const t = geom::terrain())
+        t->m_lightingDirty = 1;
+}
+
+// its read arm (0x1004F730) reads slot B (+0x6C).
+void postProductionGetWaterFogRange(float range[4])
+{
+    void* const o = g_PostProductionFrameWorkOwner;
+    range[0] = F(o, 0x6C);
+    range[1] = F(o, 0x70);
+    range[2] = F(o, 0x74);
+    range[3] = F(o, 0x78);
 }
 
 // Updates shader and device fog from camera depth below the water plane.
