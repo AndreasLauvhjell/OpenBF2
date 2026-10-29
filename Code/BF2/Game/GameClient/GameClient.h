@@ -198,6 +198,17 @@ private:
     bool                   m_punkBuster;             // +0x159
 };
 
+// [CHOSEN, not recovered] Net-stat overlay behind game.showNetGraph; retail BF2.exe draws no
+// client net-stat text. Shows only the local connection's rates, ping and loss - no addresses,
+// ports or player names.
+int  getNetGraphOverlayMode();
+/// @param mode 1 shows the overlay; any other value hides it.
+void setNetGraphOverlayMode(int mode);
+/// Queues this frame's overlay text on the DebugTextWriter singleton. Does nothing when the mode is
+/// not 1, when no game client or connection statistics exist, or when the writer is unavailable.
+/// Call once per rendered frame, before the scene ends; the writer clears its queue every frame.
+void drawNetGraphOverlay();
+
 } // namespace hfe
 } // namespace dice
 

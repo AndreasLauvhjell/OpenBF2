@@ -83,6 +83,7 @@
 #if !DEDICATED
 #include "BF2ClientSeams.h"                 // [FRONTIER] client collaborators without recovered classes
 #include "../LocalProfileManager.h"        // native client startup interface
+#include "../GameClient/GameClient.h"      // drawNetGraphOverlay - the game.showNetGraph overlay
 #include "../ProfileManager.h"             // renderMenu case 14 clears the pending transition
 #include "../../Menu/BF2HudManager.h"       // constructor and established virtual prefix; publication gated
 #include <cstdio>
@@ -1865,6 +1866,8 @@ bool BF2Engine::mainLoop()
         // BF2.exe 0x40D3B5: `mov ecx, [esi+18h]; mov eax, [ecx]; call [eax+1Ch]` on this->bf2Render.
         bf2Render->beforeFrame();                                   // vslot +0x1C, 0x4530A0
         rendered = true;
+        // [CHOSEN, not recovered] Queue the game.showNetGraph overlay for this rendered frame.
+        drawNetGraphOverlay();
         // ..0x40D3D7: the demo's +0x08 recorder and the widened frame time, then +0x18.
         bf2Render->render(frameTime, demo->recorder());             // vslot +0x18, 0x453270 [FRONTIER] body
         if (game)

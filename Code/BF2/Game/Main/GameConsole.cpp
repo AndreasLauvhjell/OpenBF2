@@ -11,6 +11,7 @@
 #include "../../Scene/Object/PlayerManager.h"   // game.radioMessage's sender - the local human
 #if !DEDICATED
 #include "BF2ClientSeams.h"     // BF2Render::toggleFullscreen - game.toggleFullscreen's target
+#include "../GameClient/GameClient.h"   // game.showNetGraph's overlay mode
 #endif
 #include <string>
 
@@ -159,6 +160,11 @@ void gameToggleFullscreen()
 } // namespace
 BF2_CONSOLE_METHOD_0_STATIC_ACTIVE(toggleFullscreen, gameToggleFullscreen,
                                    ::dice::hfe::bf2Engine->getBF2Render() != 0, kGameConsoleTag)
+
+// game.showNetGraph - [CHOSEN, not recovered] the net-stat overlay switch; 1 shows it, 0 hides it.
+// Retail BF2.exe has no such property. Always available; the overlay itself waits for a connection.
+BF2_CONSOLE_PROPERTY_FN(showNetGraph, int, true, ::dice::hfe::getNetGraphOverlayMode(),
+                        ::dice::hfe::setNetGraphOverlayMode, kGameConsoleTag)
 #endif
 
 #if 0 // [RETIRE-WHEN: demo recording feature is implemented]

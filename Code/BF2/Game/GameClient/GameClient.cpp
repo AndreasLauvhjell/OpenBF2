@@ -20,6 +20,8 @@
 #include "../../Core/System.h"                       // g_system->getSimulationRate
 #include "../IGameLogic.h"
 #include "../Main/BF2Engine.h"                       // bf2Engine->demo (isPlayingDemo)
+#include "../Main/BF2Window.h"                       // the net-stat overlay's vertical placement
+#include "../../IO/TickCalculator.h"                 // the net-stat overlay's tick rate
 #include "../Main/Demo.h"
 #include "../Main/BF2ClientSeams.h"                  // hudManager, g_distributedLightRenderer
 #include "../Main/StatsMonitor.h"
@@ -2422,6 +2424,85 @@ void GameClient::handleDataBlock(EventNode* node, void* data)
         break;
     }
 }
+
+// [CHOSEN, not recovered] The game.showNetGraph overlay. The writer is reached through its
+// registered singleton and the host-string slot +0x30 (drawTextColoured).
+namespace {
+int g_netGraphOverlayMode = 0;
+
+#if defined(_MSC_VER)
+#  define NETGRAPH_VCALL __thiscall
+#else
+#  define NETGRAPH_VCALL
+#endif
+typedef void (NETGRAPH_VCALL* DrawTextColouredFn)(void*, int, int, unsigned int,
+                                                  const std::string&, int);
+
+const int          kNetGraphX           = 6;
+const int          kNetGraphLineCount   = 5;
+const int          kNetGraphLineSpacing = 16;
+const unsigned int kNetGraphColour      = 0xFFFF0000u;   // opaque red, argb
+
+// Lost packets as a percentage of all packets in that direction; zero when nothing moved.
+float lossPercent(float lostPerSecond, float deliveredPerSecond)
+{
+    const float total = lostPerSecond + deliveredPerSecond;
+    return total > 0.0f ? lostPerSecond * 100.0f / total : 0.0f;
+}
+} // namespace
+
+int getNetGraphOverlayMode()
+{
+    return g_netGraphOverlayMode;
+}
+
+void setNetGraphOverlayMode(int mode)
+{
+    g_netGraphOverlayMode = mode;
+}
+
+void drawNetGraphOverlay()
+{
+    if (g_netGraphOverlayMode != 1 || !game)
+        return;
+    IGameClient* const client = static_cast<IGameClient*>(game->queryInterface(IID_IGameClient));
+    if (!client)
+        return;
+    io::ConnectionStatus status;
+    if (!client->getConnectionStatus(status))
+        return;
+    IBase* const writer = classManager->getSingleton(std::string("DebugTextWriter"));
+    if (!writer)
+        return;
+
+    // The simulation tick is the engine's fixed-step rate; client and server share the same constant,
+    // so this is also the server's tick rate. Loss field directions follow ConnectionStatus's
+    // [INFERRED] names.
+    const TickCalculator* const ticks = bf2Engine->getTickCalculator();
+    const float tickRate = ticks && ticks->tickLength > 0.0f ? 1.0f / ticks->tickLength : 0.0f;
+    const std::string lines[kNetGraphLineCount] = {
+        formatString("fps: %.0f  ping: %u ms", bf2Engine->getAverageFPS(), status.ping),
+        formatString("tick: %.0f Hz", tickRate),
+        formatString("in:  %.0f pkt/s  %.1f kB/s",
+                     status.packetsReceivedPerSecond, status.bytesReceivedPerSecond / 1000.0f),
+        formatString("out: %.0f pkt/s  %.1f kB/s",
+                     status.packetsSentPerSecond, status.bytesSentPerSecond / 1000.0f),
+        formatString("loss: in %.1f%%  out %.1f%%",
+                     lossPercent(status.packetsLostReceivePerSecond, status.packetsReceivedPerSecond),
+                     lossPercent(status.packetsLostSendPerSecond, status.packetsSentPerSecond)),
+    };
+    const DrawTextColouredFn drawTextColoured =
+        reinterpret_cast<DrawTextColouredFn>((*reinterpret_cast<void***>(writer))[0x30 / 4]);
+    // Centre the block on three quarters of the window height at the left edge, clear of the kill
+    // feed and the HUD corners.
+    const BF2Window* const window = bf2Engine->getWindow();
+    const int height = window ? window->getHeight() : 0;
+    const int top = height * 3 / 4 - kNetGraphLineCount * kNetGraphLineSpacing / 2;
+    for (int i = 0; i < kNetGraphLineCount; ++i)
+        drawTextColoured(writer, kNetGraphX, top + i * kNetGraphLineSpacing,
+                         kNetGraphColour, lines[i], 0);
+}
+#undef NETGRAPH_VCALL
 
 } // namespace hfe
 } // namespace dice
