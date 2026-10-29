@@ -447,6 +447,8 @@ void  postProductionSetFogColor255(const float rgb[3]);
 void  postProductionGetFogColor255(float rgb[3]);
 void  postProductionSetWaterFogColor255(const float rgb[3]);
 void  postProductionGetWaterFogColor255(float rgb[3]);
+void  postProductionSetWaterFogRange(const float range[4]);
+void  postProductionGetWaterFogRange(float range[4]);
 void  postProductionUpdateFog(float underwaterDepth);
 // BF2Render.cpp - sub_100F7B00 / sub_100F7AD0: the camera's depth below the water plane (0 when
 // above it) and the under-water test the fog update forks on.

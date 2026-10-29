@@ -7,6 +7,7 @@
 #if BF2_PLUGIN_ABI_NATIVE
 
 #include "Terrain.h"
+#include "ITerrainEditable.h"
 
 #include "../../RendDX9Abi/HfeAbi.h"
 #include "../../RendDX9Abi/PluginEntry.h"
@@ -84,6 +85,17 @@ void setWaterSunIntensity(float intensity)
     ::memcpy(static_cast<unsigned char*>(terrain()->m_materialParameters) + 0x4C, record, sizeof(record));
 }
 
+// terrainWaterColor - ctor 0x100B5FBB (type "Vec3"), active while the terrain answers
+// ITerrainEditable (0x100B6040 over 0x100B0CE5); executor 0x100B60BF: get slot +0x13C, set
+// slot +0x138, both on that interface.
+ITerrainEditable* editableTerrain()
+{
+    IBase* const t = terrain();
+    return t ? static_cast<ITerrainEditable*>(t->queryInterface(kIID_ITerrainEditable)) : 0;
+}
+Vec3 getTerrainWaterColor() { return editableTerrain()->getTerrainWaterColor(); }
+void setTerrainWaterColor(const Vec3& colour) { editableTerrain()->setTerrainWaterColor(colour); }
+
 #if defined(BF2_IMAGE_EDITOR) && BF2_IMAGE_EDITOR
 // drawPrimaryLightmaps / drawSurroundingLightmaps - the 2006 retail editor's bool properties (its renderer's binding
 // constructors 0x101DD570 / 0x101DDBF0, which set and read its Terrain +0x261 / +0x263); 1.50 binds neither. The
@@ -103,6 +115,8 @@ BF2_CONSOLE_PROPERTY_FN(forceRenderStyle, int, terrain() != 0,
                         getForceRenderStyle(), setForceRenderStyle, kTerrainConsoleTag)
 BF2_CONSOLE_PROPERTY_FN(waterSunIntensity, float, terrain() != 0,
                         getWaterSunIntensity(), setWaterSunIntensity, kTerrainConsoleTag)
+BF2_CONSOLE_PROPERTY_FN(terrainWaterColor, Vec3, editableTerrain() != 0,
+                        getTerrainWaterColor(), setTerrainWaterColor, kTerrainConsoleTag)
 BF2_CONSOLE_PROPERTY_FN(sunColor, Vec3, terrain() != 0, getSunColor(), setSunColor, kTerrainConsoleTag)
 BF2_CONSOLE_PROPERTY_FN(GIColor, Vec3, terrain() != 0, getGIColor(), setGIColor, kTerrainConsoleTag)
 BF2_CONSOLE_METHOD_0_STATIC_ACTIVE(init, consoleInitTerrain, terrain() != 0, kTerrainConsoleTag)
