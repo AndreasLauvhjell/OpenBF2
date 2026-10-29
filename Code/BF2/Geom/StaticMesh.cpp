@@ -811,10 +811,9 @@ StaticMeshRenderer* staticMeshRenderer()
     return static_cast<StaticMeshRenderer*>(static_cast<void*>(g_StaticMeshRenderer));
 }
 
-// dword_1024B930 - the Terrain singleton.  BF2Render.cpp records that nothing recovered publishes
-// it; the water arm of the draw tests it first and is dead until a Terrain class lands.
-// [FRONTIER] dice::hfe::geom::Terrain - the class that publishes dword_1024B930
-void* const g_terrain = 0;
+// dword_1024B930 - the Terrain singleton (ModuleGeom.cpp), which the water arm of the draw tests
+// first and reads its water techniques and envmap from.
+extern IBase* g_Terrain;
 
 // sub_1008DD80 - pack a Vec3 and a w into a static Vec4 and answer its address.  The shipped body
 // guards a one-time zeroing of the static with a flag bit; a zero-initialised static is that.
@@ -2555,7 +2554,7 @@ void StaticMesh::drawVanilla()
                 sun->direction[2] = sunDirection[2];
             }
 
-            if (t->m_isWater && g_terrain && m_dword26C)
+            if (t->m_isWater && g_Terrain && m_dword26C)
             {
                 // the water arm
                 std::memcpy(op.world.value, m_transform->m, sizeof(op.world.value));
@@ -2570,7 +2569,7 @@ void StaticMesh::drawVanilla()
                     staticMeshStoreLightMapOffset(entry, this);
                 }
 
-                const unsigned char* const terrain = static_cast<const unsigned char*>(g_terrain);
+                const unsigned char* const terrain = reinterpret_cast<const unsigned char*>(g_Terrain);
                 dx9rend::Ra::RaShader* const nearShader =
                     *reinterpret_cast<dx9rend::Ra::RaShader* const*>(terrain + 0x718);
                 dx9rend::Ra::RaShader* const farShader =
