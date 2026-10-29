@@ -17,10 +17,10 @@ public:
     unsigned int getObjectSize() override;
     bool streamProperties(System*, Stream*) override;
     bool updateSelf(System*, const NodeState*, const Rect*, float) override;
-    void paintSelf(System*, const NodeState*, const Rect*, const Rect*, RenderContext*) override; // 7AAEF0 [FRONTIER]
-    bool onEvent1(System*, const Rect*, const NodeState*, int first, int index, int second) override; // 7AB5F0 [FRONTIER]
+    void paintSelf(System*, const NodeState*, const Rect*, const Rect*, RenderContext*) override; // 7AAEF0
+    bool onEvent1(System*, const Rect*, const NodeState*, int key, int index, int second) override; // 7AB5F0
     bool onEvent4(System*, const Rect*, const NodeState*, int first, int index, int second) override;
-    void updateVisibleStart(System*, const Rect*);
+    void updateVisibleStart(System*, const Rect*);    // 7AA910
     static TypeDescriptor* getClassType();             // 7AC340, metadata934DA0
 protected:
     friend class Bf2EditNode;

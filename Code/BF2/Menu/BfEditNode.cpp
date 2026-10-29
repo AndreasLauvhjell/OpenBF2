@@ -3,13 +3,19 @@
 #include "BfEditNode.h"
 #if !DEDICATED
 #include "BfEditData.h"
+#include "DifFontMetadata.h"
+#include "Font.h"
+#include "../External/BFMeme/Action.h"
+#include "../External/BFMeme/Effect.h"
+#include "../External/BFMeme/Pointer.h"
 #include "../External/BFMeme/Stream.h"
+#include "../External/BFMeme/Style.h"
 #include "../External/BFMeme/System.h"
 #include "../External/BFMeme/TypeDescriptor.h"
-#include <cstdio>
-#include <cstdlib>
+#include <cmath>
 #include <cstring>
 #include <new>
+#include <string>
 namespace dice { namespace meme {
 BfEditNode::BfEditNode()
     : m_editData(nullptr), m_string(nullptr), m_selectAction(nullptr), m_font(0),
@@ -123,19 +129,226 @@ TypeDescriptor* BfEditNode::getClassType()                 // 7AC340, singletonA
 }
 TypeDescriptor* BfEditNode::getType() { return getClassType(); }
 
-// [FRONTIER] [TEMP] [CHOSEN, not recovered] Edit-node painting and pointer-event handling stop on invocation.
-// [RETIRE-WHEN: hud-edit-node-frame] Replace with complete, validated frame and pointer-event implementations.
-void BfEditNode::paintSelf(System*, const NodeState*, const Rect*, const Rect*, RenderContext*)
+// Draws the visible text from the first visible character up to a carriage return or the
+// right edge, then the two-unit cursor while it is focused and in the visible blink phase.
+// Glyph quads are clipped to `bounds`; the shipped body never reads `clip`. A failed glyph
+// draw ends the paint without a cursor. Hidden edit data suppresses glyphs, not the cursor.
+void BfEditNode::paintSelf(System* system, const NodeState*, const Rect* bounds, const Rect*,
+                           RenderContext* context)
 {
-    std::fprintf(stderr, "[FRONTIER] dice::meme::BfEditNode::paintSelf reached\n");
-    std::fflush(stderr);
-    std::abort();
+    if (!m_string) return;
+    float x = bounds->x;
+    const float baseY = bounds->y;
+    const float right = bounds->x + bounds->width;
+    const float fontHeight = system->getFontHeight(m_font);
+    Rect glyph = *bounds;
+    int index = m_firstVisible;
+    int elementIndex = 0;
+    bool cursorDrawn = false;
+    hfe::menu::Font* const font = reinterpret_cast<hfe::menu::Font*>(m_font);
+    const std::string fontName(font->getName()); // retail has no null guard
+    float fontScale = 1.0f;
+    if (fontName.find(".dif", 0, 4) != std::string::npos)
+        fontScale = static_cast<hfe::menu::DifFont*>(font)->getMetadata()->getScale();
+    const float reciprocalScale = static_cast<float>(1.0 / fontScale);
+
+    const auto drawCursor = [&]() {
+        glyph.height = fontHeight;
+        glyph.y = baseY;
+        glyph.width = 2.0f;
+        Quad cursor(&glyph, nullptr);
+        drawContextTexture(context, system, 0, &cursor);
+    };
+    const auto cursorVisible = [&]() {
+        return index == m_cursor && m_blinkTime >= 0.0f && m_focused;
+    };
+
+    for (int character = m_string->getCharacter(system, index); character;) {
+        if (character == 13) {
+            if (!cursorDrawn) index = m_cursor; // forces the trailing cursor below
+            break;
+        }
+        GlyphMetrics metrics; // retail ignores failure
+        system->getGlyphMetrics(character, m_font, &metrics);
+        glyph.width = metrics.width;
+        glyph.height = metrics.height;
+        if (fontScale == 1.0f) {
+            glyph.x = x;
+            glyph.y = metrics.verticalOffset + baseY;
+        } else {
+            x = fontScale * x;
+            const float scaledY = fontScale * baseY;
+            const double roundedX = std::floor(!(std::fmod(x, 1.0) >= 0.5)
+                                                   ? static_cast<double>(x)
+                                                   : static_cast<double>(x) + 1.0);
+            x = static_cast<float>(roundedX * reciprocalScale);
+            glyph.x = x;
+            const double roundedY = std::floor(!(std::fmod(scaledY, 1.0) >= 0.5)
+                                                   ? static_cast<double>(scaledY)
+                                                   : static_cast<double>(scaledY) + 1.0);
+            glyph.y = static_cast<float>((roundedY + metrics.verticalOffset) * reciprocalScale);
+        }
+        if (!(x < right)) break;
+
+        if (!m_editData || !m_editData->m_hideText) {
+            if (m_outline) {
+                const Color outlineColor = {0.15000001f, 0.15000001f, 0.15000001f, 1.0f};
+                const float glyphX = glyph.x, glyphY = glyph.y;
+                Quad outline(&glyph, bounds, &outlineColor);
+                translateQuad(&outline, 1.0f, 1.0f, -0.001f);
+                drawContextCharacter(context, system, character, m_font, elementIndex, &outline);
+                setQuadBounds(&outline, glyphX + 1.0f, glyphY, glyph.width, glyph.height);
+                drawContextCharacter(context, system, character, m_font, elementIndex, &outline);
+                setQuadBounds(&outline, glyphX + 1.0f, glyphY - 1.0f, glyph.width, glyph.height);
+                drawContextCharacter(context, system, character, m_font, elementIndex, &outline);
+                setQuadBounds(&outline, glyphX, glyphY - 1.0f, glyph.width, glyph.height);
+                drawContextCharacter(context, system, character, m_font, elementIndex, &outline);
+                setQuadBounds(&outline, glyphX - 1.0f, glyphY - 1.0f, glyph.width, glyph.height);
+                drawContextCharacter(context, system, character, m_font, elementIndex, &outline);
+                setQuadBounds(&outline, glyphX - 1.0f, glyphY, glyph.width, glyph.height);
+                drawContextCharacter(context, system, character, m_font, elementIndex, &outline);
+                setQuadBounds(&outline, glyphX - 1.0f, glyphY + 1.0f, glyph.width, glyph.height);
+                drawContextCharacter(context, system, character, m_font, elementIndex, &outline);
+                setQuadBounds(&outline, glyphX, glyphY + 1.0f, glyph.width, glyph.height);
+                drawContextCharacter(context, system, character, m_font, elementIndex, &outline);
+            }
+            Quad quad(&glyph, bounds, &m_color);
+            if (!drawContextCharacter(context, system, character, m_font, elementIndex, &quad))
+                return;
+        }
+        if (cursorVisible()) {
+            drawCursor();
+            cursorDrawn = true;
+        }
+        ++elementIndex;
+        ++index;
+        x = static_cast<float>(((static_cast<double>(metrics.rightBearing) + metrics.width)
+                                + metrics.leftBearing) + x);
+        character = m_string->getCharacter(system, index);
+    }
+    if (cursorVisible()) {
+        glyph.x = x;
+        drawCursor();
+    }
 }
-bool BfEditNode::onEvent1(System*, const Rect*, const NodeState*, int, int, int)
+
+// Handles pointer and editing keys for the focused box. Only index 1 is accepted. Key 18 runs
+// the select action and drops focus; a click inside the bounds takes focus and locks the
+// pointer, one outside drops focus, unlocks and forwards the click to the system pointer.
+// Editing keys need focus and text. Returns false when the event is refused or focus is lost.
+bool BfEditNode::onEvent1(System* system, const Rect* rect, const NodeState* state,
+                          int key, int index, int second)
 {
-    std::fprintf(stderr, "[FRONTIER] dice::meme::BfEditNode::onEvent1 reached\n");
-    std::fflush(stderr);
-    std::abort();
+    if (index != 1) return false;
+    const auto loseFocus = [&]() {
+        m_focused = false;
+        system->unlockPointer(); // no zero guard; an unfocused miss also unlocks
+        pointerEvent1(system, static_cast<Pointer*>(system->getPointerObject()), 1, 1, second);
+    };
+    if (key == 18) {
+        if (m_selectAction) {
+            const NodeInputEvent event = {1, 0, 0.0f, 0.0f, 0};
+            m_selectAction->execute(system, rect, state, &event);
+            if (!m_focused) return false;
+            m_focused = false;
+            system->unlockPointer();
+        }
+    } else if (key == 1 && !m_ignoreClick) {
+        const float* const pointer = system->getPointerPosition();
+        const float pointerX = pointer[0];
+        const float pointerY = pointer[1];
+        const float right = rect->width + rect->x;
+        const float bottom = rect->height + rect->y;
+        const bool inside = pointerX > rect->x && pointerX < right &&
+                            pointerY > rect->y && pointerY < bottom;
+        if (!inside) {
+            loseFocus();
+            return false;
+        }
+        if (!m_focused) {
+            m_focused = true;
+            system->lockPointer();
+        }
+    }
+    if (!m_focused || !m_string) return false;
+
+    const int length = m_string->getStringLength(system);
+    switch (key) {
+    case 1:
+        if (m_ignoreClick) {
+            m_ignoreClick = false;
+            break;
+        }
+        {
+            float offset = rect->x - system->getPointerPosition()[0];
+            if (offset < 0.0f) offset *= -1.0f;
+            float remaining = rect->width;
+            int position = 0;
+            for (; position < length; ++position) {
+                GlyphMetrics metrics;
+                const int font = m_font;
+                const int character = m_string->getCharacter(system, position);
+                system->getGlyphMetrics(character, font, &metrics); // result discarded
+                const double next = static_cast<double>(remaining) -
+                    ((static_cast<double>(metrics.rightBearing) + metrics.width) + metrics.leftBearing);
+                remaining = static_cast<float>(next);
+                if (next <= static_cast<double>(rect->width) - offset) {
+                    m_cursor = position;
+                    updateVisibleStart(system, rect);
+                    break;
+                }
+            }
+            if (position == length) {
+                m_cursor = position;
+                updateVisibleStart(system, rect);
+            }
+        }
+        break;
+    case 5:
+        if (m_cursor > 0) --m_cursor;
+        break;
+    case 7:
+        if (m_cursor < length) ++m_cursor;
+        break;
+    case 9:
+        m_cursor = 0;
+        updateVisibleStart(system, rect);
+        break;
+    case 10:
+        m_cursor = length - 1; // shipped end key stops before the last character
+        updateVisibleStart(system, rect);
+        break;
+    case 14:
+        if (m_cursor < length) {
+            char* buffer = static_cast<char*>(::operator new(length + 1)); // no null guard
+            m_string->getString(system, buffer, length + 1);
+            std::memmove(buffer + m_cursor, buffer + m_cursor + 1, length - m_cursor);
+            m_string->setString(system, buffer);
+            ::operator delete(buffer);
+            buffer = nullptr;
+        }
+        break;
+    case 15:
+        if (m_cursor > 0) {
+            char* buffer = static_cast<char*>(::operator new(length + 1)); // no null guard
+            m_string->getString(system, buffer, length + 1);
+            std::memmove(buffer + m_cursor - 1, buffer + m_cursor, length - m_cursor + 1);
+            m_string->setString(system, buffer);
+            ::operator delete(buffer);
+            buffer = nullptr;
+            --m_cursor;
+        }
+        break;
+    case 16:
+        return true; // no visible-start refresh
+    case 17:
+        if (m_ignoreClick) m_ignoreClick = false;
+        break;
+    default:
+        break;
+    }
+    updateVisibleStart(system, rect);
+    return true;
 }
 static_assert(sizeof(BfEditNode) == 80, "native BfEditNode storage");
 } }
