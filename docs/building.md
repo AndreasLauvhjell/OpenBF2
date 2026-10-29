@@ -165,6 +165,7 @@ The renderer and atlas scripts can use the April 2005 DirectX SDK (D3DX version 
 through `DXSDK_DIR`; they also have a no-SDK import-library fallback. The runtime still
 needs the matching `d3dx9_25.dll`. Client runtime dependencies also include the game's
 Bink and Novint components, TextureAtlasBuilder, and an OpenAL provider for audio.
+[OpenAL Soft and HRTF audio](openal-soft-hrtf.md) describes an optional OpenAL Soft setup.
 The audio build uses vendored Ogg/Vorbis by default; setting `BF2AUDIO_NO_VORBIS` omits it.
 
 The CMake client target stages all four rebuilt DLLs above. It also stages Python
