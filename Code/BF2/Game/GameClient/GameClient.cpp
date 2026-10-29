@@ -453,8 +453,9 @@ bool GameClient::update(int steps, float dt)
     ClientVoteManager::getInstance()->update(dt);
     transmit(steps, delta);
     m_playerInputs.clear();
-    if (m_showNetGraph && m_bitStream)
-        GAMECLIENT_FRONTIER("update", "BitStream PE +0x04 (the net-graph reset) is unmapped");
+    // The net-stat object is not null-tested; it exists whenever a connection does.
+    if (m_showNetGraph)
+        m_networkableStats->update();
     return ok;
 }
 
