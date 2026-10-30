@@ -5,8 +5,10 @@
 #include "../../Core/Debug.h"
 #include "../../Core/Ids.h"
 #include "../../Game/Main/BF2ClientSeams.h"
+#include "../../Core/SettingsRepostitory.h"
 #include "../../Game/Main/BF2Window.h"
 #include <cmath>
+#include <cstdio>
 
 namespace dice { namespace hfe { namespace io {
 extern IBase* inputDeviceManager;
@@ -16,6 +18,178 @@ namespace {
 // The retail polling scratch buffer is global (0xA054E0), shared by instances.
 DIDEVICEOBJECTDATA mouseEvents[128];
 const char mouseSource[] = "C:\\dice\\Projects\\BF2Branches\\Patch_1_50\\Code\\BF2\\IO\\Input\\MouseDevice.cpp";
+
+// [CHOSEN, not recovered] Raw Input mouse backend, enabled with the +rawMouse 1 launch option
+// (setting "GSRawMouse"). Retail reads the mouse through a 128-event DirectInput buffer and drops
+// the whole poll on overflow, which loses movement with high polling-rate mice. In raw mode the
+// DirectInput device is still created (capabilities, cooperative mode bookkeeping) but never
+// acquired; WM_INPUT reports are converted into the same DIDEVICEOBJECTDATA samples, so
+// updateSamples, peakXYAxis, sensitivity and inversion are unchanged. All state lives here rather
+// than in MouseDevice so the retail class layout stays untouched; there is one system mouse.
+// Messages are pumped on the thread that calls MouseDevice::update, so no locking is needed.
+struct RawMouseState
+{
+    bool enabled;                                   // read once in MouseDevice::init
+    bool handlerInstalled;
+    bool registered;                                // RegisterRawInputDevices is in effect
+    bool exclusive;                                 // registered with NOLEGACY | CAPTUREMOUSE
+    bool lost;                                      // focus lost: reset like DIERR_INPUTLOST
+    bool cursorHidden;                              // one ShowCursor(FALSE) is outstanding
+    HWND window;
+    DWORD sequence;
+    std::list<DIDEVICEOBJECTDATA> pending;          // reports since the last poll
+};
+RawMouseState rawMouse = { false, false, false, false, false, false, 0, 0, std::list<DIDEVICEOBJECTDATA>() };
+
+// Upper bound on queued reports between two polls; mirrors the retail 256-sample guard.
+const size_t rawMousePendingLimit = 4096;
+
+// Confines and hides the cursor while the mouse is captured, as an exclusive DirectInput
+// acquisition does. NOLEGACY suppresses WM_SETCURSOR, so the window's own hide never runs.
+void clipRawMouseCursor(bool clip)
+{
+    if (clip != rawMouse.cursorHidden) {
+        ShowCursor(clip ? FALSE : TRUE);
+        rawMouse.cursorHidden = clip;
+    }
+    if (!clip || !rawMouse.window) {
+        ClipCursor(0);
+        return;
+    }
+    RECT rect;
+    if (!GetClientRect(rawMouse.window, &rect))
+        return;
+    MapWindowPoints(rawMouse.window, 0, reinterpret_cast<POINT*>(&rect), 2);
+    ClipCursor(&rect);
+}
+
+// Millisecond clock for raw reports and raw-mode poll times. GetTickCount and GetMessageTime
+// advance in roughly 16 ms steps, which lumps a fast mouse into one tick; the performance counter
+// stamps each report when the frame pumps it. Only compared within the raw path.
+DWORD rawMouseClock()
+{
+    static LONGLONG frequency = 0;
+    if (!frequency) {
+        LARGE_INTEGER value;
+        QueryPerformanceFrequency(&value);
+        frequency = value.QuadPart;
+    }
+    LARGE_INTEGER counter;
+    QueryPerformanceCounter(&counter);
+    return static_cast<DWORD>(counter.QuadPart * 1000 / frequency);
+}
+
+// Appends one report. Axis motion with the same millisecond timestamp is summed into the newest
+// matching sample, which keeps the queue near two axis samples per millisecond at any polling rate.
+void pushRawMouseEvent(DWORD offset, DWORD data, DWORD time)
+{
+    if (offset == DIMOFS_X || offset == DIMOFS_Y || offset == DIMOFS_Z) {
+        for (std::list<DIDEVICEOBJECTDATA>::reverse_iterator it = rawMouse.pending.rbegin();
+             it != rawMouse.pending.rend() && it->dwTimeStamp == time; ++it) {
+            if (it->dwOfs == offset) {
+                it->dwData = static_cast<DWORD>(static_cast<LONG>(it->dwData) + static_cast<LONG>(data));
+                return;
+            }
+        }
+    }
+    if (rawMouse.pending.size() >= rawMousePendingLimit)
+        rawMouse.pending.pop_front();
+    DIDEVICEOBJECTDATA event = {};
+    event.dwOfs = offset;
+    event.dwData = data;
+    event.dwTimeStamp = time;
+    event.dwSequence = ++rawMouse.sequence;
+    rawMouse.pending.push_back(event);
+}
+
+void handleRawMouseInput(HRAWINPUT handle)
+{
+    RAWINPUT input;
+    UINT size = sizeof(input);
+    if (GetRawInputData(handle, RID_INPUT, &input, &size, sizeof(RAWINPUTHEADER)) == static_cast<UINT>(-1))
+        return;
+    if (input.header.dwType != RIM_TYPEMOUSE)
+        return;
+    const RAWMOUSE& mouse = input.data.mouse;
+    const DWORD time = rawMouseClock();
+    // Absolute reports (remote desktop, tablets) have no relative meaning for aiming; ignored.
+    if (!(mouse.usFlags & MOUSE_MOVE_ABSOLUTE)) {
+        if (mouse.lLastX)
+            pushRawMouseEvent(DIMOFS_X, static_cast<DWORD>(mouse.lLastX), time);
+        if (mouse.lLastY)
+            pushRawMouseEvent(DIMOFS_Y, static_cast<DWORD>(mouse.lLastY), time);
+    }
+    const USHORT flags = mouse.usButtonFlags;
+    if (flags & RI_MOUSE_WHEEL)
+        pushRawMouseEvent(DIMOFS_Z, static_cast<DWORD>(static_cast<LONG>(static_cast<SHORT>(mouse.usButtonData))), time);
+    static const USHORT downFlags[5] = { RI_MOUSE_BUTTON_1_DOWN, RI_MOUSE_BUTTON_2_DOWN,
+        RI_MOUSE_BUTTON_3_DOWN, RI_MOUSE_BUTTON_4_DOWN, RI_MOUSE_BUTTON_5_DOWN };
+    static const USHORT upFlags[5] = { RI_MOUSE_BUTTON_1_UP, RI_MOUSE_BUTTON_2_UP,
+        RI_MOUSE_BUTTON_3_UP, RI_MOUSE_BUTTON_4_UP, RI_MOUSE_BUTTON_5_UP };
+    for (DWORD i = 0; i < 5; ++i) {
+        if (flags & downFlags[i])
+            pushRawMouseEvent(DIMOFS_BUTTON0 + i, 0x80, time);
+        if (flags & upFlags[i])
+            pushRawMouseEvent(DIMOFS_BUTTON0 + i, 0, time);
+    }
+}
+
+// Window message handler, installed on the game window the first time raw mode activates.
+int rawMouseMessageHandler(HWND, UINT message, WPARAM wParam, LPARAM lParam)
+{
+    if (!rawMouse.registered)
+        return 0;
+    if (message == WM_INPUT) {
+        handleRawMouseInput(reinterpret_cast<HRAWINPUT>(lParam));
+    } else if (message == WM_ACTIVATEAPP) {
+        if (wParam) {
+            clipRawMouseCursor(rawMouse.exclusive);
+        } else {
+            clipRawMouseCursor(false);
+            rawMouse.lost = true;
+        }
+    }
+    return 0;
+}
+
+bool registerRawMouse(HWND window, bool exclusive)
+{
+    RAWINPUTDEVICE device;
+    device.usUsagePage = 0x01;                      // generic desktop
+    device.usUsage = 0x02;                          // mouse
+    device.dwFlags = exclusive ? RIDEV_NOLEGACY | RIDEV_CAPTUREMOUSE : 0;
+    device.hwndTarget = window;
+    if (!RegisterRawInputDevices(&device, 1, sizeof(device)))
+        return false;
+    rawMouse.window = window;
+    rawMouse.registered = true;
+    rawMouse.exclusive = exclusive;
+    clipRawMouseCursor(exclusive && GetForegroundWindow() == window);
+    return true;
+}
+
+void unregisterRawMouse()
+{
+    if (!rawMouse.registered)
+        return;
+    RAWINPUTDEVICE device;
+    device.usUsagePage = 0x01;
+    device.usUsage = 0x02;
+    device.dwFlags = RIDEV_REMOVE;
+    device.hwndTarget = 0;
+    RegisterRawInputDevices(&device, 1, sizeof(device));
+    clipRawMouseCursor(false);
+    rawMouse.registered = false;
+    rawMouse.exclusive = false;
+    rawMouse.pending.clear();
+}
+
+HWND rawMouseWindow()
+{
+    if (!g_bf2Render || !g_bf2Render->getWindow())
+        return 0;
+    return g_bf2Render->getWindow()->getHwnd();
+}
 }
 
 MouseDevice::MouseDevice()
@@ -35,6 +209,11 @@ MouseDevice::MouseDevice()
 
 MouseDevice::~MouseDevice()
 {
+    unregisterRawMouse();                               // [CHOSEN, not recovered]; no-op in DI mode
+    if (rawMouse.handlerInstalled && g_bf2Render && g_bf2Render->getWindow()) {
+        g_bf2Render->getWindow()->removeMessageHandler(rawMouseMessageHandler);
+        rawMouse.handlerInstalled = false;
+    }
     if (m_device) {
         m_device->Unacquire();
         m_device->Release();
@@ -72,6 +251,9 @@ bool MouseDevice::setCooperativeMode(InputDeviceMode mode)
     if (m_device->SetCooperativeLevel(GetFocus(), flags) != DI_OK)
         return setCooperativeModeForWindow(g_bf2Render->getWindow()->getHwnd(), mode);
     m_mode = mode;
+    // [CHOSEN, not recovered] A live raw registration follows the new exclusivity.
+    if (rawMouse.registered && rawMouse.exclusive != (mode == 0))
+        registerRawMouse(rawMouse.window, mode == 0);
     return true;
 }
 
@@ -89,6 +271,19 @@ bool MouseDevice::activate()
 {
     if (!m_device)
         return false;
+    if (rawMouse.enabled) {
+        // [CHOSEN, not recovered] Raw mode registers for WM_INPUT instead of acquiring.
+        if (!m_active) {
+            const HWND window = rawMouseWindow();
+            if (window && !rawMouse.handlerInstalled) {
+                g_bf2Render->getWindow()->addMessageHandler(rawMouseMessageHandler);
+                rawMouse.handlerInstalled = true;
+            }
+            m_active = window && registerRawMouse(window, m_mode == 0);
+            rawMouse.lost = false;
+        }
+        return true;                                    // also when registration fails, as retail
+    }
     if (!m_active)
         m_active = m_device->Acquire() == DI_OK;
     return true;                                        // also when Acquire fails
@@ -99,7 +294,10 @@ bool MouseDevice::deActivate()
     if (!m_device)
         return false;
     if (m_active) {
-        m_device->Unacquire();
+        if (rawMouse.enabled)
+            unregisterRawMouse();                       // [CHOSEN, not recovered]
+        else
+            m_device->Unacquire();
         m_active = false;
         m_samples.clear();                              // peak queue is retained
         m_buttons = m_previousButtons = 0;
@@ -259,6 +457,37 @@ void MouseDevice::update(float deltaTime)
         m_samples.clear();
         m_peakSamples.clear();
     }
+    if (rawMouse.enabled) {
+        // [CHOSEN, not recovered] Drain WM_INPUT reports. A focus loss resets state the way
+        // DIERR_INPUTLOST does; nothing is dropped on volume.
+        // The cursor capture follows the foreground state every poll: activation messages can
+        // arrive before the device is registered again, so they alone cannot restore it.
+        const bool capture = rawMouse.registered && rawMouse.exclusive
+                          && GetForegroundWindow() == rawMouse.window;
+        if (capture != rawMouse.cursorHidden)
+            clipRawMouseCursor(capture);
+        // Another application can leave its cursor shape behind, and NOLEGACY suppresses the
+        // WM_SETCURSOR through which the window would clear it again.
+        if (capture && GetCursor())
+            SetCursor(0);
+        if (rawMouse.lost) {
+            rawMouse.lost = false;
+            rawMouse.pending.clear();
+            m_samples.clear();
+            m_peakSamples.clear();
+            m_buttons = m_previousButtons = 0;
+            m_axes[0] = m_axes[1] = m_axes[2] = m_axes[3] = 0.0f;
+        }
+        m_sampleTime = m_pollTime;
+        m_pollTime = rawMouseClock();                   // same clock as the report stamps
+        for (std::list<DIDEVICEOBJECTDATA>::const_iterator it = rawMouse.pending.begin();
+             it != rawMouse.pending.end(); ++it) {
+            m_samples.push_back(*it);
+            m_peakSamples.push_back(*it);
+        }
+        rawMouse.pending.clear();
+        return;
+    }
     DWORD count;
     HRESULT result;
     for (;;) {
@@ -339,6 +568,12 @@ bool MouseDevice::init()
     bufferSize.dwData = 128;
     if (m_device->SetProperty(DIPROP_BUFFERSIZE, &bufferSize.diph) < 0)
         Debug(DebugTypeError, mouseSource, 172, "") << "Failed to init buffered mode";
+    // [CHOSEN, not recovered] Backend choice for this run; see RawMouseState.
+    rawMouse.enabled = settings && settings->boolGet("GSRawMouse", false);
+    if (rawMouse.enabled) {
+        std::fprintf(stderr, "[CHOSEN] MouseDevice: Raw Input backend enabled (+rawMouse 1)\n");
+        std::fflush(stderr);
+    }
     return setCooperativeMode(static_cast<InputDeviceMode>(0)) != false;
 }
 

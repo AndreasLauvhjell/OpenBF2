@@ -797,6 +797,8 @@ bool BF2Engine::parseParameters(const std::string& commandLine)
         parser.add( 44, "maxPlayers",             "Sets max players.");
         parser.add( 59, "ranked",                 "Allows gamespy snapshot sending");
         parser.add( 73, "dropDynamicSpawns",      "Don't re-add dynamic spawn groups as round (re)starts.");
+        // [CHOSEN, not recovered] OpenBF2 option: Raw Input mouse backend (IO/Input/MouseDevice.cpp).
+        parser.add( 74, "rawMouse",               "Use Raw Input (WM_INPUT) for the mouse instead of DirectInput");
 
         // Only registered parser IDs reach these sparse switch cases.
         std::list<std::pair<int, std::string> > keyList;        // var_C8
@@ -953,6 +955,10 @@ bool BF2Engine::parseParameters(const std::string& commandLine)
 
                 case 73:    // +dropDynamicSpawns - a flag
                     settings->boolSet("dropDynamicSpawns", true);
+                    break;
+
+                case 74:    // +rawMouse - [CHOSEN, not recovered], value-gated on "1" like +ai
+                    settings->boolSet("GSRawMouse", value.compare("1") == 0);
                     break;
 
                 // 6 (+checkForAvailablePatch), 7 (+checkForPatch) and 10 (+lowPriority) are

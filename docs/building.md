@@ -229,6 +229,11 @@ mode and AI settings for the scenario being tested. Set an unused game port expl
 `BF2_PORT`, and any test-client destination consistent. Follow the
 [development validation rules](development.md#validation) before connecting clients.
 
+The client accepts `+rawMouse 1`, a non-retail option that reads the mouse through Windows Raw
+Input (`WM_INPUT`) instead of the retail 128-event DirectInput buffer, which discards a whole poll
+when it overflows. Without the option the client keeps the retail DirectInput path. The backend
+lives in `Code/BF2/IO/Input/MouseDevice.cpp` and is marked `[CHOSEN, not recovered]`.
+
 The production executable runs until normal shutdown. `BF2_FRAMES` and other harness
 controls belong to `Code/Build/bootmain.cpp` and do not limit production run targets.
 `bf2_client_run` uses `BF2_GAME_DIR` and the `BF2_CLIENT_RUN_ARGS` semicolon list.
