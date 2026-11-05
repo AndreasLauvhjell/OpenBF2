@@ -39,6 +39,8 @@ namespace dx9rend {
 extern void* g_rendererBase;       // RendDX9Init.cpp   - dword_1023B970 (the Renderer object)
 extern void* g_shaderManager;      // ShaderManager.cpp - dword_1023B97C
 extern void* g_raShaderConstants;  // RenderQueues.cpp  - dword_1023DDBC (the Ra constants block)
+extern double g_waterClock;        // BF2Render.cpp     - [CHOSEN, not recovered] GlobalTime as a double
+bool rendererIsExpansionPack();    // Renderer vslot +0xAC
 
 bool  effectHasTechnique(void* effect, const vc71::string& name);          // Effect.cpp,  sub_1001DC20
 void  updateShaderDefines(void* shaderManager, void* base);                // ShaderManager.cpp, 0x10023730
@@ -264,6 +266,13 @@ void Terrain::updateWaterConstants()
         const float globalTime = constantF(148);                                      // GlobalTime
         const float cycle = globalTime / getWaterAnimSpeed();                         // vslot +0x90
         constantF(412) = cycle - static_cast<float>(static_cast<int>(cycle));        // WaterCycleTime
+
+        // [CHOSEN, not recovered] Issue #69. The bf2 water shaders offset their texture coordinates by
+        // WaterCycleTime, so retail's wrap makes the whole surface jump. Leaving the cycle unwrapped
+        // keeps the motion continuous at the same speed. The expansion pack keeps the retail value:
+        // its caustics shader also reads this constant.
+        if (!dx9rend::rendererIsExpansionPack())
+            constantF(412) = static_cast<float>(dx9rend::g_waterClock / getWaterAnimSpeed());
     }
     else
     {

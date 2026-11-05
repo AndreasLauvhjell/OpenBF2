@@ -253,6 +253,10 @@ void effectManagerResetEffects();
 }
 extern void* g_renderEntryPool;
 extern void* g_raShaderConstants;
+// [CHOSEN, not recovered] Issue #69. Double-precision copy of the GlobalTime accumulation. It
+// advances at the same two sites, so the 3D water runs at the retail rate without inheriting the
+// float's rounding.
+double g_waterClock = 0.0;
 extern void* g_renderTargetSystem;
 // QueryManager.cpp - the GPU-throttle fences.
 void queryIssueEnd(void* query);
@@ -1765,6 +1769,7 @@ void Renderer::roadQueuePass()
     const double* const dbl = reinterpret_cast<const double*>(this);
     unsigned char* const constants = static_cast<unsigned char*>(g_raShaderConstants);
     *reinterpret_cast<float*>(constants + 0x94) += static_cast<float>(dbl[189]);
+    g_waterClock += dbl[189];
 
     {
         const float* const m = view->getViewMatrixPtr()->m;                                  // +0x64
@@ -2067,9 +2072,12 @@ bool Renderer::renderFrame(double time, float deltaTime)
 
             // sub_100383D0 - GlobalTime accumulate on the withheld constants block.
             if (g_raShaderConstants)
+            {
                 *reinterpret_cast<float*>(
                     static_cast<unsigned char*>(g_raShaderConstants) + 148) +=
                     static_cast<float>(dbl[189]);
+                g_waterClock += dbl[189];
+            }
 
             // The constants block is still unpublished in this
             // reconstruction, so retain its existing guard while using the exact LightManager
